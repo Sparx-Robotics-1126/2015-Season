@@ -1,0 +1,14 @@
+# Local Properties
+/build.properties
+/.classpath
+
+# Compiled Files
+*.class
+
+# Package Files
+*.jar
+*.war
+*.ear
+
+# Eclipse Settings
+.settings/

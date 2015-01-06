@@ -3,9 +3,9 @@ package org.gosparx.team1126.robot;
 
 
 import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
 
 /**
  * This is a demo program showing the use of the RobotDrive class.
@@ -24,32 +24,41 @@ import edu.wpi.first.wpilibj.Timer;
  * this system. Use IterativeRobot or Command-Based instead if you're new.
  */
 public class Robot extends SampleRobot {
-    RobotDrive myRobot;
-    Joystick stick;
+    private Joystick leftStick;
+    private Joystick rightStick;
+    private Victor v1LeftFront;
+    private Victor v2LeftBack;
+    private Victor v3RightFront;
+    private Victor v4RightBack;
 
     public Robot() {
-        myRobot = new RobotDrive(0, 1);
-        myRobot.setExpiration(0.1);
-        stick = new Joystick(0);
+        leftStick = new Joystick(0);
+        rightStick = new Joystick(1);
+        v1LeftFront = new Victor(0);
+        v2LeftBack = new Victor(1);
+        v3RightFront = new Victor(2);
+        v4RightBack = new Victor(3);
     }
 
     /**
      * Drive left & right motors for 2 seconds then stop
      */
     public void autonomous() {
-        myRobot.setSafetyEnabled(false);
-        myRobot.drive(-0.5, 0.0);	// drive forwards half speed
+        
         Timer.delay(2.0);		//    for 2 seconds
-        myRobot.drive(0.0, 0.0);	// stop robot
+       
     }
 
     /**
      * Runs the motors with arcade steering.
      */
     public void operatorControl() {
-        myRobot.setSafetyEnabled(true);
+       
         while (isOperatorControl() && isEnabled()) {
-            myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
+           v1LeftFront.set(leftStick.getY());
+           v2LeftBack.set(leftStick.getY());
+           v3RightFront.set(rightStick.getY());
+           v4RightBack.set(rightStick.getY());
             Timer.delay(0.005);		// wait for a motor update time
         }
     }

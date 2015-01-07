@@ -1,6 +1,4 @@
-
 package org.gosparx.team1126.robot;
-
 
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.RobotDrive;

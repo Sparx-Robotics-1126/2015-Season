@@ -60,12 +60,19 @@ public abstract class GenericSubsystem extends Thread {
 	 */
 	protected double logTime() { return 5; }
 	
+	/**
+	 * Logs all info appropriate to the subsystem.
+	 */
 	abstract protected void writeLog();
 	
+	/**
+	 * Runs and loops the execute() until execute returns false, logging ever logTime() seconds.
+	 */
 	@Override
 	public void run(){
 		boolean retVal = false;
 		double lastLogged = 0;
+		init();
 		do{
 			try{
 				retVal = execute();

@@ -152,8 +152,10 @@ public class Drives extends GenericSubsystem{
 			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
 				currentDriveState = State.IN_LOW_GEAR.getStateValue();
 			}
-			wantedRightSpeed = SHIFTINGSPEED;
-			wantedLeftSpeed = SHIFTINGSPEED;
+			if(currentSpeed < 0){
+				wantedRightSpeed = SHIFTINGSPEED * - 1;
+				wantedLeftSpeed = SHIFTINGSPEED * - 1;
+			}else wantedRightSpeed = SHIFTINGSPEED; wantedLeftSpeed = SHIFTINGSPEED;
 		}else if(currentDriveState == State.IN_HIGH_GEAR.getStateValue()){
 			if(currentSpeed >= UPPERSHIFTSPEED){
 				shiftingSol.set(LOW_GEAR);
@@ -164,87 +166,89 @@ public class Drives extends GenericSubsystem{
 			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
 				currentDriveState = State.IN_HIGH_GEAR.getStateValue();
 			}
-		wantedRightSpeed = SHIFTINGSPEED;
-		wantedLeftSpeed = SHIFTINGSPEED;
+			if(currentSpeed < 0){
+				wantedRightSpeed = SHIFTINGSPEED * - 1;
+				wantedLeftSpeed = SHIFTINGSPEED * - 1;
+			}else wantedRightSpeed = SHIFTINGSPEED; wantedLeftSpeed = SHIFTINGSPEED;
 		}else System.out.println("Error currentDriveState = " + currentDriveState);
-	
-	leftFront.set(wantedLeftSpeed);
-	leftBack.set(wantedLeftSpeed);
-	rightFront.set(wantedRightSpeed);
-	rightBack.set(wantedRightSpeed);
-	return false;
-}
 
-/**
- * The amount of time you want to sleep for after a cycle.
- * 
- * @return the number of milliseconds you want to sleep after a cycle.
- */
-@Override
-protected long sleepTime() {
-	return 0;
-}
-
-/**
- * Where all the logged info goes
- */
-@Override
-protected void writeLog() {
-
-}
-/**
- * sets the wanted left and right speed to the speed sent in
- * @param left left motor speed
- * @param right right motor speed
- */
-public void setSpeed(double left, double right) {
-	wantedLeftSpeed = left;
-	wantedRightSpeed = right;
-}
-/**
- *Makes the states for drives
- */
-private enum State{
-
-	IN_LOW_GEAR		(0),
-	SHIFTING_LOW	(1),
-	IN_HIGH_GEAR	(2),
-	SHIFTING_HIGH	(3);
-
-	private final int STATE;
-	/**
-	 * This assigns each state to it's correct value
-	 * @param state the numerical value of each state
-	 */
-	State(int state){
-		STATE = state;
-	}
-	/**
-	 * Gets the number for that state and returns it
-	 * @return
-	 */
-	public int getStateValue(){
-		return this.STATE;
-	}
-	/**
-	 * Gets the name of the state
-	 * @param num is used to get the correct State
-	 * @return the correct state 
-	 */
-	public String getStateName(int num){
-
-		if( num == IN_LOW_GEAR.getStateValue()){
-			return "In low gear";
-		}else if(num == SHIFTING_LOW.getStateValue()){
-			return "Shifting Low";
-		}else if(num == IN_HIGH_GEAR.getStateValue()){
-			return "In high gear";
-		}else if(num == SHIFTING_HIGH.getStateValue()){
-			return "Shifting high";
-		}else return "Error";
-
-
+		leftFront.set(wantedLeftSpeed);
+		leftBack.set(wantedLeftSpeed);
+		rightFront.set(wantedRightSpeed);
+		rightBack.set(wantedRightSpeed);
+		return false;
 	}
 
-}
+	/**
+	 * The amount of time you want to sleep for after a cycle.
+	 * 
+	 * @return the number of milliseconds you want to sleep after a cycle.
+	 */
+	@Override
+	protected long sleepTime() {
+		return 0;
+	}
+
+	/**
+	 * Where all the logged info goes
+	 */
+	@Override
+	protected void writeLog() {
+
+	}
+	/**
+	 * sets the wanted left and right speed to the speed sent in
+	 * @param left left motor speed
+	 * @param right right motor speed
+	 */
+	public void setSpeed(double left, double right) {
+		wantedLeftSpeed = left;
+		wantedRightSpeed = right;
+	}
+	/**
+	 *Makes the states for drives
+	 */
+	private enum State{
+
+		IN_LOW_GEAR		(0),
+		SHIFTING_LOW	(1),
+		IN_HIGH_GEAR	(2),
+		SHIFTING_HIGH	(3);
+
+		private final int STATE;
+		/**
+		 * This assigns each state to it's correct value
+		 * @param state the numerical value of each state
+		 */
+		State(int state){
+			STATE = state;
+		}
+		/**
+		 * Gets the number for that state and returns it
+		 * @return
+		 */
+		public int getStateValue(){
+			return this.STATE;
+		}
+		/**
+		 * Gets the name of the state
+		 * @param num is used to get the correct State
+		 * @return the correct state 
+		 */
+		public String getStateName(int num){
+
+			if( num == IN_LOW_GEAR.getStateValue()){
+				return "In low gear";
+			}else if(num == SHIFTING_LOW.getStateValue()){
+				return "Shifting Low";
+			}else if(num == IN_HIGH_GEAR.getStateValue()){
+				return "In high gear";
+			}else if(num == SHIFTING_HIGH.getStateValue()){
+				return "Shifting high";
+			}else return "Error";
+
+
+		}
+
+	}
 }

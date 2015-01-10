@@ -2,7 +2,6 @@ package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.sensors.EncoderData;
 import org.gosparx.team1126.robot.IO;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -103,7 +102,7 @@ public class Drives extends GenericSubsystem{
 	 * if drives == null, make a new drives
 	 * @return the new drives
 	 */
-	public static Drives getInstance(){
+	public static synchronized Drives getInstance(){
 		if(drives == null){
 			drives = new Drives("Drives", Thread.NORM_PRIORITY);
 		}
@@ -123,15 +122,15 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		leftFront = new Victor(IO.LEFTFRONTDRIVES);
-		leftBack = new Victor(IO.LEFTBACKDRIVES);
-		rightFront = new Victor(IO.RIGHTFRONTDRIVES);
-		rightBack = new Victor(IO.RIGHTBACKDRIVES);
-		encodeLeft = new Encoder(IO.LEFTDRIVESENCODERA, IO.LEFTDRIVESENCODERB);
+		leftFront = new Victor(IO.LEFT_FRONT_DRIVES);
+		leftBack = new Victor(IO.LEFT_BACK_DRIVES);
+		rightFront = new Victor(IO.RIGHT_FRONT_DRIVES);
+		rightBack = new Victor(IO.RIGHT_BACK_DRIVES);
+		encodeLeft = new Encoder(IO.LEFT_DRIVES_ENCODERA, IO.LEFT_DRIVES_ENCODERB);
 		encodeDataLeft = new EncoderData(encodeLeft, DISTANCE_PER_TICK);
-		encodeRight = new Encoder(IO.RIGHTDRIVESENCODERA, IO.RIGHTDRIVESENCODERB);
+		encodeRight = new Encoder(IO.RIGHT_DRIVES_ENCODERA, IO.RIGHT_DRIVES_ENCODERB);
 		encodeDataRight = new EncoderData(encodeRight, DISTANCE_PER_TICK);
-		shiftingSol = new Solenoid(IO.SHIFTINGPNU);
+		shiftingSol = new Solenoid(IO.SHIFTING_PNU);
 		return true;
 	}
 	/**

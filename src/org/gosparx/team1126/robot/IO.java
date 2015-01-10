@@ -2,22 +2,22 @@ package org.gosparx.team1126.robot;
 
 public final class IO {
 	//Motor
-	public static final int LEFTFRONTDRIVES 		= 0;
-	public static final int LEFTBACKDRIVES			= 1;
-	public static final int RIGHTFRONTDRIVES		= 2;
-	public static final int RIGHTBACKDRIVES			= 3;
+	public static final int LEFT_FRONT_DRIVES 		= 0;
+	public static final int LEFT_BACK_DRIVES			= 1;
+	public static final int RIGHT_FRONT_DRIVES		= 2;
+	public static final int RIGHT_BACK_DRIVES			= 3;
 	
 	//PNU
-	public static final int SHIFTINGPNU 			= 0;
+	public static final int SHIFTING_PNU 			= 0;
 	
 	//Encoders
-	public static final int RIGHTDRIVESENCODERA 	= 0;
-	public static final int RIGHTDRIVESENCODERB 	= 0;
-	public static final int LEFTDRIVESENCODERA 		= 0;
-	public static final int LEFTDRIVESENCODERB		= 0;
+	public static final int RIGHT_DRIVES_ENCODERA 	= 0;
+	public static final int RIGHT_DRIVES_ENCODERB 	= 0;
+	public static final int LEFT_DRIVES_ENCODERA 		= 0;
+	public static final int LEFT_DRIVES_ENCODERB		= 0;
 	
 	//Joystick
-	public static final int DRIVERJOYPORT			= 0;
+	public static final int DRIVER_JOYSTICK_PORT			= 0;
 	
 	
 }

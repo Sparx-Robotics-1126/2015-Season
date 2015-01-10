@@ -1,7 +1,6 @@
 package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.team1126.robot.IO;
-
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Controls extends GenericSubsystem{
@@ -9,7 +8,7 @@ public class Controls extends GenericSubsystem{
  
 	private static Controls controls;
 	private Drives drives;
-	public static Controls getInstance(){
+	public static synchronized Controls getInstance(){
 		if(controls == null){
 			controls = new Controls("Controls", Thread.NORM_PRIORITY);
 		}
@@ -22,7 +21,7 @@ public class Controls extends GenericSubsystem{
 
 	@Override
 	protected boolean init() {
-		driverJoy = new Joystick(IO.DRIVERJOYPORT);
+		driverJoy = new Joystick(IO.DRIVER_JOYSTICK_PORT);
 		drives = Drives.getInstance(); 
 		return true;
 	}

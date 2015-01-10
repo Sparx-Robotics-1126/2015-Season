@@ -7,6 +7,6 @@ package org.gosparx.sensors;
 
 public interface RGBSensorIF {
 	public int getRed();
-	public int getBlue();
 	public int getGreen();
+	public int getBlue();
 }

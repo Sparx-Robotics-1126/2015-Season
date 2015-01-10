@@ -2,6 +2,9 @@
 package org.gosparx.team1126.robot;
 
 
+import org.gosparx.sensors.SparkfunRGBSensor;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Joystick;
@@ -26,11 +29,15 @@ import edu.wpi.first.wpilibj.Timer;
 public class Robot extends SampleRobot {
     RobotDrive myRobot;
     Joystick stick;
+    private SparkfunRGBSensor rgbSensor;
+    private DriverStation theDriverStation;
 
     public Robot() {
         myRobot = new RobotDrive(0, 1);
         myRobot.setExpiration(0.1);
         stick = new Joystick(0);
+        rgbSensor = new SparkfunRGBSensor(0, 1, 2, 1);
+        theDriverStation = DriverStation.getInstance();
     }
 
     /**
@@ -51,6 +58,15 @@ public class Robot extends SampleRobot {
         while (isOperatorControl() && isEnabled()) {
             myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
             Timer.delay(0.005);		// wait for a motor update time
+            int redValue = rgbSensor.getRed();
+            int greenValue = rgbSensor.getGreen();
+            int blueValue = rgbSensor.getBlue();
+            String redString = "red Value = " + redValue;
+            String greenString = "green Value = " + greenValue;
+            String blueString = "blue Value = " + blueValue;
+            theDriverStation.reportError(redString, false);
+            theDriverStation.reportError(greenString, false);
+            theDriverStation.reportError(blueString, false);
         }
     }
 

@@ -4,9 +4,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
+ * Used to log messages to files. This is the non singleton Logger that communicates with the singleton LogWriter.
  * @author Alex
  * @date 1/8/15
- * Used to log messages to files. This is the non singleton Logger that communicates with the singleton LogWriter.
  */
 public class Logger{
 	

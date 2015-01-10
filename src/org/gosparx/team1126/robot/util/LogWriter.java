@@ -9,14 +9,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
 /**
+ * Used to log messages to files. This is the singleton LogWriter that writes to the files.
  * @author Alex
  * @date 1/8/15
- * Used to log messages to files. This is the singleton LogWriter that writes to the files.
  */
 public class LogWriter extends GenericSubsystem{
 
 	/**
-	 * The file path to store the logs in
+	 * The file path to store the logs in. /mnt/sda1 is the USB port.
 	 */
 	private String filePath = "/mnt/sda1/";
 
@@ -47,9 +47,9 @@ public class LogWriter extends GenericSubsystem{
 
 	/**
 	 * Supports singleton model.
-	 * @return - THE ONLY LOGWRITER EVER CREATED
+	 * @return - the long writer
 	 */
-	public static LogWriter getInstance(){
+	public static synchronized LogWriter getInstance(){
 		if(lw == null){
 			lw = new LogWriter();
 		}

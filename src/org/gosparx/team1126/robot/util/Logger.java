@@ -1,7 +1,6 @@
 package org.gosparx.team1126.robot.util;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 
 /**
  * Used to log messages to files. This is the non singleton Logger that communicates with the singleton LogWriter.
@@ -46,25 +45,7 @@ public class Logger{
 	 * @param message - the message to send
 	 */
 	public void logMessage(String message){
-		String status = "";
-		if(ds.isDisabled()){
-			status = "Dis";
-		}else if(ds.isAutonomous()){
-			status = "Aut";
-		}else if(ds.isEnabled()){
-			status = "Tel";
-		}
-		double time = Timer.getFPGATimestamp();
-        time *= Math.pow(10, PRECISION);
-        int timeInt = (int)time;
-        String timeToFormat = "" + timeInt;
-        String timeFormatted = timeToFormat;
-        if(timeToFormat.length()<= DIGITS_IN_TIME) {
-            timeFormatted = "0000000000000000".substring(0, DIGITS_IN_TIME - timeToFormat.length()) + timeInt;
-        }
-        timeFormatted = timeFormatted.substring(0,timeFormatted.length() - PRECISION) + "." + timeFormatted.substring(timeFormatted.length() - PRECISION);
-		String toLog = "DEBUG[" + status + "]{" + subsystemName + "}(" + timeFormatted + "):" + message;
-		writer.logString(toLog + "\n");
+		logMessage(message, false);
 	}
 	
 	/**
@@ -72,6 +53,15 @@ public class Logger{
 	 * @param message - the message to send
 	 */
 	public void logError(String message){
+		logMessage(message, true);
+	}
+	
+	/**
+	 * Sends the message to the LogWriter with the proper formatting
+	 * @param message - the message to log
+	 * @param error - if the message is considered an error
+	 */
+	private void logMessage(String message, boolean error){
 		String status = "";
 		if(ds.isDisabled()){
 			status = "Dis";
@@ -89,7 +79,7 @@ public class Logger{
             timeFormatted = "0000000000000000".substring(0, DIGITS_IN_TIME - timeToFormat.length()) + timeInt;
         }
         timeFormatted = timeFormatted.substring(0,timeFormatted.length() - PRECISION) + "." + timeFormatted.substring(timeFormatted.length() - PRECISION);
-		String toLog = "DEBUG[" + status + "]{" + subsystemName + "}(" + timeFormatted + "):" + message;
+		String toLog = (error ? ("ERROR") : ("DEBUG"))+ "[" + status + "]{" + subsystemName + "}(" + timeFormatted + "):" + message;
 		writer.logString(toLog);
 	}
 }

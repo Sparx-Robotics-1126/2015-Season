@@ -3,6 +3,10 @@ package org.gosparx.team1126.robot;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 import edu.wpi.first.wpilibj.SampleRobot;
 
+/**
+ * @author Alex
+ * The entrypoint for the robot. The constructor is called once the robot is turned on.
+ */
 public class Robot extends SampleRobot {
 
 	/**

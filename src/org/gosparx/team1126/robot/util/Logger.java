@@ -1,6 +1,7 @@
 package org.gosparx.team1126.robot.util;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * @author Alex
@@ -17,7 +18,7 @@ public class Logger{
 	/**
 	 * The amount of digits after the decimal in the time
 	 */
-	private static final int PERCISION = 4;
+	private static final int PRECISION = 4;
 	
 	/**
 	 * The total amount of digits in the time
@@ -53,11 +54,17 @@ public class Logger{
 		}else if(ds.isEnabled()){
 			status = "Tel";
 		}
-		String semiformatted = Integer.toString(((int)(ds.getMatchTime() * Math.pow(10, PERCISION))));
-		String time = ("00000000000".substring(0,DIGITS_IN_TIME - semiformatted.length()) + semiformatted + "").substring(0, DIGITS_IN_TIME);
-		String formatted = time.substring(0, time.length() - PERCISION) + "." + time.substring(time.length() - PERCISION);
-		String toLog = "DEBUG[" + status + "]{" + subsystemName + "}(" + formatted + "):" + message;
-		writer.logString(toLog);
+		double time = Timer.getFPGATimestamp();
+        time *= Math.pow(10, PRECISION);
+        int timeInt = (int)time;
+        String timeToFormat = "" + timeInt;
+        String timeFormatted = timeToFormat;
+        if(timeToFormat.length()<= DIGITS_IN_TIME) {
+            timeFormatted = "0000000000000000".substring(0, DIGITS_IN_TIME - timeToFormat.length()) + timeInt;
+        }
+        timeFormatted = timeFormatted.substring(0,timeFormatted.length() - PRECISION) + "." + timeFormatted.substring(timeFormatted.length() - PRECISION);
+		String toLog = "DEBUG[" + status + "]{" + subsystemName + "}(" + timeFormatted + "):" + message;
+		writer.logString(toLog + "\n");
 	}
 	
 	/**
@@ -73,10 +80,16 @@ public class Logger{
 		}else if(ds.isEnabled()){
 			status = "Tel";
 		}
-		String semiformatted = Integer.toString(((int)(ds.getMatchTime() * Math.pow(10, PERCISION))));
-		String time = ("00000000000".substring(0,DIGITS_IN_TIME - semiformatted.length()) + semiformatted + "").substring(0, DIGITS_IN_TIME);
-		String formatted = time.substring(0, time.length() - PERCISION) + "." + time.substring(time.length() - PERCISION);
-		String toLog = "ERROR[" + status + "]{" + subsystemName + "}(" + formatted + "):" + message;
+		double time = ds.getMatchTime();
+        time *= Math.pow(10, PRECISION);
+        int timeInt = (int)time;
+        String timeToFormat = "" + timeInt;
+        String timeFormatted = timeToFormat;
+        if(timeToFormat.length()<= DIGITS_IN_TIME) {
+            timeFormatted = "0000000000000000".substring(0, DIGITS_IN_TIME - timeToFormat.length()) + timeInt;
+        }
+        timeFormatted = timeFormatted.substring(0,timeFormatted.length() - PRECISION) + "." + timeFormatted.substring(timeFormatted.length() - PRECISION);
+		String toLog = "DEBUG[" + status + "]{" + subsystemName + "}(" + timeFormatted + "):" + message;
 		writer.logString(toLog);
 	}
 }

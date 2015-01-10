@@ -1,8 +1,12 @@
 package org.gosparx.team1126.robot.util;
 
-import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Calendar;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-import edu.wpi.first.wpilibj.networktables2.util.List;
+import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
 /**
  * @author Alex
@@ -10,17 +14,37 @@ import edu.wpi.first.wpilibj.networktables2.util.List;
  * Used to log messages to files. This is the singleton LogWriter that writes to the files.
  */
 public class LogWriter extends GenericSubsystem{
-	
+
+	/**
+	 * The file path to store the logs in
+	 */
+	private String filePath = "/mnt/sda1/";
+
+	/**
+	 * The name of the log
+	 */
+	private String logName;
+
+	/**
+	 * A file for checking if the current log exists
+	 */
+	private File file;
+
+	/**
+	 * The FileOutputStream for accessing the log
+	 */
+	private FileOutputStream dos;
+
 	/**
 	 * Support for the singleton model
 	 */
 	private static LogWriter lw;
-	
+
 	/**
-	 * A list of log messages we need to write so that they always appear in chronological order.
+	 * A queue of log messages we need to write so that they always appear in chronological order.
 	 */
-	private List toLog;
-	
+	private Queue<String> toLog;
+
 	/**
 	 * Supports singleton model.
 	 * @return - THE ONLY LOGWRITER EVER CREATED
@@ -31,25 +55,36 @@ public class LogWriter extends GenericSubsystem{
 		}
 		return lw;
 	}
-	
+
 	/**
 	 * Creates a LogWriter
 	 */
 	private LogWriter(){
 		super("LogWriter", Thread.NORM_PRIORITY);
-		toLog = new List();
+		toLog = new ConcurrentLinkedQueue<String>();
 	}
 
 	/**
-	 * MAKES THINGS IN THE START
+	 * Makes sure the file exists and if the directories for it exist
 	 */
 	@Override
 	protected boolean init() {
+		try {
+			logName = "log" + Calendar.getInstance().get(Calendar.MONTH) + "-" + Calendar.getInstance().get(Calendar.DATE) + "-" + Calendar.getInstance().get(Calendar.YEAR) + "(" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + "-" + Calendar.getInstance().get(Calendar.MINUTE) + ").txt";
+			file = new File(filePath + logName);
+			file.mkdirs();
+			if(file.exists()){
+				file.delete();
+			}
+
+			file.createNewFile();
+		} catch (Exception e) {
+		}
 		return true;
 	}
 
 	/**
-	 * LOOPS AND MAKES MESSAGES APPEAR IN FILES
+	 * Loops and sleeps until toLog is no longer empty, and then writes the information to the log file.
 	 */
 	@Override
 	protected boolean execute(){
@@ -61,7 +96,7 @@ public class LogWriter extends GenericSubsystem{
 				}catch(Exception e){
 					e.printStackTrace();
 				}
-			toWrite = (String) toLog.get(0);
+			toWrite = toLog.remove();
 			toLog.remove(0);
 		}
 		write(toWrite.getBytes());
@@ -70,7 +105,7 @@ public class LogWriter extends GenericSubsystem{
 	}
 
 	/**
-	 * THIS THREAD NEEDS SOME ZZZ
+	 * The amount of time for the sleeping between loops of execute()
 	 */
 	@Override
 	protected long sleepTime() {
@@ -78,24 +113,37 @@ public class LogWriter extends GenericSubsystem{
 	}
 
 	/**
-	 * WHY WOULD I LOG WHAT THE LOGWRITER IS DOING JUSTIN
+	 *	Logs info about the subsystem
 	 */
 	@Override
 	protected void writeLog() {
-		
+
 	}
-	
-	//TODO IMPLEMENT
+
+	/**
+	 * writes the passed byte array to the file and then closes the output stream
+	 * @param bytes - the array of bytes to write
+	 */
 	private void write(byte[] bytes){
-		
+		try {
+			dos = new FileOutputStream(file);
+			dos.write(bytes);
+			dos.flush();
+			dos.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}
-	
+
 	/**
 	 * Adds a message to the queue
 	 * @param message - the message to add to the queue
 	 */
 	public void logString(String message){
-		toLog.add(message);
-		toLog.notify();
+		synchronized (toLog) {
+			toLog.add(message);
+			toLog.notify();
+		}
 	}
 }

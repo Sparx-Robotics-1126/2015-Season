@@ -26,7 +26,7 @@ public abstract class GenericSubsystem extends Thread {
 	public GenericSubsystem(String name, int priority){
 		super(name);
 		className = name;
-		if(priority != Thread.MIN_PRIORITY || priority != Thread.NORM_PRIORITY || priority != MAX_PRIORITY)
+		if(priority != Thread.MIN_PRIORITY && priority != Thread.NORM_PRIORITY && priority != MAX_PRIORITY)
 			throw new InvalidParameterException();
 		setPriority(priority);
 	}

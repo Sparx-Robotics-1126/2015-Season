@@ -1,9 +1,14 @@
 package org.gosparx.team1126.robot.subsystem;
 
-public class Controls extends GenericSubsystem{
+import org.gosparx.team1126.robot.IO;
 
+import edu.wpi.first.wpilibj.Joystick;
+
+public class Controls extends GenericSubsystem{
+ private Joystick driverJoy;
+ 
 	private static Controls controls;
-	
+	private Drives drives;
 	public static Controls getInstance(){
 		if(controls == null){
 			controls = new Controls("Controls", Thread.NORM_PRIORITY);
@@ -17,13 +22,14 @@ public class Controls extends GenericSubsystem{
 
 	@Override
 	protected boolean init() {
-		// TODO Auto-generated method stub
-		return false;
+		driverJoy = new Joystick(IO.driverJoyPort);
+		drives = Drives.getInstance(); 
+		return true;
 	}
 
 	@Override
 	protected boolean execute() {
-		// TODO Auto-generated method stub
+		drives.setSpeed(driverJoy.getX(), driverJoy.getY());
 		return false;
 	}
 

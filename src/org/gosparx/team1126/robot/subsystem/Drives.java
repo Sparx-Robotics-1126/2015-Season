@@ -2,7 +2,6 @@ package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.sensors.EncoderData;
 import org.gosparx.team1126.robot.IO;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
@@ -35,19 +34,19 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * makes the left encoder
 	 */
-	private Encoder encodeLeft;
+	private Encoder encoderLeft;
 	/**
 	 * makes the right encoder
 	 */
-	private Encoder encodeRight;
+	private Encoder encoderRight;
 	/**
 	 * makes the left encoder data
 	 */
-	private EncoderData encodeDataLeft;
+	private EncoderData encoderDataLeft;
 	/**
 	 * makes the right encoder data
 	 */
-	private EncoderData encodeDataRight;
+	private EncoderData encoderDataRight;
 	/**
 	 * the solenoid used for shifting
 	 */
@@ -59,19 +58,19 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * the wanted speed for the left motors
 	 */
-	private double wantedLeftSpeed = 0;
+	private double wantedLeftPower;
 	/**
 	 * the wanted speed for the right motors
 	 */
-	private double wantedRightSpeed = 0;
+	private double wantedRightPower;
 	/**
 	 * the current state the drives is in
 	 */
-	private int currentDriveState = State.IN_LOW_GEAR.getStateValue();
+	private int currentDriveState;
 	/**
 	 * the current average speed between the left and right motors
 	 */
-	private double currentSpeed = 0;
+	private double currentSpeed;
 	/**
 	 * the speed required to shift down
 	 */
@@ -87,7 +86,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * actual time it took to shift
 	 */
-	private double shiftTime = 0;
+	private double shiftTime;
 	/**
 	 * the speed required to shift
 	 */
@@ -125,11 +124,16 @@ public class Drives extends GenericSubsystem{
 		leftBack = new Victor(IO.LEFT_BACK_DRIVES);
 		rightFront = new Victor(IO.RIGHT_FRONT_DRIVES);
 		rightBack = new Victor(IO.RIGHT_BACK_DRIVES);
-		encodeLeft = new Encoder(IO.LEFT_DRIVES_ENCODERA, IO.LEFT_DRIVES_ENCODERB);
-		encodeDataLeft = new EncoderData(encodeLeft, DISTANCE_PER_TICK);
-		encodeRight = new Encoder(IO.RIGHT_DRIVES_ENCODERA, IO.RIGHT_DRIVES_ENCODERB);
-		encodeDataRight = new EncoderData(encodeRight, DISTANCE_PER_TICK);
+		encoderLeft = new Encoder(IO.LEFT_DRIVES_ENCODERA, IO.LEFT_DRIVES_ENCODERB);
+		encoderDataLeft = new EncoderData(encoderLeft, DISTANCE_PER_TICK);
+		encoderRight = new Encoder(IO.RIGHT_DRIVES_ENCODERA, IO.RIGHT_DRIVES_ENCODERB);
+		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		shiftingSol = new Solenoid(IO.SHIFTING_PNU);
+		wantedLeftPower = 0;
+		wantedRightPower = 0;
+		currentDriveState = State.IN_LOW_GEAR.getStateValue();
+		currentSpeed = 0;
+		shiftTime = 0;
 		return true;
 	}
 	/**
@@ -138,9 +142,9 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		encodeDataRight.calculateSpeed();
-		encodeDataLeft.calculateSpeed();
-		currentSpeed = (encodeDataRight.getSpeed() + encodeDataLeft.getSpeed()) / 2;
+		encoderDataRight.calculateSpeed();
+		encoderDataLeft.calculateSpeed();
+		currentSpeed = (encoderDataRight.getSpeed() + encoderDataLeft.getSpeed()) / 2;
 
 		if(currentDriveState == State.IN_LOW_GEAR.getStateValue()){
 			if(currentSpeed >= LOWERSHIFTSPEED){
@@ -153,9 +157,9 @@ public class Drives extends GenericSubsystem{
 				currentDriveState = State.IN_LOW_GEAR.getStateValue();
 			}
 			if(currentSpeed < 0){
-				wantedRightSpeed = SHIFTINGSPEED * - 1;
-				wantedLeftSpeed = SHIFTINGSPEED * - 1;
-			}else wantedRightSpeed = SHIFTINGSPEED; wantedLeftSpeed = SHIFTINGSPEED;
+				wantedRightPower = SHIFTINGSPEED * - 1;
+				wantedLeftPower = SHIFTINGSPEED * - 1;
+			}else wantedRightPower = SHIFTINGSPEED; wantedLeftPower = SHIFTINGSPEED;
 		}else if(currentDriveState == State.IN_HIGH_GEAR.getStateValue()){
 			if(currentSpeed >= UPPERSHIFTSPEED){
 				shiftingSol.set(LOW_GEAR);
@@ -167,15 +171,15 @@ public class Drives extends GenericSubsystem{
 				currentDriveState = State.IN_HIGH_GEAR.getStateValue();
 			}
 			if(currentSpeed < 0){
-				wantedRightSpeed = SHIFTINGSPEED * - 1;
-				wantedLeftSpeed = SHIFTINGSPEED * - 1;
-			}else wantedRightSpeed = SHIFTINGSPEED; wantedLeftSpeed = SHIFTINGSPEED;
+				wantedRightPower = SHIFTINGSPEED * - 1;
+				wantedLeftPower = SHIFTINGSPEED * - 1;
+			}else wantedRightPower = SHIFTINGSPEED; wantedLeftPower = SHIFTINGSPEED;
 		}else System.out.println("Error currentDriveState = " + currentDriveState);
 
-		leftFront.set(wantedLeftSpeed);
-		leftBack.set(wantedLeftSpeed);
-		rightFront.set(wantedRightSpeed);
-		rightBack.set(wantedRightSpeed);
+		leftFront.set(wantedLeftPower);
+		leftBack.set(wantedLeftPower);
+		rightFront.set(wantedRightPower);
+		rightBack.set(wantedRightPower);
 		return false;
 	}
 
@@ -186,7 +190,7 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected long sleepTime() {
-		return 0;
+		return 10;
 	}
 
 	/**
@@ -194,16 +198,16 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-
+		System.out.println("Enabling");
 	}
 	/**
-	 * sets the wanted left and right speed to the speed sent in
+	 * sets the wanted left and right speed to the speed sent in inches
 	 * @param left left motor speed
 	 * @param right right motor speed
 	 */
 	public void setSpeed(double left, double right) {
-		wantedLeftSpeed = left;
-		wantedRightSpeed = right;
+		wantedLeftPower = left;
+		wantedRightPower = right;
 	}
 	/**
 	 *Makes the states for drives

@@ -15,11 +15,6 @@ import edu.wpi.first.wpilibj.Timer;
 public abstract class GenericSubsystem extends Thread {
 	
 	/**
-	 * The name of the class
-	 */
-	private String className;
-	
-	/**
 	 * This constructs a new subsystem with the given name and priority.
 	 * 
 	 * @param name
@@ -29,7 +24,6 @@ public abstract class GenericSubsystem extends Thread {
 	 */
 	public GenericSubsystem(String name, int priority){
 		super(name);
-		className = name;
 		if(priority != Thread.MIN_PRIORITY || priority != Thread.NORM_PRIORITY || priority != MAX_PRIORITY)
 			throw new InvalidParameterException();
 		setPriority(priority);
@@ -98,6 +92,6 @@ public abstract class GenericSubsystem extends Thread {
 	 */
 	@Override
 	public String toString(){
-		return  className;
+		return  this.getName();
 	}
 }

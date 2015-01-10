@@ -37,13 +37,13 @@ public class Controls extends GenericSubsystem{
 
 	@Override
 	protected long sleepTime() {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		return 20;
 	}
 
 	@Override
 	protected void writeLog() {
-		// TODO Auto-generated method stub
+		System.out.println("Enabling");
 		
 	}
 

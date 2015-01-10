@@ -3,6 +3,7 @@ package org.gosparx.team1126.robot.subsystem;
 import org.gosparx.sensors.EncoderData;
 import org.gosparx.team1126.robot.IO;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;

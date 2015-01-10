@@ -3,9 +3,9 @@ package org.gosparx.team1126.robot;
 public final class IO {
 	//Motor
 	public static final int rightFrontDrives 		= 0;
-	public static final int rightBackDrives 		= 0;
-	public static final int leftFrontDrives			= 0;
-	public static final int leftBackDrives 			= 0;
+	public static final int rightBackDrives 		= 1;
+	public static final int leftFrontDrives			= 2;
+	public static final int leftBackDrives 			= 3;
 	
 	//PNU
 	public static final int shiftingPnu 			= 0;

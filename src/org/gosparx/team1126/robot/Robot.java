@@ -5,8 +5,14 @@ import edu.wpi.first.wpilibj.SampleRobot;
 
 public class Robot extends SampleRobot {
 
+	/**
+	 * An array of all of the subsystems on the robot
+	 */
 	private GenericSubsystem[] subsystems;
 	
+	/**
+	 * Called once every time the robot is powered on
+	 */
     public Robot() {
         subsystems = new GenericSubsystem[]{
         		
@@ -17,14 +23,23 @@ public class Robot extends SampleRobot {
         }
     }
 
+    /**
+     *  Called one time when the robot enters autonomous
+     */
     public void autonomous() {
 
     }
 
+    /**
+     *  Called one time when the robot enters teleop
+     */
     public void operatorControl() {
         
     }
 
+    /**
+     *  Called one time when the robot enters test
+     */
     public void test() {
     }
 }

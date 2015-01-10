@@ -14,7 +14,11 @@ import edu.wpi.first.wpilibj.Timer;
  */
 public abstract class GenericSubsystem extends Thread {
 	
+	/**
+	 * The name of the class
+	 */
 	private String className;
+	
 	/**
 	 * This constructs a new subsystem with the given name and priority.
 	 * 
@@ -89,6 +93,9 @@ public abstract class GenericSubsystem extends Thread {
 		System.out.println("Completing thread: " + getName());
 	}
 	
+	/**
+	 * returns a String version of the class
+	 */
 	@Override
 	public String toString(){
 		return  className;

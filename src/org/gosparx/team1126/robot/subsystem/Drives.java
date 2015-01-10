@@ -123,15 +123,15 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		leftFront = new Victor(IO.leftFrontDrives);
-		leftBack = new Victor(IO.leftBackDrives);
-		rightFront = new Victor(IO.rightFrontDrives);
-		rightBack = new Victor(IO.rightBackDrives);
-		encodeLeft = new Encoder(IO.leftDrivesEncoderA, IO.leftDrivesEncoderB);
+		leftFront = new Victor(IO.LEFTFRONTDRIVES);
+		leftBack = new Victor(IO.LEFTBACKDRIVES);
+		rightFront = new Victor(IO.RIGHTFRONTDRIVES);
+		rightBack = new Victor(IO.RIGHTBACKDRIVES);
+		encodeLeft = new Encoder(IO.LEFTDRIVESENCODERA, IO.LEFTDRIVESENCODERB);
 		encodeDataLeft = new EncoderData(encodeLeft, DISTANCE_PER_TICK);
-		encodeRight = new Encoder(IO.rightDrivesEncoderA, IO.rightDrivesEncoderB);
+		encodeRight = new Encoder(IO.RIGHTDRIVESENCODERA, IO.RIGHTDRIVESENCODERB);
 		encodeDataRight = new EncoderData(encodeRight, DISTANCE_PER_TICK);
-		shiftingSol = new Solenoid(IO.shiftingPnu);
+		shiftingSol = new Solenoid(IO.SHIFTINGPNU);
 		return true;
 	}
 	/**

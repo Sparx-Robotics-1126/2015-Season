@@ -22,7 +22,7 @@ public class Controls extends GenericSubsystem{
 
 	@Override
 	protected boolean init() {
-		driverJoy = new Joystick(IO.driverJoyPort);
+		driverJoy = new Joystick(IO.DRIVERJOYPORT);
 		drives = Drives.getInstance(); 
 		return true;
 	}

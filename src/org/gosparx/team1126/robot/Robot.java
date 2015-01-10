@@ -27,52 +27,57 @@ import edu.wpi.first.wpilibj.Timer;
  * this system. Use IterativeRobot or Command-Based instead if you're new.
  */
 public class Robot extends SampleRobot {
-    RobotDrive myRobot;
-    Joystick stick;
-    private SparkfunRGBSensor rgbSensor;
-    private DriverStation theDriverStation;
+	RobotDrive myRobot;
+	Joystick stick;
+	private SparkfunRGBSensor rgbSensor;
+	private DriverStation theDriverStation;
 
-    public Robot() {
-        myRobot = new RobotDrive(0, 1);
-        myRobot.setExpiration(0.1);
-        stick = new Joystick(0);
-        rgbSensor = new SparkfunRGBSensor(1, 2, 3, 0);
-        theDriverStation = DriverStation.getInstance();
-    }
+	public Robot() {
+		myRobot = new RobotDrive(0, 1);
+		myRobot.setExpiration(0.1);
+		stick = new Joystick(0);
+		rgbSensor = new SparkfunRGBSensor(1, 2, 3, 0);
+		theDriverStation = DriverStation.getInstance();
+		rgbSensor.setLED(true);
+	}
 
-    /**
-     * Drive left & right motors for 2 seconds then stop
-     */
-    public void autonomous() {
-        myRobot.setSafetyEnabled(false);
-        myRobot.drive(-0.5, 0.0);	// drive forwards half speed
-        Timer.delay(2.0);		//    for 2 seconds
-        myRobot.drive(0.0, 0.0);	// stop robot
-    }
+	/**
+	 * Drive left & right motors for 2 seconds then stop
+	 */
+	public void autonomous() {
+		myRobot.setSafetyEnabled(false);
+		myRobot.drive(-0.5, 0.0);	// drive forwards half speed
+		Timer.delay(2.0);		//    for 2 seconds
+		myRobot.drive(0.0, 0.0);	// stop robot
+	}
 
-    /**
-     * Runs the motors with arcade steering.
-     */
-    public void operatorControl() {
-        myRobot.setSafetyEnabled(true);
-        while (isOperatorControl() && isEnabled()) {
-            myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
-            Timer.delay(0.005);		// wait for a motor update time
-            int redValue = rgbSensor.getRed();
-            int greenValue = rgbSensor.getGreen();
-            int blueValue = rgbSensor.getBlue();
-            String redString = "red Value = " + redValue;
-            String greenString = "green Value = " + greenValue;
-            String blueString = "blue Value = " + blueValue;
-            theDriverStation.reportError(redString, false);
-            theDriverStation.reportError(greenString, false);
-            theDriverStation.reportError(blueString, false);
-        }
-    }
+	/**
+	 * Runs the motors with arcade steering.
+	 */
+	public void operatorControl() {
+		myRobot.setSafetyEnabled(true);
+		int counter = 0;
+		while (isOperatorControl() && isEnabled()) {
+			myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
+			Timer.delay(0.005);		// wait for a motor update time
+			int redValue = rgbSensor.getRed();
+			int greenValue = rgbSensor.getGreen();
+			int blueValue = rgbSensor.getBlue();
+			String redString = "red Value = " + redValue;
+			String greenString = "green Value = " + greenValue;
+			String blueString = "blue Value = " + blueValue;
+			if(counter%100 == 0){
+				theDriverStation.reportError(redString + "\n", false);
+				theDriverStation.reportError(greenString + "\n", false);
+				theDriverStation.reportError(blueString + "\n", false);
+			}
+			counter ++; 
+		}
+	}
 
-    /**
-     * Runs during test mode
-     */
-    public void test() {
-    }
+	/**
+	 * Runs during test mode
+	 */
+	public void test() {
+	}
 }

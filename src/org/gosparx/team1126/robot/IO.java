@@ -1,6 +1,7 @@
 package org.gosparx.team1126.robot;
 
 public final class IO {
+	//fixed
 	//Motor
 	public static final int LEFT_FRONT_DRIVES 		= 0;
 	public static final int LEFT_BACK_DRIVES			= 1;

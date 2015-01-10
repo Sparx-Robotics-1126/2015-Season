@@ -37,8 +37,7 @@ public class Controls extends GenericSubsystem{
 
 	@Override
 	protected long sleepTime() {
-		
-		return 20;
+		return 20; //not sure if this is correct time needed
 	}
 
 	@Override

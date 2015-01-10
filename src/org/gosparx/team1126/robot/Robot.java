@@ -1,7 +1,14 @@
 package org.gosparx.team1126.robot;
 
+import java.sql.Time;
+
+import org.gosparx.team1126.robot.sensors.UltrasonicRangeFinder;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
+
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * The entrypoint for the robot. The constructor is called once the robot is turned on.
@@ -38,7 +45,11 @@ public class Robot extends SampleRobot {
 	 *  Called one time when the robot enters teleop
 	 */
 	public void operatorControl() {
-
+		UltrasonicRangeFinder usrf = new UltrasonicRangeFinder(new AnalogInput(0), UltrasonicRangeFinder.MAX_SONAR_EZ1_VPI);
+		while(DriverStation.getInstance().isEnabled() && DriverStation.getInstance().isOperatorControl()){
+			DriverStation.getInstance().reportError("Range: " + usrf.getRange() + "\n", false);
+			Timer.delay(1);
+		}
 	}
 
 	/**

@@ -8,8 +8,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 /**
- * 
- * @author Mike
+ * Makes the drives system to have the robot move.
  *
  */
 public class Drives extends GenericSubsystem{
@@ -68,7 +67,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * the current state the drives is in
 	 */
-	private int currentDriveState = State.IN_LOW_GEAR;
+	private int currentDriveState = State.IN_LOW_GEAR.getStateValue();
 	/**
 	 * the current average speed between the left and right motors
 	 */
@@ -97,7 +96,7 @@ public class Drives extends GenericSubsystem{
 	 * determines if it's in high or low gear
 	 */
 	private static final boolean LOW_GEAR = false;
-	
+
 	/**
 	 * if drives == null, make a new drives
 	 * @return the new drives
@@ -143,99 +142,109 @@ public class Drives extends GenericSubsystem{
 		encodeDataLeft.calculateSpeed();
 		currentSpeed = (encodeDataRight.getSpeed() + encodeDataLeft.getSpeed()) / 2;
 
-		switch(currentDriveState){
-		case State.IN_LOW_GEAR:
+		if(currentDriveState == State.IN_LOW_GEAR.getStateValue()){
 			if(currentSpeed >= LOWERSHIFTSPEED){
 				shiftingSol.set(!LOW_GEAR);
 				shiftTime = Timer.getFPGATimestamp();
-				currentDriveState = State.SHIFTING_HIGH;
+				currentDriveState = State.SHIFTING_HIGH.getStateValue();
 			}
-			break;
-		case State.SHIFTING_LOW:
+		} else if(currentDriveState == State.SHIFTING_LOW.getStateValue()){
 			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
-				currentDriveState = State.IN_LOW_GEAR;
+				currentDriveState = State.IN_LOW_GEAR.getStateValue();
 			}
 			wantedRightSpeed = SHIFTINGSPEED;
 			wantedLeftSpeed = SHIFTINGSPEED;
-			break;
-		case State.IN_HIGH_GEAR:
+		}else if(currentDriveState == State.IN_HIGH_GEAR.getStateValue()){
 			if(currentSpeed >= UPPERSHIFTSPEED){
 				shiftingSol.set(LOW_GEAR);
 				shiftTime = Timer.getFPGATimestamp();
-				currentDriveState = State.SHIFTING_LOW;
+				currentDriveState = State.SHIFTING_LOW.getStateValue();
 			}
-			break;
-		case State.SHIFTING_HIGH:
+		}else if(currentDriveState == State.SHIFTING_HIGH.getStateValue()){
 			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
-				currentDriveState = State.IN_HIGH_GEAR;
+				currentDriveState = State.IN_HIGH_GEAR.getStateValue();
 			}
-			wantedRightSpeed = SHIFTINGSPEED;
-			wantedLeftSpeed = SHIFTINGSPEED;
-			break;
-		default:
-			System.out.println("Error currentDriveState = " + currentDriveState);
-		}
-		leftFront.set(wantedLeftSpeed);
-		leftBack.set(wantedLeftSpeed);
-		rightFront.set(wantedRightSpeed);
-		rightBack.set(wantedRightSpeed);
-		return false;
-	}
-	/**
-	 * The amount of time you want to sleep for after a cycle.
-	 * 
-	 * @return the number of milliseconds you want to sleep after a cycle.
-	 */
-	@Override
-	protected long sleepTime() {
-		return 0;
-	}
+		wantedRightSpeed = SHIFTINGSPEED;
+		wantedLeftSpeed = SHIFTINGSPEED;
+		}else System.out.println("Error currentDriveState = " + currentDriveState);
 	
-	/**
-	 * Where all the logged info goes
-	 */
-	@Override
-	protected void writeLog() {
+	leftFront.set(wantedLeftSpeed);
+	leftBack.set(wantedLeftSpeed);
+	rightFront.set(wantedRightSpeed);
+	rightBack.set(wantedRightSpeed);
+	return false;
+}
 
+/**
+ * The amount of time you want to sleep for after a cycle.
+ * 
+ * @return the number of milliseconds you want to sleep after a cycle.
+ */
+@Override
+protected long sleepTime() {
+	return 0;
+}
+
+/**
+ * Where all the logged info goes
+ */
+@Override
+protected void writeLog() {
+
+}
+/**
+ * sets the wanted left and right speed to the speed sent in
+ * @param left left motor speed
+ * @param right right motor speed
+ */
+public void setSpeed(double left, double right) {
+	wantedLeftSpeed = left;
+	wantedRightSpeed = right;
+}
+/**
+ *Makes the states for drives
+ */
+private enum State{
+
+	IN_LOW_GEAR		(0),
+	SHIFTING_LOW	(1),
+	IN_HIGH_GEAR	(2),
+	SHIFTING_HIGH	(3);
+
+	private final int STATE;
+	/**
+	 * This assigns each state to it's correct value
+	 * @param state the numerical value of each state
+	 */
+	State(int state){
+		STATE = state;
 	}
 	/**
-	 * sets the wanted left and right speed to the speed sent in
-	 * @param left left motor speed
-	 * @param right right motor speed
+	 * Gets the number for that state and returns it
+	 * @return
 	 */
-	public void setSpeed(double left, double right) {
-		wantedLeftSpeed = left;
-		wantedRightSpeed = right;
+	public int getStateValue(){
+		return this.STATE;
 	}
 	/**
-	 * 
-	 * @author Mike
-	 *
+	 * Gets the name of the state
+	 * @param num is used to get the correct State
+	 * @return the correct state 
 	 */
-	private static final class State{
-		public static final int IN_LOW_GEAR		= 0;
-		public static final int SHIFTING_LOW	= 1;
-		public static final int IN_HIGH_GEAR	= 2;
-		public static final int SHIFTING_HIGH	= 3;
+	public String getStateName(int num){
 
-		/**
-		 * Gets the name of the state
-		 * @param num is used to get the correct State
-		 * @return the correct state 
-		 */
-		public String getStateName(int num){
-			switch(num){
-			case IN_LOW_GEAR:
-				return "In low gear";
-			case SHIFTING_LOW:
-				return "Shifting into low gear";
-			case IN_HIGH_GEAR:
-				return "In high gear";
-			case SHIFTING_HIGH:
-				return "Shifting into high gear";
-			default: return "Error";
-			}
-		}
+		if( num == IN_LOW_GEAR.getStateValue()){
+			return "In low gear";
+		}else if(num == SHIFTING_LOW.getStateValue()){
+			return "Shifting Low";
+		}else if(num == IN_HIGH_GEAR.getStateValue()){
+			return "In high gear";
+		}else if(num == SHIFTING_HIGH.getStateValue()){
+			return "Shifting high";
+		}else return "Error";
+
 
 	}
+
+}
 }

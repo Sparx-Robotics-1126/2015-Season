@@ -66,6 +66,7 @@ public abstract class GenericSubsystem extends Thread {
 	public void run(){
 		boolean retVal = false;
 		double lastLogged = 0;
+		init();
 		do{
 			try{
 				retVal = execute();

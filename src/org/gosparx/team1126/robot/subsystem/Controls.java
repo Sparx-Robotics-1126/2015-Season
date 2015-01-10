@@ -2,7 +2,10 @@ package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.team1126.robot.IO;
 import edu.wpi.first.wpilibj.Joystick;
-
+/**
+ * This is how the controller is able to work with drives
+ *
+ */
 public class Controls extends GenericSubsystem{
  private Joystick driverJoy;
  

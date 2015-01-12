@@ -3,39 +3,60 @@ package org.gosparx.sensors;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 
-/* Implement Sparkfun type RGB sensor
- * Author: Raza Ahmed
- * version 1.0 season 2015
- */
 
-public class SparkfunRGBSensor implements RGBSensorIF{
+public class RGBSensor{
 
+	/**
+	 * Red input
+	 */
 	private AnalogInput redAnalogInput;
+	
+	/**
+	 * Green input
+	 */
 	private AnalogInput greenAnalogInput;
-	private AnalogInput blueAnalogInput; 
-	private DigitalOutput ledDigitalOutput;
+	
+	/**
+	 * Blue input
+	 */
+	private AnalogInput blueAnalogInput;
 
-	public SparkfunRGBSensor(int redChannel, int greenChannel, int blueChannel, int ledChannel){
+	/**
+	 * Creates an RGBSensor
+	 * @param redChannel - red channel
+	 * @param greenChannel - green channel
+	 * @param blueChannel - blue channel
+	 * @param ledChannel - LED channel
+	 */
+	public RGBSensor(int redChannel, int greenChannel, int blueChannel, int ledChannel){
 		redAnalogInput = new AnalogInput(redChannel);
 		greenAnalogInput = new AnalogInput(greenChannel);
 		blueAnalogInput = new AnalogInput(blueChannel);
-		ledDigitalOutput = new DigitalOutput (ledChannel);
+		new DigitalOutput (ledChannel).set(true);
 	}
 
+	/**
+	 * @return value of red
+	 */
 	public int getRed(){
 		return redAnalogInput.getValue();
 		// return redAnalogInput.getValue() * 10;
 	}
+	
+	/**
+	 * @return value of green
+	 */
 	public int getGreen(){
 		return greenAnalogInput.getValue();
 		// return greenAnalogInput.getValue() * 17;
 	}
+	
+	/**
+	 * @return value of blue
+	 */
 	public int getBlue(){
 		return blueAnalogInput.getValue();
 		// return blueAnalogInput.getValue() * 14;
-	}
-	public void setLED(boolean on){
-			ledDigitalOutput.set(on);	
 	}
 }
 

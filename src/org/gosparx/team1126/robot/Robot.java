@@ -2,7 +2,7 @@
 package org.gosparx.team1126.robot;
 
 
-import org.gosparx.sensors.SparkfunRGBSensor;
+import org.gosparx.sensors.RGBSensor;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -29,14 +29,14 @@ import edu.wpi.first.wpilibj.Timer;
 public class Robot extends SampleRobot {
 	RobotDrive myRobot;
 	Joystick stick;
-	private SparkfunRGBSensor rgbSensor;
+	private RGBSensor rgbSensor;
 	private DriverStation theDriverStation;
 
 	public Robot() {
 		myRobot = new RobotDrive(0, 1);
 		myRobot.setExpiration(0.1);
 		stick = new Joystick(0);
-		rgbSensor = new SparkfunRGBSensor(1, 2, 3, 0);
+		rgbSensor = new RGBSensor(1, 2, 3, 0);
 		theDriverStation = DriverStation.getInstance();
 		rgbSensor.setLED(true);
 	}

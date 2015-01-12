@@ -38,7 +38,6 @@ public class Robot extends SampleRobot {
 		stick = new Joystick(0);
 		rgbSensor = new RGBSensor(1, 2, 3, 0);
 		theDriverStation = DriverStation.getInstance();
-		rgbSensor.setLED(true);
 	}
 
 	/**
@@ -60,7 +59,6 @@ public class Robot extends SampleRobot {
 		while (isOperatorControl() && isEnabled()) {
 //			myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
 //			Timer.delay(0.005);		// wait for a motor update time
-			rgbSensor.setLED(true);
 			double redValue = rgbSensor.getRed();
 			double greenValue = rgbSensor.getGreen();
 			double blueValue = rgbSensor.getBlue();

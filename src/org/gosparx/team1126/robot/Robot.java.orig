@@ -36,7 +36,11 @@ public class Robot extends SampleRobot {
 		myRobot = new RobotDrive(0, 1);
 		myRobot.setExpiration(0.1);
 		stick = new Joystick(0);
+<<<<<<< HEAD
 		rgbSensor = new RGBSensor(1, 2, 3, 0);
+=======
+		rgbSensor = new SparkfunRGBSensor(0, 1, 2, 0);
+>>>>>>> af2912482a6d688ad7acbc34314975ef589d97b7
 		theDriverStation = DriverStation.getInstance();
 		rgbSensor.setLED(true);
 	}

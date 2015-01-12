@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DigitalOutput;
  * version 1.0 season 2015
  */
 
-public class SparkfunRGBSensor implements RGBSensorIF{
+public class SparkfunRGBSensor{
 
 	private AnalogInput redAnalogInput;
 	private AnalogInput greenAnalogInput;

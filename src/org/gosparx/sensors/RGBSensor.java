@@ -22,6 +22,11 @@ public class RGBSensor{
 	 * Blue input
 	 */
 	private AnalogInput blueAnalogInput;
+	
+	/**
+	 * LED ouput
+	 */
+	private DigitalOutput lightLED;
 
 	/**
 	 * Creates an RGBSensor
@@ -34,7 +39,7 @@ public class RGBSensor{
 		redAnalogInput = new AnalogInput(redChannel);
 		greenAnalogInput = new AnalogInput(greenChannel);
 		blueAnalogInput = new AnalogInput(blueChannel);
-		new DigitalOutput (ledChannel).set(true);
+		lightLED = new DigitalOutput(ledChannel);
 	}
 
 	/**
@@ -56,6 +61,14 @@ public class RGBSensor{
 	 */
 	public int getBlue(){
 		return blueAnalogInput.getValue();
+	}
+	
+	/**
+	 * @param on - true if on, false is off
+	 * @return
+	 */
+	public void setLED(boolean on){
+		lightLED.set(on);
 	}
 }
 

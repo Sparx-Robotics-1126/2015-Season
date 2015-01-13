@@ -6,29 +6,48 @@ import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
 import edu.wpi.first.wpilibj.SampleRobot;
 
+/**
+ * The entrypoint for the robot. The constructor is called once the robot is turned on.
+ * @author Alex
+ */
 public class Robot extends SampleRobot {
 
+	/**
+	 * An array of all of the subsystems on the robot
+	 */
 	private GenericSubsystem[] subsystems;
-	
-    public Robot() {
-        subsystems = new GenericSubsystem[]{
-        	Drives.getInstance(),
+
+	/**
+	 * Called once every time the robot is powered on
+	 */
+	public Robot() {
+		subsystems = new GenericSubsystem[]{
+        		
         	Controls.getInstance()
-        };
-        
-        for(GenericSubsystem system: subsystems){
-        	system.start();
-        }
-    }
+		};
 
-    public void autonomous() {
+		for(GenericSubsystem system: subsystems){
+			system.start();
+		}
+	}
 
-    }
+	/**
+	 *  Called one time when the robot enters autonomous
+	 */
+	public void autonomous() {
 
-    public void operatorControl() {
-        
-    }
+	}
 
-    public void test() {
-    }
+	/**
+	 *  Called one time when the robot enters teleop
+	 */
+	public void operatorControl() {
+
+	}
+
+	/**
+	 *  Called one time when the robot enters test
+	 */
+	public void test() {
+	}
 }

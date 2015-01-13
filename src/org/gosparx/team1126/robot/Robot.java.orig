@@ -1,0 +1,85 @@
+package org.gosparx.team1126.robot;
+
+<<<<<<< HEAD
+
+import org.gosparx.sensors.ColorSensor;
+
+import edu.wpi.first.wpilibj.DriverStation;
+=======
+import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
+>>>>>>> b9e69252c920d1436b32e46917330c1b31ba5d54
+import edu.wpi.first.wpilibj.SampleRobot;
+
+/**
+ * The entrypoint for the robot. The constructor is called once the robot is turned on.
+ * @author Alex
+ */
+<<<<<<< HEAD
+public class Robot extends SampleRobot {
+	RobotDrive myRobot;
+	Joystick stick;
+	private ColorSensor colorSensor;
+	private DriverStation theDriverStation;
+=======
+public class Robot extends SampleRobot{
+>>>>>>> b9e69252c920d1436b32e46917330c1b31ba5d54
+
+	/**
+	 * An array of all of the subsystems on the robot
+	 */
+	private GenericSubsystem[] subsystems;
+
+	/**
+	 * Called once every time the robot is powered on
+	 */
+	public Robot() {
+<<<<<<< HEAD
+		myRobot = new RobotDrive(0, 1);
+		myRobot.setExpiration(0.1);
+		stick = new Joystick(0);
+		colorSensor = new ColorSensor();
+		theDriverStation = DriverStation.getInstance();
+=======
+		subsystems = new GenericSubsystem[]{
+
+		};
+
+		for(GenericSubsystem system: subsystems){
+			system.start();
+		}
+>>>>>>> b9e69252c920d1436b32e46917330c1b31ba5d54
+	}
+
+	/**
+	 *  Called one time when the robot enters autonomous
+	 */
+	public void autonomous() {
+
+	}
+
+	/**
+	 *  Called one time when the robot enters teleop
+	 */
+	public void operatorControl() {
+<<<<<<< HEAD
+		myRobot.setSafetyEnabled(true);
+		int counter = 0;
+		while (isOperatorControl() && isEnabled()) {
+//			myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
+//			Timer.delay(0.005);		// wait for a motor update time
+			if(counter%100 == 0){
+				theDriverStation.reportError(colorSensor.colorToString(colorSensor.getColor()) + "\n", false);
+			}
+			counter ++; 
+		}
+=======
+		
+>>>>>>> b9e69252c920d1436b32e46917330c1b31ba5d54
+	}
+
+	/**
+	 *  Called one time when the robot enters test
+	 */
+	public void test() {
+	}
+}

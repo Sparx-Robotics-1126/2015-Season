@@ -1,73 +1,50 @@
-
 package org.gosparx.team1126.robot;
 
-
+import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 import org.gosparx.sensors.ColorSensor;
-
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
 
 /**
- * This is a demo program showing the use of the RobotDrive class.
- * The SampleRobot class is the base of a robot application that will automatically call your
- * Autonomous and OperatorControl methods at the right time as controlled by the switches on
- * the driver station or the field controls.
- *
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the SampleRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
- *
- * WARNING: While it may look like a good choice to use for your code if you're inexperienced,
- * don't. Unless you know what you are doing, complex code will be much more difficult under
- * this system. Use IterativeRobot or Command-Based instead if you're new.
+ * The entrypoint for the robot. The constructor is called once the robot is turned on.
+ * @author Alex
  */
-public class Robot extends SampleRobot {
-	RobotDrive myRobot;
-	Joystick stick;
+public class Robot extends SampleRobot{
 	private ColorSensor colorSensor;
-	private DriverStation theDriverStation;
 
+	/**
+	 * An array of all of the subsystems on the robot
+	 */
+	private GenericSubsystem[] subsystems;
+
+	/**
+	 * Called once every time the robot is powered on
+	 */
 	public Robot() {
-		myRobot = new RobotDrive(0, 1);
-		myRobot.setExpiration(0.1);
-		stick = new Joystick(0);
+		subsystems = new GenericSubsystem[]{
+
+		};
 		colorSensor = new ColorSensor();
-		theDriverStation = DriverStation.getInstance();
-	}
-
-	/**
-	 * Drive left & right motors for 2 seconds then stop
-	 */
-	public void autonomous() {
-		myRobot.setSafetyEnabled(false);
-		myRobot.drive(-0.5, 0.0);	// drive forwards half speed
-		Timer.delay(2.0);		//    for 2 seconds
-		myRobot.drive(0.0, 0.0);	// stop robot
-	}
-
-	/**
-	 * Runs the motors with arcade steering.
-	 */
-	public void operatorControl() {
-		myRobot.setSafetyEnabled(true);
-		int counter = 0;
-		while (isOperatorControl() && isEnabled()) {
-//			myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
-//			Timer.delay(0.005);		// wait for a motor update time
-			if(counter%100 == 0){
-				theDriverStation.reportError(colorSensor.colorToString(colorSensor.getColor()) + "\n", false);
-			}
-			counter ++; 
+		for(GenericSubsystem system: subsystems){
 		}
 	}
 
 	/**
-	 * Runs during test mode
+	 *  Called one time when the robot enters autonomous
+	 */
+	public void autonomous() {
+
+	}
+
+	/**
+	 *  Called one time when the robot enters teleop
+	 */
+	public void operatorControl() {
+		
+				theDriverStation.reportError(colorSensor.colorToString(colorSensor.getColor()) + "\n", false);
+	}
+
+	/**
+	 *  Called one time when the robot enters test
 	 */
 	public void test() {
 	}

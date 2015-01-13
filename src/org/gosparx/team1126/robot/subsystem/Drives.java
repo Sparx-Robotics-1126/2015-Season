@@ -126,9 +126,9 @@ public class Drives extends GenericSubsystem{
 		leftBack = new Victor(IO.PWM_LEFT_BACK_DRIVES);
 		rightFront = new Victor(IO.PWM_RIGHT_FRONT_DRIVES);
 		rightBack = new Victor(IO.PWM_RIGHT_BACK_DRIVES);
-		encoderLeft = new Encoder(IO.PWM_LEFT_DRIVES_ENCODERA, IO.PWM_LEFT_DRIVES_ENCODERB);
+		encoderLeft = new Encoder(IO.ENCODER_LEFT_DRIVES_A, IO.ENCODER_LEFT_DRIVES_B);
 		encoderDataLeft = new EncoderData(encoderLeft, DISTANCE_PER_TICK);
-		encoderRight = new Encoder(IO.PWM_RIGHT_DRIVES_ENCODERA, IO.PWM_RIGHT_DRIVES_ENCODERB);
+		encoderRight = new Encoder(IO.ENCODER_RIGHT_DRIVES_A, IO.ENCODER_RIGHT_DRIVES_B);
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
 		wantedLeftPower = 0;

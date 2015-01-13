@@ -106,6 +106,7 @@ public class Drives extends GenericSubsystem{
 		}
 		return drives;
 	}
+	
 	/**
 	 * constructor for drives
 	 * @param name drives name
@@ -114,21 +115,22 @@ public class Drives extends GenericSubsystem{
 	private Drives(String name, int priority) {
 		super(name, priority);
 	}
+	
 	/**
 	 * instantiates all the objects
 	 * @return if false, keep looping, true loop ends
 	 */
 	@Override
 	protected boolean init() {
-		leftFront = new Victor(IO.LEFT_FRONT_DRIVES);
-		leftBack = new Victor(IO.LEFT_BACK_DRIVES);
-		rightFront = new Victor(IO.RIGHT_FRONT_DRIVES);
-		rightBack = new Victor(IO.RIGHT_BACK_DRIVES);
-		encoderLeft = new Encoder(IO.LEFT_DRIVES_ENCODERA, IO.LEFT_DRIVES_ENCODERB);
+		leftFront = new Victor(IO.PWM_LEFT_FRONT_DRIVES);
+		leftBack = new Victor(IO.PWM_LEFT_BACK_DRIVES);
+		rightFront = new Victor(IO.PWM_RIGHT_FRONT_DRIVES);
+		rightBack = new Victor(IO.PWM_RIGHT_BACK_DRIVES);
+		encoderLeft = new Encoder(IO.PWM_LEFT_DRIVES_ENCODERA, IO.PWM_LEFT_DRIVES_ENCODERB);
 		encoderDataLeft = new EncoderData(encoderLeft, DISTANCE_PER_TICK);
-		encoderRight = new Encoder(IO.RIGHT_DRIVES_ENCODERA, IO.RIGHT_DRIVES_ENCODERB);
+		encoderRight = new Encoder(IO.PWM_RIGHT_DRIVES_ENCODERA, IO.PWM_RIGHT_DRIVES_ENCODERB);
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
-		shiftingSol = new Solenoid(IO.SHIFTING_PNU);
+		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
 		wantedLeftPower = 0;
 		wantedRightPower = 0;
 		currentDriveState = State.IN_LOW_GEAR;
@@ -136,6 +138,7 @@ public class Drives extends GenericSubsystem{
 		shiftTime = 0;
 		return true;
 	}
+	
 	/**
 	 * determines if it needs to be shifted
 	 * @return if false, keep looping, true end loop
@@ -198,13 +201,14 @@ public class Drives extends GenericSubsystem{
 		return 10;
 	}
 
-	/** *fixed*
+	/**
 	 * Where all the logged info goes
 	 */
 	@Override
 	protected void writeLog() {
 		System.out.println("Enabling");
 	}
+	
 	/**
 	 * sets the wanted left and right speed to the speed sent in inches
 	 * @param left left motor speed

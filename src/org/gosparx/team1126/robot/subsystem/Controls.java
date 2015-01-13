@@ -54,14 +54,14 @@ public class Controls extends GenericSubsystem{
 		drives.setSpeed(driverJoy.getX(), driverJoy.getY());
 		return false;
 	}
-	/** *FIXED*
+	/** 
 	 * The amount of time you want to sleep for after a cycle.
 	 * 
 	 * @return the number of milliseconds you want to sleep after a cycle.
 	 */
 	@Override
 	protected long sleepTime() {
-		return 20; 
+		return 20;
 	}
 	/**
 	 * Where all the logged info goes

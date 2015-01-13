@@ -40,7 +40,6 @@ public class RGBSensor{
 	 */
 	public int getRed(){
 		return redAnalogInput.getValue();
-		// return redAnalogInput.getValue() * 10;
 	}
 	
 	/**
@@ -48,7 +47,6 @@ public class RGBSensor{
 	 */
 	public int getGreen(){
 		return greenAnalogInput.getValue();
-		// return greenAnalogInput.getValue() * 17;
 	}
 	
 	/**
@@ -56,7 +54,6 @@ public class RGBSensor{
 	 */
 	public int getBlue(){
 		return blueAnalogInput.getValue();
-		// return blueAnalogInput.getValue() * 14;
 	}
 }
 

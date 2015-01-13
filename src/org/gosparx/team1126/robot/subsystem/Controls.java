@@ -28,7 +28,7 @@ public class Controls extends GenericSubsystem{
 	 */
 	public static synchronized Controls getInstance(){
 		if(controls == null){
-			controls = new Controls("Controls", Thread.NORM_PRIORITY);
+			controls = new Controls();
 		}
 		return controls;
 	}
@@ -37,8 +37,8 @@ public class Controls extends GenericSubsystem{
 	 * @param priority the priority of the control
 	 * constructor for the Controls
 	 */
-	private Controls(String name, int priority) {
-		super(name, priority);
+	private Controls() {
+		super("controls", Thread.NORM_PRIORITY);
 	}
 	/**
 	 * instantiates a Joystick and Drives

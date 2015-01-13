@@ -102,7 +102,7 @@ public class Drives extends GenericSubsystem{
 	 */
 	public static synchronized Drives getInstance(){
 		if(drives == null){
-			drives = new Drives("Drives", Thread.NORM_PRIORITY);
+			drives = new Drives();
 		}
 		return drives;
 	}
@@ -112,8 +112,8 @@ public class Drives extends GenericSubsystem{
 	 * @param name drives name
 	 * @param priority drives priority for execute
 	 */
-	private Drives(String name, int priority) {
-		super(name, priority);
+	private Drives() {
+		super("Drives", Thread.NORM_PRIORITY);
 	}
 	
 	/**
@@ -193,7 +193,6 @@ public class Drives extends GenericSubsystem{
 
 	/**
 	 * The amount of time you want to sleep for after a cycle.
-	 * 
 	 * @return the number of milliseconds you want to sleep after a cycle.
 	 */
 	@Override
@@ -206,6 +205,8 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
+		System.out.println("Current speed: " + currentSpeed);
+		System.out.println("Current drive state: " + currentDriveState);
 	}
 	
 	/**

@@ -66,7 +66,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * the current state the drives is in
 	 */
-	private int currentDriveState;
+	private State currentDriveState;
 	/**
 	 * the current average speed between the left and right motors
 	 */
@@ -131,7 +131,7 @@ public class Drives extends GenericSubsystem{
 		shiftingSol = new Solenoid(IO.SHIFTING_PNU);
 		wantedLeftPower = 0;
 		wantedRightPower = 0;
-		currentDriveState = State.IN_LOW_GEAR.getStateValue();
+		currentDriveState = State.IN_LOW_GEAR;
 		currentSpeed = 0;
 		shiftTime = 0;
 		return true;
@@ -145,37 +145,42 @@ public class Drives extends GenericSubsystem{
 		encoderDataRight.calculateSpeed();
 		encoderDataLeft.calculateSpeed();
 		currentSpeed = (encoderDataRight.getSpeed() + encoderDataLeft.getSpeed()) / 2;
-
-		if(currentDriveState == State.IN_LOW_GEAR.getStateValue()){
+		switch(currentDriveState){
+		case IN_LOW_GEAR:
 			if(currentSpeed >= LOWERSHIFTSPEED){
 				shiftingSol.set(!LOW_GEAR);
 				shiftTime = Timer.getFPGATimestamp();
-				currentDriveState = State.SHIFTING_HIGH.getStateValue();
+				currentDriveState = State.SHIFTING_HIGH;
 			}
-		} else if(currentDriveState == State.SHIFTING_LOW.getStateValue()){
+			break;
+		case SHIFTING_LOW:
 			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
-				currentDriveState = State.IN_LOW_GEAR.getStateValue();
+				currentDriveState = State.IN_LOW_GEAR;
 			}
 			if(currentSpeed < 0){
 				wantedRightPower = SHIFTINGSPEED * - 1;
 				wantedLeftPower = SHIFTINGSPEED * - 1;
 			}else wantedRightPower = SHIFTINGSPEED; wantedLeftPower = SHIFTINGSPEED;
-		}else if(currentDriveState == State.IN_HIGH_GEAR.getStateValue()){
+			break;
+		case IN_HIGH_GEAR:
 			if(currentSpeed >= UPPERSHIFTSPEED){
 				shiftingSol.set(LOW_GEAR);
 				shiftTime = Timer.getFPGATimestamp();
-				currentDriveState = State.SHIFTING_LOW.getStateValue();
+				currentDriveState = State.SHIFTING_LOW;
 			}
-		}else if(currentDriveState == State.SHIFTING_HIGH.getStateValue()){
+			break;
+		case SHIFTING_HIGH:
 			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
-				currentDriveState = State.IN_HIGH_GEAR.getStateValue();
+				currentDriveState = State.IN_HIGH_GEAR;
 			}
 			if(currentSpeed < 0){
 				wantedRightPower = SHIFTINGSPEED * - 1;
 				wantedLeftPower = SHIFTINGSPEED * - 1;
 			}else wantedRightPower = SHIFTINGSPEED; wantedLeftPower = SHIFTINGSPEED;
-		}else System.out.println("Error currentDriveState = " + currentDriveState);
-
+			break;
+		default:
+			System.out.println("Error currentDriveState = " + currentDriveState);
+		}
 		leftFront.set(wantedLeftPower);
 		leftBack.set(wantedLeftPower);
 		rightFront.set(wantedRightPower);
@@ -209,50 +214,34 @@ public class Drives extends GenericSubsystem{
 		wantedLeftPower = left;
 		wantedRightPower = right;
 	}
+
 	/**
 	 *Makes the states for drives
 	 */
-	private enum State{
+	public enum State{
+		IN_LOW_GEAR,
+		SHIFTING_LOW,
+		IN_HIGH_GEAR,
+		SHIFTING_HIGH;
 
-		IN_LOW_GEAR		(0),
-		SHIFTING_LOW	(1),
-		IN_HIGH_GEAR	(2),
-		SHIFTING_HIGH	(3);
-
-		private final int STATE;
-		/**
-		 * This assigns each state to it's correct value
-		 * @param state the numerical value of each state
-		 */
-		State(int state){
-			STATE = state;
-		}
-		/**
-		 * Gets the number for that state and returns it
-		 * @return
-		 */
-		public int getStateValue(){
-			return this.STATE;
-		}
 		/**
 		 * Gets the name of the state
-		 * @param num is used to get the correct State
 		 * @return the correct state 
 		 */
-		public String getStateName(int num){
-
-			if( num == IN_LOW_GEAR.getStateValue()){
+		@Override
+		public String toString(){
+			switch(this){
+			case IN_LOW_GEAR:
 				return "In low gear";
-			}else if(num == SHIFTING_LOW.getStateValue()){
+			case SHIFTING_LOW:
 				return "Shifting Low";
-			}else if(num == IN_HIGH_GEAR.getStateValue()){
+			case IN_HIGH_GEAR:
 				return "In high gear";
-			}else if(num == SHIFTING_HIGH.getStateValue()){
+			case SHIFTING_HIGH:
 				return "Shifting high";
-			}else return "Error";
-
-
+			default:
+				return "Error";
+			}
 		}
-
 	}
 }

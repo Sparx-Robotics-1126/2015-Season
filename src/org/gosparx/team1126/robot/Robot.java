@@ -1,47 +1,49 @@
-
 package org.gosparx.team1126.robot;
 
+import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 import edu.wpi.first.wpilibj.SampleRobot;
-
+import edu.wpi.first.wpilibj.RobotDrive;
 
 /**
- * This is a demo program showing the use of the RobotDrive class.
- * The SampleRobot class is the base of a robot application that will automatically call your
- * Autonomous and OperatorControl methods at the right time as controlled by the switches on
- * the driver station or the field controls.
- *
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the SampleRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
- *
- * WARNING: While it may look like a good choice to use for your code if you're inexperienced,
- * don't. Unless you know what you are doing, complex code will be much more difficult under
- * this system. Use IterativeRobot or Command-Based instead if you're new.
+ * The entrypoint for the robot. The constructor is called once the robot is turned on.
+ * @author Alex
  */
 public class Robot extends SampleRobot{
 
-	public Robot() {
+	/**
+	 * An array of all of the subsystems on the robot
+	 */
+	private GenericSubsystem[] subsystems;
 
+	/**
+	 * Called once every time the robot is powered on
+	 */
+	public Robot() {
+		subsystems = new GenericSubsystem[]{
+
+		};
+
+		for(GenericSubsystem system: subsystems){
+			system.start();
+		}
 	}
 
 	/**
-	 * Drive left & right motors for 2 seconds then stop
+	 *  Called one time when the robot enters autonomous
 	 */
 	public void autonomous() {
 
 	}
 
 	/**
-	 * Runs the motors with arcade steering.
+	 *  Called one time when the robot enters teleop
 	 */
 	public void operatorControl() {
 		
 	}
 
 	/**
-	 * Runs during test mode
+	 *  Called one time when the robot enters test
 	 */
 	public void test() {
 	}

@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
  * A class to interpret data from the UltrasonicRangeFinder
  * @author Alex
  */
-public class UltrasonicRangeFinder {
+public abstract class UltrasonicRangeFinder {
 	
 	/**
 	 * The analog input that the sensor is in.
@@ -22,11 +22,6 @@ public class UltrasonicRangeFinder {
 	 * The voltage at the set zero position
 	 */
 	private double zeroPos;
-	
-	/**
-	 * The volts per inch drop for the MaxSonar EZ1 range finder.
-	 */
-	public static final double MAX_SONAR_EZ1_VPI = 5.0/512.0; 
 	
 	/**
 	 * Creates a new UltrasonicRangeFinder 

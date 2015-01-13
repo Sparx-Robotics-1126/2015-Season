@@ -2,7 +2,7 @@
 package org.gosparx.team1126.robot;
 
 
-import org.gosparx.sensors.SparkfunRGBSensor;
+import org.gosparx.sensors.ColorSensor;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -29,16 +29,15 @@ import edu.wpi.first.wpilibj.Timer;
 public class Robot extends SampleRobot {
 	RobotDrive myRobot;
 	Joystick stick;
-	private SparkfunRGBSensor rgbSensor;
+	private ColorSensor colorSensor;
 	private DriverStation theDriverStation;
 
 	public Robot() {
 		myRobot = new RobotDrive(0, 1);
 		myRobot.setExpiration(0.1);
 		stick = new Joystick(0);
-		rgbSensor = new SparkfunRGBSensor(0, 1, 2, 0);
+		colorSensor = new ColorSensor();
 		theDriverStation = DriverStation.getInstance();
-		rgbSensor.setLED(true);
 	}
 
 	/**
@@ -60,17 +59,8 @@ public class Robot extends SampleRobot {
 		while (isOperatorControl() && isEnabled()) {
 //			myRobot.arcadeDrive(stick); // drive with arcade style (use right stick)
 //			Timer.delay(0.005);		// wait for a motor update time
-			rgbSensor.setLED(true);
-			double redValue = rgbSensor.getRed();
-			double greenValue = rgbSensor.getGreen();
-			double blueValue = rgbSensor.getBlue();
-			String redString = "red Value = " + redValue;
-			String greenString = "green Value = " + greenValue;
-			String blueString = "blue Value = " + blueValue;
 			if(counter%100 == 0){
-				theDriverStation.reportError(redString + "\n", false);
-				theDriverStation.reportError(greenString + "\n", false);
-				theDriverStation.reportError(blueString + "\n", false);
+				theDriverStation.reportError(colorSensor.colorToString(colorSensor.getColor()) + "\n", false);
 			}
 			counter ++; 
 		}

@@ -1,6 +1,7 @@
 package org.gosparx.team1126.robot;
 
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
+
 import edu.wpi.first.wpilibj.SampleRobot;
 
 /**

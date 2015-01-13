@@ -218,7 +218,6 @@ public class Drives extends GenericSubsystem{
 		wantedLeftPower = left;
 		wantedRightPower = right;
 	}
-
 	/**
 	 *Makes the states for drives
 	 */

@@ -20,8 +20,8 @@ public class Robot extends SampleRobot {
 	 * Called once every time the robot is powered on
 	 */
 	public Robot() {
-        subsystems = new GenericSubsystem[]{	
-        		LogWriter.getInstance()
+		subsystems = new GenericSubsystem[]{	
+				LogWriter.getInstance()
 		};
 
 		for(GenericSubsystem system: subsystems){
@@ -35,12 +35,12 @@ public class Robot extends SampleRobot {
 	public void autonomous() {
 
 	}
-    
+
 	/**
 	 *  Called one time when the robot enters teleop
 	 */
 	public void operatorControl() {
-       
+
 	}
 
 	/**

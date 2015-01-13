@@ -18,7 +18,7 @@ public class LogWriter extends GenericSubsystem{
 	/**
 	 * The file path to store the logs in. /mnt/sda1 is the USB port.
 	 */
-	private String filePath = "/mnt/sda1/";
+	private static final String FILE_PATH = "/mnt/sda1/";
 
 	/**
 	 * The name of the log
@@ -71,7 +71,7 @@ public class LogWriter extends GenericSubsystem{
 	protected boolean init() {
 		try {
 			logName = "log" + Calendar.getInstance().get(Calendar.MONTH) + "-" + Calendar.getInstance().get(Calendar.DATE) + "-" + Calendar.getInstance().get(Calendar.YEAR) + "(" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + "-" + Calendar.getInstance().get(Calendar.MINUTE) + ").txt";
-			file = new File(filePath + logName);
+			file = new File(FILE_PATH + logName);
 			file.mkdirs();
 			if(file.exists()){
 				file.delete();

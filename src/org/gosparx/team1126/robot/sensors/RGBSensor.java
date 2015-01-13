@@ -1,4 +1,4 @@
-package org.gosparx.sensors;
+package org.gosparx.team1126.robot.sensors;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalOutput;

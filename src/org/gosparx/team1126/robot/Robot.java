@@ -1,14 +1,16 @@
 package org.gosparx.team1126.robot;
 
+import org.gosparx.team1126.robot.sensors.ColorSensor;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SampleRobot;
 
 /**
- * The entrypoint for the robot. The constructor is called once the robot is turned on.
- * @author Alex
+ * The entry point for the robot. The constructor is called once the robot is turned on.
  */
 public class Robot extends SampleRobot{
+	private ColorSensor colorSensor;
 
 	/**
 	 * An array of all of the subsystems on the robot
@@ -22,9 +24,8 @@ public class Robot extends SampleRobot{
 		subsystems = new GenericSubsystem[]{
 
 		};
-
+		colorSensor = new ColorSensor();
 		for(GenericSubsystem system: subsystems){
-			system.start();
 		}
 	}
 
@@ -40,6 +41,7 @@ public class Robot extends SampleRobot{
 	 */
 	public void operatorControl() {
 		
+				DriverStation.getInstance().reportError(colorSensor.colorToString(colorSensor.getColor()) + "\n", false);
 	}
 
 	/**

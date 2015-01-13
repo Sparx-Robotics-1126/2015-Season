@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.Timer;
  */
 public abstract class GenericSubsystem extends Thread {
 	
-	private String className;
 	/**
 	 * This constructs a new subsystem with the given name and priority.
 	 * 
@@ -25,7 +24,6 @@ public abstract class GenericSubsystem extends Thread {
 	 */
 	public GenericSubsystem(String name, int priority){
 		super(name);
-		className = name;
 		if(priority != Thread.MIN_PRIORITY && priority != Thread.NORM_PRIORITY && priority != MAX_PRIORITY)
 			throw new InvalidParameterException();
 		setPriority(priority);
@@ -60,8 +58,14 @@ public abstract class GenericSubsystem extends Thread {
 	 */
 	protected double logTime() { return 5; }
 	
+	/**
+	 * Logs all info appropriate to the subsystem.
+	 */
 	abstract protected void writeLog();
 	
+	/**
+	 * Runs and loops the execute() until execute returns false, logging ever logTime() seconds.
+	 */
 	@Override
 	public void run(){
 		boolean retVal = false;
@@ -83,8 +87,11 @@ public abstract class GenericSubsystem extends Thread {
 		System.out.println("Completing thread: " + getName());
 	}
 	
+	/**
+	 * returns a String version of the class
+	 */
 	@Override
 	public String toString(){
-		return  className;
+		return  this.getName();
 	}
 }

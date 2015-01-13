@@ -3,7 +3,9 @@ package org.gosparx.sensors;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 
-
+/**
+ * Used for creating an RGB sensor used for detecting color 
+ */
 public class RGBSensor{
 
 	/**
@@ -36,21 +38,21 @@ public class RGBSensor{
 	}
 
 	/**
-	 * @return value of red
+	 * @return value of red (0 - 255)
 	 */
 	public int getRed(){
 		return redAnalogInput.getValue();
 	}
 	
 	/**
-	 * @return value of green
+	 * @return value of green (0 - 255)
 	 */
 	public int getGreen(){
 		return greenAnalogInput.getValue();
 	}
 	
 	/**
-	 * @return value of blue
+	 * @return value of blue (0 - 255)
 	 */
 	public int getBlue(){
 		return blueAnalogInput.getValue();

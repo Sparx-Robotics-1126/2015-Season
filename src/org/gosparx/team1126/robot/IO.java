@@ -18,7 +18,8 @@ public final class IO {
 	public static final int PWM_LEFT_DRIVES_ENCODERB	= 0;
 	
 	//Joystick
-	public static final int DRIVER_JOYSTICK_PORT		= 0;
+	public static final int DRIVER_JOYSTICK_PORT1		= 0;
+	public static final int DRIVER_JOYSTICK_PORT2		= 0;
 	
 	
 }

@@ -40,8 +40,9 @@ public class Robot extends SampleRobot{
 	 *  Called one time when the robot enters teleop
 	 */
 	public void operatorControl() {
-		
+		while(true){
 				DriverStation.getInstance().reportError(colorSensor.colorToString(colorSensor.getColor()) + "\n", false);
+		}
 	}
 
 	/**

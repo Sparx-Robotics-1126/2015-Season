@@ -40,6 +40,7 @@ public class RGBSensor{
 		greenAnalogInput = new AnalogInput(greenChannel);
 		blueAnalogInput = new AnalogInput(blueChannel);
 		lightLED = new DigitalOutput(ledChannel);
+		lightLED.set(true);
 	}
 
 	/**

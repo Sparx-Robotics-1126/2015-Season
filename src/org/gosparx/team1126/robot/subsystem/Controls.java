@@ -4,13 +4,16 @@ import org.gosparx.team1126.robot.IO;
 import edu.wpi.first.wpilibj.Joystick;
 /**
  * This is how the controller is able to work with drives
- *
  */
 public class Controls extends GenericSubsystem{
 	/**
-	 * declares a Joystick object named driverJoy
+	 * declares a Joystick object named driverJoy1
 	 */
-	private Joystick driverJoy;
+	private Joystick driverJoy1;
+	/**
+	 * declares a Joystick object named driverJoy2
+	 */
+	private Joystick driverJoy2;
 	/**
 	 * declares a Controls object named controls
 	 */
@@ -37,26 +40,28 @@ public class Controls extends GenericSubsystem{
 	private Controls(String name, int priority) {
 		super(name, priority);
 	}
-	/**@return false ~ keeps looping true ~ stops loop
+	/**
 	 * instantiates a Joystick and Drives
+	 * @return false ~ keeps looping true ~ stops loop
 	 */
 	@Override
 	protected boolean init() {
-		driverJoy = new Joystick(IO.DRIVER_JOYSTICK_PORT);
+		driverJoy1 = new Joystick(IO.DRIVER_JOYSTICK_PORT1);
+		driverJoy1 = new Joystick(IO.DRIVER_JOYSTICK_PORT2);
 		drives = Drives.getInstance(); 
 		return true;
 	}
-	/**@return false ~ keeping looping true ~ end loop
+	/**
 	 * sets the speed of the control axis to drives
+	 * @return false ~ keeping looping true ~ end loop
 	 */
 	@Override
 	protected boolean execute() {
-		drives.setSpeed(driverJoy.getX(), driverJoy.getY());
+		drives.setPower(driverJoy1.getY(), driverJoy2.getY());
 		return false;
 	}
 	/** 
 	 * The amount of time you want to sleep for after a cycle.
-	 * 
 	 * @return the number of milliseconds you want to sleep after a cycle.
 	 */
 	@Override
@@ -68,8 +73,6 @@ public class Controls extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		System.out.println("Enabling");
-
 	}
 
 }

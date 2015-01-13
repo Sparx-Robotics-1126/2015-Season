@@ -72,15 +72,15 @@ public class Drives extends GenericSubsystem{
 	 */
 	private double currentSpeed;
 	/**
-	 * the speed required to shift down
+	 * the speed required to shift down, not accurate yet
 	 */
 	private static final double LOWERSHIFTSPEED = 30;
 	/**
-	 * the speed required to shift up
+	 * the speed required to shift up, not accurate yet
 	 */
 	private static final double UPPERSHIFTSPEED = 70;
 	/**
-	 * the time required to shift
+	 * the time required to shift, not accurate yet
 	 */
 	private static final double SHIFTING_TIME = 0.5;
 	/**
@@ -206,7 +206,6 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		System.out.println("Enabling");
 	}
 	
 	/**
@@ -214,7 +213,7 @@ public class Drives extends GenericSubsystem{
 	 * @param left left motor speed
 	 * @param right right motor speed
 	 */
-	public void setSpeed(double left, double right) {
+	public void setPower(double left, double right) {
 		wantedLeftPower = left;
 		wantedRightPower = right;
 	}

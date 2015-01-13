@@ -1,6 +1,7 @@
 package org.gosparx.team1126.robot;
 
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
+
 import edu.wpi.first.wpilibj.SampleRobot;
 
 /**
@@ -38,7 +39,7 @@ public class Robot extends SampleRobot {
 	 *  Called one time when the robot enters teleop
 	 */
 	public void operatorControl() {
-
+		
 	}
 
 	/**

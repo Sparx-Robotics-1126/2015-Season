@@ -55,21 +55,21 @@ public class ColorSensor {
 	/**
 	 * @return value of red (0 - 255)
 	 */
-	public int getRed(){
+	private int getRed(){
 		return redAnalogInput.getValue();
 	}
 	
 	/**
 	 * @return value of green (0 - 255)
 	 */
-	public int getGreen(){
+	private int getGreen(){
 		return greenAnalogInput.getValue();
 	}
 	
 	/**
 	 * @return value of blue (0 - 255)
 	 */
-	public int getBlue(){
+	private int getBlue(){
 		return blueAnalogInput.getValue();
 	}
 	

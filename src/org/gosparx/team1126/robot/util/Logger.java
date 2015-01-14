@@ -23,7 +23,7 @@ public class Logger{
 	private DriverStation ds;
 	
 	/**
-	 * The name of the subsytem
+	 * The name of the subsystem
 	 */
 	private String subsystemName;
 	

@@ -3,8 +3,8 @@ package org.gosparx.team1126.robot.util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Calendar;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
@@ -43,7 +43,7 @@ public class LogWriter extends GenericSubsystem{
 	/**
 	 * A queue of log messages we need to write so that they always appear in chronological order.
 	 */
-	private Queue<String> toLog;
+	private LinkedBlockingQueue<String> toLog;
 
 	/**
 	 * Supports singleton model.
@@ -61,7 +61,7 @@ public class LogWriter extends GenericSubsystem{
 	 */
 	private LogWriter(){
 		super("LogWriter", Thread.NORM_PRIORITY);
-		toLog = new ConcurrentLinkedQueue<String>();
+		toLog = new LinkedBlockingQueue<String>();
 	}
 
 	/**
@@ -70,13 +70,13 @@ public class LogWriter extends GenericSubsystem{
 	@Override
 	protected boolean init() {
 		try {
-			logName = "log" + Calendar.getInstance().get(Calendar.MONTH) + "-" + Calendar.getInstance().get(Calendar.DATE) + "-" + Calendar.getInstance().get(Calendar.YEAR) + "(" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + "-" + Calendar.getInstance().get(Calendar.MINUTE) + ").txt";
+			Calendar cal = Calendar.getInstance();
+			logName = "log" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DATE) + "-" + cal.get(Calendar.YEAR) + "(" + cal.get(Calendar.HOUR_OF_DAY) + "-" + cal.get(Calendar.MINUTE) + ").txt";
 			file = new File(FILE_PATH + logName);
 			file.mkdirs();
 			if(file.exists()){
 				file.delete();
 			}
-
 			file.createNewFile();
 		} catch (Exception e) {
 		}
@@ -88,15 +88,13 @@ public class LogWriter extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute(){
-		String toWrite;
-		synchronized (toLog) {
-			if(toLog.isEmpty())
-				try{
-					toLog.wait();
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			toWrite = toLog.remove();
+		String toWrite = null;
+		while(toWrite == null){
+			try {
+				toWrite = toLog.poll(10, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		write(toWrite.getBytes());
 		System.out.println(toWrite);
@@ -115,27 +113,21 @@ public class LogWriter extends GenericSubsystem{
 	 *	Logs info about the subsystem
 	 */
 	@Override
-	protected void writeLog() {
-
-	}
+	protected void writeLog() {}
 
 	/**
 	 * writes the passed byte array to the file and then closes the output stream
 	 * @param bytes - the array of bytes to write
 	 */
-	private void write(byte[] bytes){
-		synchronized (file) {
-			try {
-				dos = new FileOutputStream(file);
-				dos.write(bytes);
-				dos.flush();
-				dos.close();
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}	
+	private synchronized void write(byte[] bytes) {
+		try {
+			dos = new FileOutputStream(file);
+			dos.write(bytes);
+			dos.flush();
+			dos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -143,9 +135,6 @@ public class LogWriter extends GenericSubsystem{
 	 * @param message - the message to add to the queue
 	 */
 	public void logString(String message){
-		synchronized (toLog) {
-			toLog.add(message);
-			toLog.notify();
-		}
+		toLog.add(message);
 	}
 }

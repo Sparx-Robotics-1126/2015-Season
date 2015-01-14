@@ -12,39 +12,39 @@ import edu.wpi.first.wpilibj.Victor;
  */
 public class Drives extends GenericSubsystem{
 	/**
-	 * Makes a Drives object called drives
+	 * Makes a drives object that will be called to use the drives class
 	 */
 	private static Drives drives;
 	/**
-	 * makes the left front victor
+	 * Object used to control the left front motor
 	 */
 	private Victor leftFront;
 	/**
-	 * makes the left back victor
+	 * Object used to control the left back motor
 	 */
 	private Victor leftBack;
 	/**
-	 * makes the right front victor
+	 * Object used to control the right front motor
 	 */
 	private Victor rightFront;
 	/**
-	 * makes the right back victor
+	 * Object used to control the right back motor
 	 */
 	private Victor rightBack;
 	/**
-	 * makes the left encoder
+	 * Used to get the distance the robot has traveled 
 	 */
 	private Encoder encoderLeft;
 	/**
-	 * makes the right encoder
+	 * Used to get the distance the robot has traveled
 	 */
 	private Encoder encoderRight;
 	/**
-	 * makes the left encoder data
+	 * makes the left encoder data which calculates how far the robot traveled in inches
 	 */
 	private EncoderData encoderDataLeft;
 	/**
-	 * makes the right encoder data
+	 * makes the right encoder data which calculates how far the robot traveled in inches
 	 */
 	private EncoderData encoderDataRight;
 	/**
@@ -52,11 +52,11 @@ public class Drives extends GenericSubsystem{
 	 */
 	private Solenoid shiftingSol;
 	/**
-	 * declares a color sensor object for the left motors
+	 * the left color sensor for detecting the colors in front of the robot
 	 */
 	private ColorSensor colorSensorLeft;
 	/**
-	 * declares a second color sensor object for the right motors
+	 * the right color sensor for detecting the colors in front of the robot
 	 */
 	private ColorSensor colorSensorRight;
 	/**
@@ -188,7 +188,7 @@ public class Drives extends GenericSubsystem{
 			}
 			break;
 		case IN_HIGH_GEAR:
-			if(currentSpeed >= UPPERSHIFTSPEED){
+			if(currentSpeed <= UPPERSHIFTSPEED){
 				shiftingSol.set(LOW_GEAR);
 				shiftTime = Timer.getFPGATimestamp();
 				currentDriveState = State.SHIFTING_LOW;

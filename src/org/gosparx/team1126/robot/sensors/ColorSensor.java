@@ -1,7 +1,9 @@
 package org.gosparx.team1126.robot.sensors;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
+
 /* This returns the color 
- * Author:Raza Ahmed, Reizwan Chowdhury, Andrew Thompson
  * Version 1.0 Season 2015
  */
 
@@ -15,23 +17,74 @@ public class ColorSensor {
 		GREEN,
 		BLUE 
 	}
+
+	/**
+	 * Red input
+	 */
+	private AnalogInput redAnalogInput;
 	
-	// this is the sensor we are using currently to read RGB values
-	private RGBSensor rgbSensor;
+	/**
+	 * Green input
+	 */
+	private AnalogInput greenAnalogInput;
+	
+	/**
+	 * Blue input
+	 */
+	private AnalogInput blueAnalogInput;
+	
+	/**
+	 * LED ouput
+	 */
+	private DigitalOutput lightLED;
+	
 	// we treat white as 80% of the addition of all of the colors and above
 	static final double WHITE_THRESHHOLD = (255 * 3) * .8; 
+	
 	// we treat black as 20% of the addition of all of the colors and below
 	static final double BLACK_THRESHHOLD = (255 * 3) * .2;
 
 	public ColorSensor(int redChannel, int greenChannel, int blueChannel, int ledChannel){
-		rgbSensor = new RGBSensor(redChannel, greenChannel, blueChannel, ledChannel);
+		redAnalogInput = new AnalogInput(redChannel);
+		greenAnalogInput = new AnalogInput(greenChannel);
+		blueAnalogInput = new AnalogInput(blueChannel);
+		lightLED = new DigitalOutput(ledChannel);
+		lightLED.set(true);
+	}
+
+	/**
+	 * @return value of red (0 - 255)
+	 */
+	public int getRed(){
+		return redAnalogInput.getValue();
+	}
+	
+	/**
+	 * @return value of green (0 - 255)
+	 */
+	public int getGreen(){
+		return greenAnalogInput.getValue();
+	}
+	
+	/**
+	 * @return value of blue (0 - 255)
+	 */
+	public int getBlue(){
+		return blueAnalogInput.getValue();
+	}
+	
+	/**
+	 * @param on - true if on, false is off
+	 */
+	public void setLED(boolean on){
+		lightLED.set(on);
 	}
 	
 	//returns the color ID
 	public Color getColor(){
-		int redValue = rgbSensor.getRed();
-		int greenValue = rgbSensor.getGreen();
-		int blueValue = rgbSensor.getBlue();
+		int redValue = getRed();
+		int greenValue = getGreen();
+		int blueValue = getBlue();
 		int totalValue = redValue + greenValue + blueValue;
 		
 		if (totalValue >= WHITE_THRESHHOLD){

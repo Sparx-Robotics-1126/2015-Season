@@ -1,6 +1,9 @@
 package org.gosparx.team1126.robot.util;
 
+import java.text.DecimalFormat;
+
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * Used to log messages to files. This is the non singleton Logger that communicates with the singleton LogWriter.
@@ -13,16 +16,6 @@ public class Logger{
 	 * A LogWriter to log our messages
 	 */
 	private LogWriter writer;
-	
-	/**
-	 * The amount of digits after the decimal in the time
-	 */
-	private static final int PRECISION = 4;
-	
-	/**
-	 * The total amount of digits in the time
-	 */
-	private static final int DIGITS_IN_TIME = 8;
 
 	/**
 	 * Used to get field times and robot status
@@ -34,6 +27,15 @@ public class Logger{
 	 */
 	private String subsystemName;
 	
+	/**
+	 * The DecimalFormatter to properly format a decimal
+	 */
+	private DecimalFormat formatter = new DecimalFormat("0000.0000");
+	
+	/**
+	 * Creates a new Logger
+	 * @param subsystem The name of the subsystem
+	 */
 	public Logger(String subsystem){
 		subsystemName = subsystem;
 		ds = DriverStation.getInstance();
@@ -70,15 +72,7 @@ public class Logger{
 		}else if(ds.isEnabled()){
 			status = "Tel";
 		}
-		double time = ds.getMatchTime();
-        time *= Math.pow(10, PRECISION);
-        int timeInt = (int)time;
-        String timeToFormat = "" + timeInt;
-        String timeFormatted = timeToFormat;
-        if(timeToFormat.length()<= DIGITS_IN_TIME) {
-            timeFormatted = "0000000000000000".substring(0, DIGITS_IN_TIME - timeToFormat.length()) + timeInt;
-        }
-        timeFormatted = timeFormatted.substring(0,timeFormatted.length() - PRECISION) + "." + timeFormatted.substring(timeFormatted.length() - PRECISION);
+		String timeFormatted = formatter.format(Timer.getFPGATimestamp());
 		String toLog = (error ? ("ERROR") : ("DEBUG"))+ "[" + status + "]{" + subsystemName + "}(" + timeFormatted + "):" + message;
 		writer.logString(toLog);
 	}

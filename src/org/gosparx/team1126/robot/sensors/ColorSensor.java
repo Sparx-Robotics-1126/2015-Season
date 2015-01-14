@@ -97,10 +97,10 @@ public class ColorSensor {
 		int blueValue = getBlue();
 		int totalValue = redValue + greenValue + blueValue;
 		
-		if (totalValue >= WHITE_THRESHHOLD){
+		if (totalValue >= WHITE_THRESHOLD){
 			return Color.WHITE;
 		}
-		else if (totalValue <= BLACK_THRESHHOLD){
+		else if (totalValue <= BLACK_THRESHOLD){
 			return Color.BLACK;
 		}
 		else if (blueValue >= redValue && blueValue >= greenValue){

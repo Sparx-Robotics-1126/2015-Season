@@ -2,6 +2,8 @@ package org.gosparx.team1126.robot.subsystem;
 
 import java.security.InvalidParameterException;
 
+import org.gosparx.team1126.robot.util.Logger;
+
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -13,6 +15,11 @@ import edu.wpi.first.wpilibj.Timer;
  *
  */
 public abstract class GenericSubsystem extends Thread {
+	
+	/**
+	 * This is the logger for the specific subsystem.
+	 */
+	protected Logger LOG;
 	
 	/**
 	 * This constructs a new subsystem with the given name and priority.
@@ -27,6 +34,7 @@ public abstract class GenericSubsystem extends Thread {
 		if(priority != Thread.MIN_PRIORITY && priority != Thread.NORM_PRIORITY && priority != MAX_PRIORITY)
 			throw new InvalidParameterException();
 		setPriority(priority);
+		LOG = new Logger(name);
 	}
 	
 	/**
@@ -75,8 +83,7 @@ public abstract class GenericSubsystem extends Thread {
 			try{
 				retVal = execute();
 			}catch(Exception e){
-				//Log the exception!
-				System.err.println("Uncaught Exception!" + e.getMessage());
+				LOG.logError("Uncaught Exception! " + e.getMessage());
 				e.printStackTrace(System.err);
 			}
 			if(Timer.getFPGATimestamp() >= lastLogged + logTime()){
@@ -84,7 +91,7 @@ public abstract class GenericSubsystem extends Thread {
 				lastLogged = Timer.getFPGATimestamp();
 			}
 		}while(!retVal);
-		System.out.println("Completing thread: " + getName());
+		LOG.logMessage("Completing thread: " + getName());
 	}
 	
 	/**

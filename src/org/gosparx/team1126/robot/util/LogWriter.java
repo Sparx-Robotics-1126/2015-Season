@@ -97,7 +97,6 @@ public class LogWriter extends GenericSubsystem{
 					e.printStackTrace();
 				}
 			toWrite = toLog.remove();
-			toLog.remove(0);
 		}
 		write(toWrite.getBytes());
 		System.out.println(toWrite);
@@ -125,15 +124,18 @@ public class LogWriter extends GenericSubsystem{
 	 * @param bytes - the array of bytes to write
 	 */
 	private void write(byte[] bytes){
-		try {
-			dos = new FileOutputStream(file);
-			dos.write(bytes);
-			dos.flush();
-			dos.close();
+		synchronized (file) {
+			try {
+				dos = new FileOutputStream(file);
+				dos.write(bytes);
+				dos.flush();
+				dos.close();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}	
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}		
+
 	}
 
 	/**

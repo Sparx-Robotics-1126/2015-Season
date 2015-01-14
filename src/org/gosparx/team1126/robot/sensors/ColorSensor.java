@@ -23,8 +23,8 @@ public class ColorSensor {
 	// we treat black as 20% of the addition of all of the colors and below
 	static final double BLACK_THRESHHOLD = (255 * 3) * .2;
 
-	public ColorSensor(){
-		rgbSensor = new RGBSensor(0, 1, 2, 0);
+	public ColorSensor(int redChannel, int greenChannel, int blueChannel, int ledChannel){
+		rgbSensor = new RGBSensor(redChannel, greenChannel, blueChannel, ledChannel);
 	}
 	
 	//returns the color ID

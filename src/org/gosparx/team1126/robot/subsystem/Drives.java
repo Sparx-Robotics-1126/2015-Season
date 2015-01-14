@@ -52,6 +52,14 @@ public class Drives extends GenericSubsystem{
 	 */
 	private Solenoid shiftingSol;
 	/**
+	 * declares a color sensor object for the left motors
+	 */
+	private ColorSensor colorSensorLeft;
+	/**
+	 * declares a second color sensor object for the right motors
+	 */
+	private ColorSensor colorSensorRight;
+	/**
 	 * the amount of distance the shortbot will make per tick
 	 */
 	private final double DISTANCE_PER_TICK = 0.04908738;
@@ -95,7 +103,14 @@ public class Drives extends GenericSubsystem{
 	 * determines if it's in high or low gear
 	 */
 	private static final boolean LOW_GEAR = false;
-
+	/**
+	 * Variable for determining which state the color sensor
+	 */
+	private State autoFunctions;
+	/**
+	 * stops the motors for auto
+	 */
+	private static final int STOP_MOTOR = 0;
 	/**
 	 * if drives == null, make a new drives
 	 * @return the new drives
@@ -106,7 +121,7 @@ public class Drives extends GenericSubsystem{
 		}
 		return drives;
 	}
-	
+
 	/**
 	 * constructor for drives
 	 * @param name drives name
@@ -115,7 +130,7 @@ public class Drives extends GenericSubsystem{
 	private Drives() {
 		super("Drives", Thread.NORM_PRIORITY);
 	}
-	
+
 	/**
 	 * instantiates all the objects
 	 * @return if false, keep looping, true loop ends
@@ -131,14 +146,17 @@ public class Drives extends GenericSubsystem{
 		encoderRight = new Encoder(IO.ENCODER_RIGHT_DRIVES_A, IO.ENCODER_RIGHT_DRIVES_B);
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
+		colorSensorLeft = new ColorSensor();
+		colorSensorRight = new ColorSenor();
 		wantedLeftPower = 0;
 		wantedRightPower = 0;
 		currentDriveState = State.IN_LOW_GEAR;
 		currentSpeed = 0;
 		shiftTime = 0;
+		autoFunctions = State.AUTO_STAND_BY;
 		return true;
 	}
-	
+
 	/**
 	 * determines if it needs to be shifted
 	 * @return if false, keep looping, true end loop
@@ -184,6 +202,23 @@ public class Drives extends GenericSubsystem{
 		default:
 			System.out.println("Error currentDriveState = " + currentDriveState);
 		}
+		switch(autoFunctions){
+		case AUTO_STAND_BY:
+			break;
+		case AUTO_LIGHT_LINE_UP:
+			if(colorSensorLeft.isColor(WHITE)){
+				wantedLeftPower = STOP_MOTOR;
+
+			}else wantedLeftPower = 0.1;
+			if(colorSensorRight.isColor(WHITE)){
+				wantedRightPower = STOP_MOTOR;
+			}else wantedRightPower = .01;
+			if(colorSensorLeft.isColor(WHITE && colorSensorRight.isColor(WHITE))){
+				autoFunctions = State.AUTO_STAND_BY;
+			}
+			break;
+		default: System.out.println("Error autoFunctions = " + autoFunctions);
+		}
 		leftFront.set(wantedLeftPower);
 		leftBack.set(wantedLeftPower);
 		rightFront.set(wantedRightPower);
@@ -208,7 +243,7 @@ public class Drives extends GenericSubsystem{
 		System.out.println("Current speed: " + currentSpeed);
 		System.out.println("Current drive state: " + currentDriveState);
 	}
-	
+
 	/**
 	 * sets the wanted left and right speed to the speed sent in inches
 	 * @param left left motor speed
@@ -225,7 +260,10 @@ public class Drives extends GenericSubsystem{
 		IN_LOW_GEAR,
 		SHIFTING_LOW,
 		IN_HIGH_GEAR,
-		SHIFTING_HIGH;
+		SHIFTING_HIGH,
+		AUTO_STAND_BY,
+		AUTO_LIGHT_LINE_UP;
+
 
 		/**
 		 * Gets the name of the state
@@ -242,6 +280,10 @@ public class Drives extends GenericSubsystem{
 				return "In high gear";
 			case SHIFTING_HIGH:
 				return "Shifting high";
+			case AUTO_STAND_BY:
+				return "In auto stand by";
+			case AUTO_LIGHT_LINE_UP:
+				return "In auto light line up";
 			default:
 				return "Error";
 			}

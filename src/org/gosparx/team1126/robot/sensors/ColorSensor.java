@@ -1,6 +1,6 @@
 package org.gosparx.team1126.robot.sensors;
 
-/* This returns the colour 
+/* This returns the color 
  * Author:Raza Ahmed, Reizwan Chowdhury, Andrew Thompson
  * Version 1.0 Season 2015
  */

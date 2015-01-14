@@ -26,6 +26,7 @@ public class Robot extends SampleRobot{
 		};
 		colorSensor = new ColorSensor();
 		for(GenericSubsystem system: subsystems){
+			system.start();
 		}
 	}
 

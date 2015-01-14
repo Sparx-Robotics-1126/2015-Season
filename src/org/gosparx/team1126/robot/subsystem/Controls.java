@@ -7,13 +7,13 @@ import edu.wpi.first.wpilibj.Joystick;
  */
 public class Controls extends GenericSubsystem{
 	/**
-	 * declares a Joystick object named driverJoy1
+	 * declares a Joystick object named driverJoyLeft
 	 */
-	private Joystick driverJoy1;
+	private Joystick driverJoyLeft;
 	/**
-	 * declares a Joystick object named driverJoy2
+	 * declares a Joystick object named driverJoyRight
 	 */
-	private Joystick driverJoy2;
+	private Joystick driverJoyRight;
 	/**
 	 * declares a Controls object named controls
 	 */
@@ -46,8 +46,8 @@ public class Controls extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		driverJoy1 = new Joystick(IO.DRIVER_JOYSTICK_PORT1);
-		driverJoy1 = new Joystick(IO.DRIVER_JOYSTICK_PORT2);
+		driverJoyLeft = new Joystick(IO.DRIVER_JOYSTICK_PORT1);
+		driverJoyRight = new Joystick(IO.DRIVER_JOYSTICK_PORT2);
 		drives = Drives.getInstance(); 
 		return true;
 	}
@@ -57,7 +57,7 @@ public class Controls extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		drives.setPower(driverJoy1.getY(), driverJoy2.getY());
+		drives.setPower(driverJoyLeft.getY(), driverJoyRight.getY());
 		return false;
 	}
 	/** 

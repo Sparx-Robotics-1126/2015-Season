@@ -52,8 +52,8 @@ public class ColorSensor {
 		return Color.UNKNOWN;
 	}
 	
-	public String colorToString(Color _color){
-		switch (_color){
+	public String colorToString(Color color){
+		switch (color){
 			case WHITE:
 				return "White";
 			case BLACK:

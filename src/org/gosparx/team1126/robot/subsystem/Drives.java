@@ -181,7 +181,11 @@ public class Drives extends GenericSubsystem{
 			if(currentSpeed < 0){
 				wantedRightPower = SHIFTINGSPEED * - 1;
 				wantedLeftPower = SHIFTINGSPEED * - 1;
-			}else wantedRightPower = SHIFTINGSPEED; wantedLeftPower = SHIFTINGSPEED;
+			}else{
+				wantedRightPower = SHIFTINGSPEED;
+
+				wantedLeftPower = SHIFTINGSPEED;
+			}
 			break;
 		case IN_HIGH_GEAR:
 			if(currentSpeed >= UPPERSHIFTSPEED){
@@ -197,7 +201,10 @@ public class Drives extends GenericSubsystem{
 			if(currentSpeed < 0){
 				wantedRightPower = SHIFTINGSPEED * - 1;
 				wantedLeftPower = SHIFTINGSPEED * - 1;
-			}else wantedRightPower = SHIFTINGSPEED; wantedLeftPower = SHIFTINGSPEED;
+			}else{
+				wantedRightPower = SHIFTINGSPEED;
+				wantedLeftPower = SHIFTINGSPEED;
+			}
 			break;
 		default:
 			System.out.println("Error currentDriveState = " + currentDriveState);

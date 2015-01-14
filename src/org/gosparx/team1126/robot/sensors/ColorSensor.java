@@ -8,12 +8,12 @@ package org.gosparx.team1126.robot.sensors;
 public class ColorSensor {
 	
 	public enum COLOR {
-		Unknown,
-		White,
-		Black,
-		Red,
-		Green,
-		Blue 
+		UNKNOWN,
+		WHITE,
+		BLACK,
+		RED,
+		GREEN,
+		BLUE 
 	}
 	
 	// this is the sensor we are using currently to read RGB values

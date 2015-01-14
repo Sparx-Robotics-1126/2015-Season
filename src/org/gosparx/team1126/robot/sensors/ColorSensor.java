@@ -1,7 +1,7 @@
 package org.gosparx.team1126.robot.sensors;
 
 /* This returns the colour 
- * Author:Raza Ahmed, Reizwan Chowdhury
+ * Author:Raza Ahmed, Reizwan Chowdhury, Andrew Thompson
  * Version 1.0 Season 2015
  */
 
@@ -68,6 +68,11 @@ public class ColorSensor {
 				return "Unknown";
 			default:
 				return "Invalid";
+			
 		}
+	}
+	
+	public boolean isColor(COLOR color) {
+		return(getColor() == color);
 	}
 }

@@ -7,7 +7,7 @@ package org.gosparx.team1126.robot.sensors;
 
 public class ColorSensor {
 	
-	public enum COLOR {
+	public enum Color {
 		UNKNOWN,
 		WHITE,
 		BLACK,
@@ -28,43 +28,43 @@ public class ColorSensor {
 	}
 	
 	//returns the color ID
-	public COLOR getColor(){
+	public Color getColor(){
 		int redValue = rgbSensor.getRed();
 		int greenValue = rgbSensor.getGreen();
 		int blueValue = rgbSensor.getBlue();
 		int totalValue = redValue + greenValue + blueValue;
 		
 		if (totalValue >= WHITE_THRESHHOLD){
-			return COLOR.White;
+			return Color.WHITE;
 		}
 		else if (totalValue <= BLACK_THRESHHOLD){
-			return COLOR.Black;
+			return Color.BLACK;
 		}
 		else if (blueValue >= redValue && blueValue >= greenValue){
-			return COLOR.Blue;
+			return Color.BLUE;
 		}
 		else if (greenValue >= redValue && greenValue >= blueValue){
-			return COLOR.Green;
+			return Color.GREEN;
 		}
 		else if (redValue >= blueValue && redValue >= greenValue){
-			return COLOR.Red;
+			return Color.RED;
 		}
-		return COLOR.Unknown;
+		return Color.UNKNOWN;
 	}
 	
-	public String colorToString(COLOR _color){
+	public String colorToString(Color _color){
 		switch (_color){
-			case White:
+			case WHITE:
 				return "White";
-			case Black:
+			case BLACK:
 				return "Black";
-			case Red:
+			case RED:
 				return "Red";
-			case Green:
+			case GREEN:
 				return "Green";
-			case Blue:
+			case BLUE:
 				return "Blue";
-			case Unknown:
+			case UNKNOWN:
 				return "Unknown";
 			default:
 				return "Invalid";
@@ -72,7 +72,7 @@ public class ColorSensor {
 		}
 	}
 	
-	public boolean isColor(COLOR color) {
+	public boolean isColor(Color color) {
 		return(getColor() == color);
 	}
 }

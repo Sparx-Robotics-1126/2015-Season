@@ -66,7 +66,6 @@ public class RGBSensor{
 	
 	/**
 	 * @param on - true if on, false is off
-	 * @return
 	 */
 	public void setLED(boolean on){
 		lightLED.set(on);

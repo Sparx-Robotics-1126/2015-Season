@@ -4,22 +4,23 @@ import org.gosparx.team1126.robot.IO;
 import edu.wpi.first.wpilibj.Joystick;
 /**
  * This is how the controller is able to work with drives
+ * @author Mike the camel
  */
 public class Controls extends GenericSubsystem{
 	/**
-	 * declares a Joystick object named driverJoy1
+	 * the left joystick for controlling the robot
 	 */
-	private Joystick driverJoy1;
+	private Joystick driverJoyLeft;
 	/**
-	 * declares a Joystick object named driverJoy2
+	 * the right joystick for controlling the robot
 	 */
-	private Joystick driverJoy2;
+	private Joystick driverJoyRight;
 	/**
-	 * declares a Controls object named controls
+	 * the controls object for using the controls class
 	 */
 	private static Controls controls;
 	/**
-	 * declares a Drives object named drives
+	 * drives object for using the drives class
 	 */
 	private Drives drives;
 	/**
@@ -46,8 +47,8 @@ public class Controls extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		driverJoy1 = new Joystick(IO.DRIVER_JOYSTICK_PORT1);
-		driverJoy1 = new Joystick(IO.DRIVER_JOYSTICK_PORT2);
+		driverJoyLeft = new Joystick(IO.DRIVER_JOYSTICK_PORT1);
+		driverJoyRight = new Joystick(IO.DRIVER_JOYSTICK_PORT2);
 		drives = Drives.getInstance(); 
 		return true;
 	}
@@ -57,7 +58,7 @@ public class Controls extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		drives.setPower(driverJoy1.getY(), driverJoy2.getY());
+		drives.setPower(driverJoyLeft.getY(), driverJoyRight.getY());
 		return false;
 	}
 	/** 

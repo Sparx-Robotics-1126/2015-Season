@@ -8,49 +8,57 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 /**
  * Makes the drives system to have the robot move.
- *
+ *@author Mike the camel
  */
 public class Drives extends GenericSubsystem{
 	/**
-	 * Makes a Drives object called drives
+	 * Makes a drives object that will be called to use the drives class
 	 */
 	private static Drives drives;
 	/**
-	 * makes the left front victor
+	 * Object used to control the left front motor
 	 */
 	private Victor leftFront;
 	/**
-	 * makes the left back victor
+	 * Object used to control the left back motor
 	 */
 	private Victor leftBack;
 	/**
-	 * makes the right front victor
+	 * Object used to control the right front motor
 	 */
 	private Victor rightFront;
 	/**
-	 * makes the right back victor
+	 * Object used to control the right back motor
 	 */
 	private Victor rightBack;
 	/**
-	 * makes the left encoder
+	 * Used to get the distance the robot has traveled 
 	 */
 	private Encoder encoderLeft;
 	/**
-	 * makes the right encoder
+	 * Used to get the distance the robot has traveled
 	 */
 	private Encoder encoderRight;
 	/**
-	 * makes the left encoder data
+	 * makes the left encoder data which calculates how far the robot traveled in inches
 	 */
 	private EncoderData encoderDataLeft;
 	/**
-	 * makes the right encoder data
+	 * makes the right encoder data which calculates how far the robot traveled in inches
 	 */
 	private EncoderData encoderDataRight;
 	/**
 	 * the solenoid used for shifting
 	 */
 	private Solenoid shiftingSol;
+	/**
+	 * the left color sensor for detecting the colors in front of the robot
+	 */
+	private ColorSensor colorSensorLeft;
+	/**
+	 * the right color sensor for detecting the colors in front of the robot
+	 */
+	private ColorSensor colorSensorRight;
 	/**
 	 * the amount of distance the shortbot will make per tick
 	 */
@@ -106,7 +114,7 @@ public class Drives extends GenericSubsystem{
 		}
 		return drives;
 	}
-	
+
 	/**
 	 * constructor for drives
 	 * @param name drives name
@@ -115,7 +123,7 @@ public class Drives extends GenericSubsystem{
 	private Drives() {
 		super("Drives", Thread.NORM_PRIORITY);
 	}
-	
+
 	/**
 	 * instantiates all the objects
 	 * @return if false, keep looping, true loop ends
@@ -138,7 +146,7 @@ public class Drives extends GenericSubsystem{
 		shiftTime = 0;
 		return true;
 	}
-	
+
 	/**
 	 * determines if it needs to be shifted
 	 * @return if false, keep looping, true end loop
@@ -163,10 +171,12 @@ public class Drives extends GenericSubsystem{
 			if(currentSpeed < 0){
 				wantedRightPower = SHIFTINGSPEED * - 1;
 				wantedLeftPower = SHIFTINGSPEED * - 1;
-			}else wantedRightPower = SHIFTINGSPEED; wantedLeftPower = SHIFTINGSPEED;
+			}else{ wantedRightPower = SHIFTINGSPEED;
+			wantedLeftPower = SHIFTINGSPEED;
+			}
 			break;
 		case IN_HIGH_GEAR:
-			if(currentSpeed >= UPPERSHIFTSPEED){
+			if(currentSpeed <= UPPERSHIFTSPEED){
 				shiftingSol.set(LOW_GEAR);
 				shiftTime = Timer.getFPGATimestamp();
 				currentDriveState = State.SHIFTING_LOW;
@@ -179,7 +189,9 @@ public class Drives extends GenericSubsystem{
 			if(currentSpeed < 0){
 				wantedRightPower = SHIFTINGSPEED * - 1;
 				wantedLeftPower = SHIFTINGSPEED * - 1;
-			}else wantedRightPower = SHIFTINGSPEED; wantedLeftPower = SHIFTINGSPEED;
+			}else{ wantedRightPower = SHIFTINGSPEED;
+			wantedLeftPower = SHIFTINGSPEED;
+			}
 			break;
 		default:
 			System.out.println("Error currentDriveState = " + currentDriveState);
@@ -208,7 +220,7 @@ public class Drives extends GenericSubsystem{
 		System.out.println("Current speed: " + currentSpeed);
 		System.out.println("Current drive state: " + currentDriveState);
 	}
-	
+
 	/**
 	 * sets the wanted left and right speed to the speed sent in inches
 	 * @param left left motor speed

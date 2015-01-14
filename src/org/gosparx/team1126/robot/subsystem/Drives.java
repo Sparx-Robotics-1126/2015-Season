@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 /**
  * Makes the drives system to have the robot move.
- *
+ *@author Mike the camel
  */
 public class Drives extends GenericSubsystem{
 	/**

@@ -4,6 +4,7 @@ import org.gosparx.team1126.robot.IO;
 import edu.wpi.first.wpilibj.Joystick;
 /**
  * This is how the controller is able to work with drives
+ * @author Mike the camel
  */
 public class Controls extends GenericSubsystem{
 	/**

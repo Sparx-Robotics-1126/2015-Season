@@ -52,14 +52,6 @@ public class Drives extends GenericSubsystem{
 	 */
 	private Solenoid shiftingSol;
 	/**
-	 * the left color sensor for detecting the colors in front of the robot
-	 */
-	private ColorSensor colorSensorLeft;
-	/**
-	 * the right color sensor for detecting the colors in front of the robot
-	 */
-	private ColorSensor colorSensorRight;
-	/**
 	 * the amount of distance the shortbot will make per tick
 	 */
 	private final double DISTANCE_PER_TICK = 0.04908738;

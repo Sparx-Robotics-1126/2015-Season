@@ -2,6 +2,8 @@ package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.sensors.EncoderData;
 import org.gosparx.team1126.robot.IO;
+import org.gosparx.team1126.robot.sensors.ColorSensor;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
@@ -146,8 +148,8 @@ public class Drives extends GenericSubsystem{
 		encoderRight = new Encoder(IO.ENCODER_RIGHT_DRIVES_A, IO.ENCODER_RIGHT_DRIVES_B);
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
-		colorSensorLeft = new ColorSensor();
-		colorSensorRight = new ColorSenor();
+		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_GREEN, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
+		colorSensorRight = new ColorSenor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_GREEN, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
 		wantedLeftPower = 0;
 		wantedRightPower = 0;
 		currentDriveState = State.IN_LOW_GEAR;

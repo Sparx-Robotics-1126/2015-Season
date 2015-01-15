@@ -20,5 +20,16 @@ public final class IO {
 	public static final int DRIVER_JOYSTICK_PORT1		= 0;
 	public static final int DRIVER_JOYSTICK_PORT2		= 0;
 	
+	//Sensors 
+	public static final int COLOR_RIGHT_RED				= 0;
+	public static final int COLOR_RIGHT_BLUE			= 0;
+	public static final int COLOR_RIGHT_GREEN			= 0;
+	public static final int COLOR_RIGHT_LED				= 0;
+	public static final int COLOR_LEFT_RED				= 0;
+	public static final int COLOR_LEFT_BLUE				= 0;
+	public static final int COLOR_LEFT_GREEN			= 0;
+	public static final int COLOR_LEFT_LED				= 0;
+	
+	
 	
 }

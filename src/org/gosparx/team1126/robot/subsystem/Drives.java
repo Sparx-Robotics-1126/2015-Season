@@ -230,8 +230,8 @@ public class Drives extends GenericSubsystem{
 			break;
 		default: System.out.println("Error autoFunctions = " + autoFunctions);
 		}
-		leftFront.set(wantedLeftPower);
-		leftBack.set(wantedLeftPower);
+		leftFront.set(-wantedLeftPower);
+		leftBack.set(-wantedLeftPower);
 		rightFront.set(wantedRightPower);
 		rightBack.set(wantedRightPower);
 		return false;

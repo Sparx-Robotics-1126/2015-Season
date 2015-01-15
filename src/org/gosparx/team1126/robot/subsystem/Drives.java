@@ -2,6 +2,9 @@ package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.sensors.EncoderData;
 import org.gosparx.team1126.robot.IO;
+import org.gosparx.team1126.robot.sensors.ColorSensor;
+import org.gosparx.team1126.robot.sensors.ColorSensor.Color;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
@@ -147,7 +150,7 @@ public class Drives extends GenericSubsystem{
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
 		colorSensorLeft = new ColorSensor();
-		colorSensorRight = new ColorSenor();
+		colorSensorRight = new ColorSensor();
 		wantedLeftPower = 0;
 		wantedRightPower = 0;
 		currentDriveState = State.IN_LOW_GEAR;
@@ -213,14 +216,14 @@ public class Drives extends GenericSubsystem{
 		case AUTO_STAND_BY:
 			break;
 		case AUTO_LIGHT_LINE_UP:
-			if(colorSensorLeft.isColor(WHITE)){
+			if(colorSensorLeft.isColor(Color.WHITE)){
 				wantedLeftPower = STOP_MOTOR;
 
 			}else wantedLeftPower = 0.1;
-			if(colorSensorRight.isColor(WHITE)){
+			if(colorSensorRight.isColor(Color.WHITE)){
 				wantedRightPower = STOP_MOTOR;
 			}else wantedRightPower = .01;
-			if(colorSensorLeft.isColor(WHITE && colorSensorRight.isColor(WHITE))){
+			if(colorSensorLeft.isColor(Color.WHITE) && colorSensorRight.isColor(Color.WHITE)){
 				autoFunctions = State.AUTO_STAND_BY;
 			}
 			break;

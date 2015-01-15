@@ -67,6 +67,23 @@ public class AdvancedJoystick{
 		currAxis = new HashMap<Integer, Double>();
 		ds = DriverStation.getInstance();
 	}
+	
+	/**
+	 * Creates a new AdvancedJoystick
+	 * @param port The port of the Joystick to collect data from
+	 * @param numButtons The number of buttons on the Joystick
+	 * @param numAxis The number of Axis on the Joystick
+	 */
+	public AdvancedJoystick(int port, int numButtons, int numAxis){
+		stick = new Joystick(port);
+		this.numButtons = numButtons;
+		this.numAxis = numAxis;
+		prevButton = new HashMap<Integer, Boolean>();
+		currButton = new HashMap<Integer, Boolean>();
+		prevAxis = new HashMap<Integer, Double>();
+		currAxis = new HashMap<Integer, Double>();
+		ds = DriverStation.getInstance();
+	}
 
 	/**
 	 * Call this before any other method using the values. Updates all of the maps

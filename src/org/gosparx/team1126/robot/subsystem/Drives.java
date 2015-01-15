@@ -150,7 +150,7 @@ public class Drives extends GenericSubsystem{
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
 		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_GREEN, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
-		colorSensorRight = new ColorSenor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_GREEN, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
+		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_GREEN, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
 		wantedLeftPower = 0;
 		wantedRightPower = 0;
 		currentDriveState = State.IN_LOW_GEAR;
@@ -212,6 +212,7 @@ public class Drives extends GenericSubsystem{
 		default:
 			System.out.println("Error currentDriveState = " + currentDriveState);
 		}
+		
 		switch(autoFunctions){
 		case AUTO_STAND_BY:
 			break;
@@ -262,6 +263,10 @@ public class Drives extends GenericSubsystem{
 	public void setPower(double left, double right) {
 		wantedLeftPower = left;
 		wantedRightPower = right;
+	}
+	
+	public void setAutoFunction(State wantedAutoState){
+		autoFunctions = wantedAutoState;
 	}
 	/**
 	 *Makes the states for drives

@@ -59,6 +59,9 @@ public class Controls extends GenericSubsystem{
 	@Override
 	protected boolean execute() {
 		drives.setPower(driverJoyLeft.getY(), driverJoyRight.getY());
+		if(driverJoyRight.getRawButton(1)){
+			drives.setAutoFunction(Drives.State.AUTO_LIGHT_LINE_UP);
+		}
 		return false;
 	}
 	/** 

@@ -17,8 +17,8 @@ public final class IO {
 	public static final int ENCODER_LEFT_DRIVES_B		= 3;
 	
 	//Joystick
-	public static final int DRIVER_JOYSTICK_PORT1		= 1;
-	public static final int DRIVER_JOYSTICK_PORT2		= 2;
+	public static final int DRIVER_JOYSTICK_PORT1		= 0;
+	public static final int DRIVER_JOYSTICK_PORT2		= 1;
 	
 	//Sensors 
 	public static final int COLOR_RIGHT_RED				= 2;

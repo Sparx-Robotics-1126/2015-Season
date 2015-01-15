@@ -5,10 +5,12 @@ import org.gosparx.team1126.robot.IO;
 import org.gosparx.team1126.robot.sensors.ColorSensor;
 import org.gosparx.team1126.robot.sensors.ColorSensor.Color;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 /**
  * Makes the drives system to have the robot move.
  *@author Mike the camel
@@ -149,8 +151,8 @@ public class Drives extends GenericSubsystem{
 		encoderRight = new Encoder(IO.ENCODER_RIGHT_DRIVES_A, IO.ENCODER_RIGHT_DRIVES_B);
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
-		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_GREEN, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
-		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_GREEN, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
+//		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_GREEN, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
+//		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_GREEN, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
 		wantedLeftPower = 0;
 		wantedRightPower = 0;
 		currentDriveState = State.IN_LOW_GEAR;
@@ -231,9 +233,9 @@ public class Drives extends GenericSubsystem{
 		default: System.out.println("Error autoFunctions = " + autoFunctions);
 		}
 		leftFront.set(-wantedLeftPower);
-		leftBack.set(-wantedLeftPower);
-		rightFront.set(wantedRightPower);
-		rightBack.set(wantedRightPower);
+		leftBack.set(wantedLeftPower);
+		rightFront.set(wantedRightPower);//TODO: check
+		rightBack.set(wantedRightPower);//TODO: check
 		return false;
 	}
 
@@ -303,5 +305,17 @@ public class Drives extends GenericSubsystem{
 				return "Error";
 			}
 		}
+	}
+	
+	@Override
+	protected void liveWindow() {
+		String subsytemName = "Drives";
+		LiveWindow.addActuator(subsytemName, "Shifting", shiftingSol);
+		LiveWindow.addActuator(subsytemName, "Right Encoder", encoderRight);
+		LiveWindow.addActuator(subsytemName, "Right Front Motor", rightFront);
+		LiveWindow.addActuator(subsytemName, "Right Rear Motor", rightBack);
+		LiveWindow.addActuator(subsytemName, "Left Front Motor", leftFront);
+		LiveWindow.addActuator(subsytemName, "Left Front Motor", leftBack);
+		LiveWindow.addActuator(subsytemName, "Left Encoder", encoderLeft);	
 	}
 }

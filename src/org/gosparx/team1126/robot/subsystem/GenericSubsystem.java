@@ -76,6 +76,7 @@ public abstract class GenericSubsystem extends Thread {
 		boolean retVal = false;
 		double lastLogged = 0;
 		init();
+		liveWindow();
 		do{
 			try{
 				retVal = execute();

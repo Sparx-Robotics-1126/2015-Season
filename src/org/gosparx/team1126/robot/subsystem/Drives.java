@@ -142,10 +142,10 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		leftFront = new Victor(IO.PWM_LEFT_FRONT_DRIVES);
-		leftBack = new Victor(IO.PWM_LEFT_BACK_DRIVES);
 		rightFront = new Victor(IO.PWM_RIGHT_FRONT_DRIVES);
 		rightBack = new Victor(IO.PWM_RIGHT_BACK_DRIVES);
+		leftFront = new Victor(IO.PWM_LEFT_FRONT_DRIVES);
+		leftBack = new Victor(IO.PWM_LEFT_BACK_DRIVES);
 		encoderLeft = new Encoder(IO.ENCODER_LEFT_DRIVES_A, IO.ENCODER_LEFT_DRIVES_B);
 		encoderDataLeft = new EncoderData(encoderLeft, DISTANCE_PER_TICK);
 		encoderRight = new Encoder(IO.ENCODER_RIGHT_DRIVES_A, IO.ENCODER_RIGHT_DRIVES_B);
@@ -171,70 +171,70 @@ public class Drives extends GenericSubsystem{
 		encoderDataRight.calculateSpeed();
 		encoderDataLeft.calculateSpeed();
 		currentSpeed = (encoderDataRight.getSpeed() + encoderDataLeft.getSpeed()) / 2;
-		switch(currentDriveState){
-		case IN_LOW_GEAR:
-			if(currentSpeed >= LOWERSHIFTSPEED){
-				shiftingSol.set(!LOW_GEAR);
-				shiftTime = Timer.getFPGATimestamp();
-				currentDriveState = State.SHIFTING_HIGH;
-			}
-			break;
-		case SHIFTING_LOW:
-			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
-				currentDriveState = State.IN_LOW_GEAR;
-			}
-			if(currentSpeed < 0){
-				wantedRightPower = SHIFTINGSPEED * - 1;
-				wantedLeftPower = SHIFTINGSPEED * - 1;
-			}else{
-				wantedRightPower = SHIFTINGSPEED;
-
-				wantedLeftPower = SHIFTINGSPEED;
-			}
-			break;
-		case IN_HIGH_GEAR:
-			if(currentSpeed <= UPPERSHIFTSPEED){
-				shiftingSol.set(LOW_GEAR);
-				shiftTime = Timer.getFPGATimestamp();
-				currentDriveState = State.SHIFTING_LOW;
-			}
-			break;
-		case SHIFTING_HIGH:
-			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
-				currentDriveState = State.IN_HIGH_GEAR;
-			}
-			if(currentSpeed < 0){
-				wantedRightPower = SHIFTINGSPEED * - 1;
-				wantedLeftPower = SHIFTINGSPEED * - 1;
-			}else{
-				wantedRightPower = SHIFTINGSPEED;
-				wantedLeftPower = SHIFTINGSPEED;
-			}
-			break;
-		default:
-			System.out.println("Error currentDriveState = " + currentDriveState);
-		}
-		
-		switch(autoFunctions){
-		case AUTO_STAND_BY:
-			break;
-		case AUTO_LIGHT_LINE_UP:
-			if(colorSensorLeft.isColor(Color.WHITE)){
-				wantedLeftPower = STOP_MOTOR;
-
-			}else wantedLeftPower = 0.1;
-			if(colorSensorRight.isColor(Color.WHITE)){
-				wantedRightPower = STOP_MOTOR;
-			}else wantedRightPower = .01;
-			if(colorSensorLeft.isColor(Color.WHITE) && colorSensorRight.isColor(Color.WHITE)){
-				autoFunctions = State.AUTO_STAND_BY;
-			}
-			break;
-		default: System.out.println("Error autoFunctions = " + autoFunctions);
-		}
+//		switch(currentDriveState){
+//		case IN_LOW_GEAR:
+//			if(currentSpeed >= LOWERSHIFTSPEED){
+//				shiftingSol.set(!LOW_GEAR);
+//				shiftTime = Timer.getFPGATimestamp();
+//				currentDriveState = State.SHIFTING_HIGH;
+//			}
+//			break;
+//		case SHIFTING_LOW:
+//			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
+//				currentDriveState = State.IN_LOW_GEAR;
+//			}
+//			if(currentSpeed < 0){
+//				wantedRightPower = SHIFTINGSPEED * - 1;
+//				wantedLeftPower = SHIFTINGSPEED * - 1;
+//			}else{
+//				wantedRightPower = SHIFTINGSPEED;
+//
+//				wantedLeftPower = SHIFTINGSPEED;
+//			}
+//			break;
+//		case IN_HIGH_GEAR:
+//			if(currentSpeed <= UPPERSHIFTSPEED){
+//				shiftingSol.set(LOW_GEAR);
+//				shiftTime = Timer.getFPGATimestamp();
+//				currentDriveState = State.SHIFTING_LOW;
+//			}
+//			break;
+//		case SHIFTING_HIGH:
+//			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
+//				currentDriveState = State.IN_HIGH_GEAR;
+//			}
+//			if(currentSpeed < 0){
+//				wantedRightPower = SHIFTINGSPEED * - 1;
+//				wantedLeftPower = SHIFTINGSPEED * - 1;
+//			}else{
+//				wantedRightPower = SHIFTINGSPEED;
+//				wantedLeftPower = SHIFTINGSPEED;
+//			}
+//			break;
+//		default:
+//			System.out.println("Error currentDriveState = " + currentDriveState);
+//		}
+//		
+//		switch(autoFunctions){
+//		case AUTO_STAND_BY:
+//			break;
+//		case AUTO_LIGHT_LINE_UP:
+//			if(colorSensorLeft.isColor(Color.WHITE)){
+//				wantedLeftPower = STOP_MOTOR;
+//
+//			}else wantedLeftPower = 0.1;
+//			if(colorSensorRight.isColor(Color.WHITE)){
+//				wantedRightPower = STOP_MOTOR;
+//			}else wantedRightPower = .01;
+//			if(colorSensorLeft.isColor(Color.WHITE) && colorSensorRight.isColor(Color.WHITE)){
+//				autoFunctions = State.AUTO_STAND_BY;
+//			}
+//			break;
+//		default: System.out.println("Error autoFunctions = " + autoFunctions);
+//		}
 		leftFront.set(-wantedLeftPower);
 		leftBack.set(wantedLeftPower);
-		rightFront.set(wantedRightPower);//TODO: check
+		rightFront.set(-wantedRightPower);//TODO: check
 		rightBack.set(wantedRightPower);//TODO: check
 		return false;
 	}

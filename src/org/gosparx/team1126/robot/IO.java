@@ -4,31 +4,31 @@ public final class IO {
 	//Motor
 	public static final int PWM_LEFT_FRONT_DRIVES 		= 0;
 	public static final int PWM_LEFT_BACK_DRIVES		= 1;
-	public static final int PWM_RIGHT_FRONT_DRIVES		= 2;
-	public static final int PWM_RIGHT_BACK_DRIVES		= 3;
+	public static final int PWM_RIGHT_FRONT_DRIVES		= 3;
+	public static final int PWM_RIGHT_BACK_DRIVES		= 2;
 	
 	//PNU
 	public static final int PNU_SHIFTING 				= 0;
 	
 	//Encoders
 	public static final int ENCODER_RIGHT_DRIVES_A 		= 0;
-	public static final int ENCODER_RIGHT_DRIVES_B 		= 0;
-	public static final int ENCODER_LEFT_DRIVES_A 		= 0;
-	public static final int ENCODER_LEFT_DRIVES_B		= 0;
+	public static final int ENCODER_RIGHT_DRIVES_B 		= 1;
+	public static final int ENCODER_LEFT_DRIVES_A 		= 2;
+	public static final int ENCODER_LEFT_DRIVES_B		= 3;
 	
 	//Joystick
 	public static final int DRIVER_JOYSTICK_PORT1		= 0;
-	public static final int DRIVER_JOYSTICK_PORT2		= 0;
+	public static final int DRIVER_JOYSTICK_PORT2		= 1;
 	
 	//Sensors 
-	public static final int COLOR_RIGHT_RED				= 0;
-	public static final int COLOR_RIGHT_BLUE			= 0;
-	public static final int COLOR_RIGHT_GREEN			= 0;
-	public static final int COLOR_RIGHT_LED				= 0;
+	public static final int COLOR_RIGHT_RED				= 2;
+	public static final int COLOR_RIGHT_BLUE			= 3;
+	public static final int COLOR_RIGHT_GREEN			= 9;//NOT USED
+	public static final int COLOR_RIGHT_LED				= 5;
 	public static final int COLOR_LEFT_RED				= 0;
-	public static final int COLOR_LEFT_BLUE				= 0;
-	public static final int COLOR_LEFT_GREEN			= 0;
-	public static final int COLOR_LEFT_LED				= 0;
+	public static final int COLOR_LEFT_BLUE				= 1;
+	public static final int COLOR_LEFT_GREEN			= 8;//NOT USED
+	public static final int COLOR_LEFT_LED				= 4;
 	
 	
 	

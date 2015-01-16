@@ -5,10 +5,12 @@ import org.gosparx.team1126.robot.IO;
 import org.gosparx.team1126.robot.sensors.ColorSensor;
 import org.gosparx.team1126.robot.sensors.ColorSensor.Color;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 /**
  * Makes the drives system to have the robot move.
  *@author Mike the camel
@@ -110,6 +112,10 @@ public class Drives extends GenericSubsystem{
 	 * Variable for determining which state the color sensor
 	 */
 	private State autoFunctions;
+	
+	private double rightPower;
+	private double leftPower;
+	
 	/**
 	 * stops the motors for auto
 	 */
@@ -140,19 +146,19 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		leftFront = new Victor(IO.PWM_LEFT_FRONT_DRIVES);
-		leftBack = new Victor(IO.PWM_LEFT_BACK_DRIVES);
 		rightFront = new Victor(IO.PWM_RIGHT_FRONT_DRIVES);
 		rightBack = new Victor(IO.PWM_RIGHT_BACK_DRIVES);
+		leftFront = new Victor(IO.PWM_LEFT_FRONT_DRIVES);
+		leftBack = new Victor(IO.PWM_LEFT_BACK_DRIVES);
 		encoderLeft = new Encoder(IO.ENCODER_LEFT_DRIVES_A, IO.ENCODER_LEFT_DRIVES_B);
 		encoderDataLeft = new EncoderData(encoderLeft, DISTANCE_PER_TICK);
 		encoderRight = new Encoder(IO.ENCODER_RIGHT_DRIVES_A, IO.ENCODER_RIGHT_DRIVES_B);
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
-		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_GREEN, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
+		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
 		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_GREEN, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
-		wantedLeftPower = 0;
-		wantedRightPower = 0;
+		leftPower = 0;
+		rightPower = 0;
 		currentDriveState = State.IN_LOW_GEAR;
 		currentSpeed = 0;
 		shiftTime = 0;
@@ -182,12 +188,12 @@ public class Drives extends GenericSubsystem{
 				currentDriveState = State.IN_LOW_GEAR;
 			}
 			if(currentSpeed < 0){
-				wantedRightPower = SHIFTINGSPEED * - 1;
-				wantedLeftPower = SHIFTINGSPEED * - 1;
+				rightPower = SHIFTINGSPEED * - 1;
+				leftPower = SHIFTINGSPEED * - 1;
 			}else{
-				wantedRightPower = SHIFTINGSPEED;
+				rightPower = SHIFTINGSPEED;
 
-				wantedLeftPower = SHIFTINGSPEED;
+				leftPower = SHIFTINGSPEED;
 			}
 			break;
 		case IN_HIGH_GEAR:
@@ -202,37 +208,48 @@ public class Drives extends GenericSubsystem{
 				currentDriveState = State.IN_HIGH_GEAR;
 			}
 			if(currentSpeed < 0){
-				wantedRightPower = SHIFTINGSPEED * - 1;
-				wantedLeftPower = SHIFTINGSPEED * - 1;
+				rightPower = SHIFTINGSPEED * - 1;
+				leftPower = SHIFTINGSPEED * - 1;
 			}else{
-				wantedRightPower = SHIFTINGSPEED;
-				wantedLeftPower = SHIFTINGSPEED;
+				rightPower = SHIFTINGSPEED;
+				leftPower = SHIFTINGSPEED;
 			}
 			break;
 		default:
 			System.out.println("Error currentDriveState = " + currentDriveState);
 		}
+		
 		switch(autoFunctions){
 		case AUTO_STAND_BY:
+			rightPower = wantedRightPower;
+			leftPower = wantedLeftPower;
 			break;
 		case AUTO_LIGHT_LINE_UP:
-			if(colorSensorLeft.isColor(Color.WHITE)){
-				wantedLeftPower = STOP_MOTOR;
-
-			}else wantedLeftPower = 0.1;
-			if(colorSensorRight.isColor(Color.WHITE)){
-				wantedRightPower = STOP_MOTOR;
-			}else wantedRightPower = .01;
-			if(colorSensorLeft.isColor(Color.WHITE) && colorSensorRight.isColor(Color.WHITE)){
+			boolean rightWhite = colorSensorRight.isColor(Color.WHITE);
+			boolean leftWhite = colorSensorLeft.isColor(Color.WHITE);
+			if(leftWhite){
+				leftPower = -0.5;
+			}else{
+				leftPower = 0.4;
+			}
+			if(rightWhite){
+				rightPower = -0.5;
+			}else{
+				rightPower = 0.4;
+			}
+			if(rightWhite && leftWhite){
 				autoFunctions = State.AUTO_STAND_BY;
+				wantedLeftPower = 0;
+				wantedRightPower = 0;
 			}
 			break;
 		default: System.out.println("Error autoFunctions = " + autoFunctions);
 		}
-		leftFront.set(wantedLeftPower);
-		leftBack.set(wantedLeftPower);
-		rightFront.set(wantedRightPower);
-		rightBack.set(wantedRightPower);
+		
+		leftFront.set(leftPower);
+		leftBack.set(-leftPower);
+		rightFront.set(rightPower);//TODO: check
+		rightBack.set(-rightPower);//TODO: check
 		return false;
 	}
 
@@ -252,6 +269,11 @@ public class Drives extends GenericSubsystem{
 	protected void writeLog() {
 		System.out.println("Current speed: " + currentSpeed);
 		System.out.println("Current drive state: " + currentDriveState);
+		System.out.println("Auto State: " + autoFunctions);
+		System.out.println("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+							"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
+		System.out.println("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
+		System.out.println("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
 	}
 
 	/**
@@ -260,8 +282,12 @@ public class Drives extends GenericSubsystem{
 	 * @param right right motor speed
 	 */
 	public void setPower(double left, double right) {
-		wantedLeftPower = left;
-		wantedRightPower = right;
+//		wantedLeftPower = left;
+//		wantedRightPower = right;
+	}
+	
+	public void setAutoFunction(State wantedAutoState){
+		autoFunctions = wantedAutoState;
 	}
 	/**
 	 *Makes the states for drives
@@ -298,5 +324,17 @@ public class Drives extends GenericSubsystem{
 				return "Error";
 			}
 		}
+	}
+	
+	@Override
+	protected void liveWindow() {
+		String subsytemName = "Drives";
+		LiveWindow.addActuator(subsytemName, "Shifting", shiftingSol);
+		LiveWindow.addActuator(subsytemName, "Right Encoder", encoderRight);
+		LiveWindow.addActuator(subsytemName, "Right Front Motor", rightFront);
+		LiveWindow.addActuator(subsytemName, "Right Rear Motor", rightBack);
+		LiveWindow.addActuator(subsytemName, "Left Front Motor", leftFront);
+		LiveWindow.addActuator(subsytemName, "Left Front Motor", leftBack);
+		LiveWindow.addActuator(subsytemName, "Left Encoder", encoderLeft);	
 	}
 }

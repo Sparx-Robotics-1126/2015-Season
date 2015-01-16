@@ -45,12 +45,14 @@ public class ColorSensor {
 	/**
 	 * we treat white as 80% of the addition of all of the colors and above
 	 */
-	static final double WHITE_THRESHOLD = (255 * 3) * .8; 
+	private static final double WHITE_THRESHOLD = (255 * 3) * .8; 
 	
 	/**
 	 * we treat black as 20% of the addition of all of the colors and below
 	 */
-	static final double BLACK_THRESHOLD = (255 * 3) * .2;
+	private static final double BLACK_THRESHOLD = (255 * 3) * .2;
+	
+	private final boolean useGreen; 
 
 	public ColorSensor(int redChannel, int greenChannel, int blueChannel, int ledChannel){
 		redAnalogInput = new AnalogInput(redChannel);
@@ -58,6 +60,15 @@ public class ColorSensor {
 		blueAnalogInput = new AnalogInput(blueChannel);
 		lightLED = new DigitalOutput(ledChannel);
 		lightLED.set(true);
+		useGreen = true;
+	}
+	
+	public ColorSensor(int redChannel, int blueChannel, int ledChannel){
+		redAnalogInput = new AnalogInput(redChannel);
+		blueAnalogInput = new AnalogInput(blueChannel);
+		lightLED = new DigitalOutput(ledChannel);
+		lightLED.set(true);
+		useGreen = false;
 	}
 
 	/**
@@ -71,7 +82,11 @@ public class ColorSensor {
 	 * @return value of green (0 - 255) values may be bigger than 255
 	 */
 	private int getGreen(){
-		return greenAnalogInput.getValue();
+		if(useGreen){
+			return greenAnalogInput.getValue();
+		}else{
+			return 0;
+		}
 	}
 	
 	/**
@@ -97,10 +112,10 @@ public class ColorSensor {
 		int blueValue = getBlue();
 		int totalValue = redValue + greenValue + blueValue;
 		
-		if (totalValue >= WHITE_THRESHHOLD){
+		if (totalValue >= WHITE_THRESHOLD){
 			return Color.WHITE;
 		}
-		else if (totalValue <= BLACK_THRESHHOLD){
+		else if (totalValue <= BLACK_THRESHOLD){
 			return Color.BLACK;
 		}
 		else if (blueValue >= redValue && blueValue >= greenValue){

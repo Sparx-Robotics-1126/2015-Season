@@ -1,7 +1,5 @@
 package org.gosparx.team1126.robot.util;
 
-import java.util.HashMap;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -29,22 +27,22 @@ public class AdvancedJoystick{
 	/**
 	 * A map of all of the previous button values, used for rising/falling edge detection
 	 */
-	private HashMap<Integer, Boolean> prevButton;
+	private boolean[] prevButton;
 
 	/**
 	 * A map of all of the current button values, used for rising/falling edge detection
 	 */
-	private HashMap<Integer, Boolean> currButton;
+	private boolean[] currButton;
 
 	/**
 	 * A map of all of the previous axis values, currently unused
 	 */
-	private HashMap<Integer, Double> prevAxis;
+	private double[] prevAxis;
 
 	/**
 	 * A map of all of the current axis values
 	 */
-	private HashMap<Integer, Double> currAxis;
+	private double[] currAxis;
 
 	/**
 	 * An instance of driverstation
@@ -61,10 +59,10 @@ public class AdvancedJoystick{
 		stick = joy;
 		this.numButtons = numButtons;
 		this.numAxis = numAxis;
-		prevButton = new HashMap<Integer, Boolean>();
-		currButton = new HashMap<Integer, Boolean>();
-		prevAxis = new HashMap<Integer, Double>();
-		currAxis = new HashMap<Integer, Double>();
+		prevButton = new boolean[numButtons];
+		currButton = new boolean[numButtons];
+		prevAxis = new double[numAxis];
+		currAxis = new double[numAxis];
 		ds = DriverStation.getInstance();
 	}
 	
@@ -78,10 +76,10 @@ public class AdvancedJoystick{
 		stick = new Joystick(port);
 		this.numButtons = numButtons;
 		this.numAxis = numAxis;
-		prevButton = new HashMap<Integer, Boolean>();
-		currButton = new HashMap<Integer, Boolean>();
-		prevAxis = new HashMap<Integer, Double>();
-		currAxis = new HashMap<Integer, Double>();
+		prevButton = new boolean[numButtons];
+		currButton = new boolean[numButtons];
+		prevAxis = new double[numAxis];
+		currAxis = new double[numAxis];
 		ds = DriverStation.getInstance();
 	}
 
@@ -90,15 +88,13 @@ public class AdvancedJoystick{
 	 */
 	public void updateValues(){
 		if(ds.isEnabled() && ds.isOperatorControl()){
-			prevButton = new HashMap<>(currButton);
-			currButton.clear();
+			prevButton = currButton.clone();
 			for(int i = 1; i <= numButtons; i++){
-				currButton.put(i, stick.getRawButton(i));
+				currButton[i-1] = stick.getRawButton(i);
 			}
-			prevAxis = new HashMap<>(currAxis);
-			currAxis.clear();
+			prevAxis = currAxis.clone();
 			for (int i = 1; i <= numAxis; i++){
-				currAxis.put(i, stick.getRawAxis(i));
+				currAxis[i-1] = stick.getRawAxis(i);
 			}
 		}
 	}
@@ -109,7 +105,7 @@ public class AdvancedJoystick{
 	 * @return the current value of the axis
 	 */
 	public double getAxis(int id){
-		return currAxis.get(id);
+		return currAxis[id-1];
 	}
 
 	/**
@@ -118,7 +114,7 @@ public class AdvancedJoystick{
 	 * @return true if pressed, false if not
 	 */
 	public boolean getButton(int id){
-		return currButton.get(id);
+		return currButton[id-1];
 	}
 
 	/**
@@ -127,7 +123,7 @@ public class AdvancedJoystick{
 	 * @return true if it is a rising edge
 	 */
 	public boolean getRisingEdge(int id){
-		return currButton.get(id) && !prevButton.get(id);
+		return currButton[id-1] && !prevButton[id-1];
 	}
 
 	/**
@@ -136,6 +132,6 @@ public class AdvancedJoystick{
 	 * @return returns if it is on a falling edge
 	 */
 	public boolean getFallingEdge(int id){
-		return !currButton.get(id) && prevButton.get(id);
+		return !currButton[id-1] && prevButton[id-1];
 	}
 }

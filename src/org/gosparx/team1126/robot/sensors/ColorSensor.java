@@ -51,6 +51,8 @@ public class ColorSensor {
 	 * we treat black as 20% of the addition of all of the colors and below
 	 */
 	static final double BLACK_THRESHOLD = (255 * 3) * .2;
+	
+	private final boolean useGreen;
 
 	public ColorSensor(int redChannel, int greenChannel, int blueChannel, int ledChannel){
 		redAnalogInput = new AnalogInput(redChannel);
@@ -58,6 +60,15 @@ public class ColorSensor {
 		blueAnalogInput = new AnalogInput(blueChannel);
 		lightLED = new DigitalOutput(ledChannel);
 		lightLED.set(true);
+		useGreen = true;
+	}
+	
+	public ColorSensor(int redChannel, int blueChannel, int ledChannel){
+		redAnalogInput = new AnalogInput(redChannel);
+		blueAnalogInput = new AnalogInput(blueChannel);
+		lightLED = new DigitalOutput(ledChannel);
+		lightLED.set(true);
+		useGreen = false;
 	}
 
 	/**
@@ -71,7 +82,11 @@ public class ColorSensor {
 	 * @return value of green (0 - 255) values may be bigger than 255
 	 */
 	private int getGreen(){
-		return greenAnalogInput.getValue();
+		if(useGreen){
+			return greenAnalogInput.getValue();
+		}else{
+			return 255;
+		}
 	}
 	
 	/**

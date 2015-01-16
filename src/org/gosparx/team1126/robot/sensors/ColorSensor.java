@@ -45,7 +45,7 @@ public class ColorSensor {
 	/**
 	 * we treat white as 80% of the addition of all of the colors and above
 	 */
-	static final double WHITE_THRESHOLD = (255 * 3) * .8; 
+	static final double WHITE_THRESHOLD = 70;//(255 * 3) * .8; 
 	
 	/**
 	 * we treat black as 20% of the addition of all of the colors and below
@@ -74,7 +74,7 @@ public class ColorSensor {
 	/**
 	 * @return value of red (0 - 255) values may be bigger than 255
 	 */
-	private int getRed(){
+	public int getRed(){
 		return redAnalogInput.getValue();
 	}
 	
@@ -85,14 +85,14 @@ public class ColorSensor {
 		if(useGreen){
 			return greenAnalogInput.getValue();
 		}else{
-			return 255;
+			return 0;
 		}
 	}
 	
 	/**
 	 * @return value of blue (0 - 255) values may be bigger than 255
 	 */
-	private int getBlue(){
+	public int getBlue(){
 		return blueAnalogInput.getValue();
 	}
 	

@@ -204,7 +204,7 @@ public class Autonomous extends GenericSubsystem{
 	private void runAuto(){
 		increaseStep = true;
 		if(ds.isAutonomous() && ds.isEnabled()){
-			switch(currentAuto[currentStep][0]){
+			switch(currentAuto[currentStep][0]){  //add automodes later when we have them
 			case DRIVES_GO_FORWARD:
 				break;
 			case DRIVES_GO_REVERSE:

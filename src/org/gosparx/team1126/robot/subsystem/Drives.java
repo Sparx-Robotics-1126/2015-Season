@@ -177,7 +177,7 @@ public class Drives extends GenericSubsystem{
 		currentSpeed = (encoderDataRight.getSpeed() + encoderDataLeft.getSpeed()) / 2;
 		switch(currentDriveState){
 		case IN_LOW_GEAR:
-			if(currentSpeed >= LOWERSHIFTSPEED){
+			if(Math.abs(currentSpeed) >= LOWERSHIFTSPEED){
 				System.out.println("SHIFTING HIGH");
 				shiftingSol.set(!LOW_GEAR);
 				shiftTime = Timer.getFPGATimestamp();
@@ -198,7 +198,7 @@ public class Drives extends GenericSubsystem{
 			}
 			break;
 		case IN_HIGH_GEAR:
-			if(currentSpeed <= UPPERSHIFTSPEED){
+			if(Math.abs(currentSpeed) <= UPPERSHIFTSPEED){
 				System.out.println("SHIFTING LOW");
 				shiftingSol.set(LOW_GEAR);
 				shiftTime = Timer.getFPGATimestamp();
@@ -296,8 +296,6 @@ public class Drives extends GenericSubsystem{
 		}else{
 			wantedRightPower = -(5/4)*Math.sqrt(-right);
 		}
-//		wantedRightPower = right;
-//		wantedLeftPower = left;
 	}
 
 	public void setAutoFunction(State wantedAutoState){

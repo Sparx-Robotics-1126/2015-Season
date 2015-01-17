@@ -75,13 +75,16 @@ public class Autonomous extends GenericSubsystem{
 	/**
 	 * The voltages of the different choices on the selection switch
 	 */
-	private final double SELECTION_1 = 0.0;
-	private final double SELECTION_2 = 0.0;
-	private final double SELECTION_3 = 0.0;
-	private final double SELECTION_4 = 0.0;
-	private final double SELECTION_5 = 0.0;
-	private final double SELECTION_6 = 0.0;
-	
+	private final double SELECTION_0 = 4.80;
+	private final double SELECTION_1 = 4.27;
+	private final double SELECTION_2 = 3.74;
+	private final double SELECTION_3 = 3.20;
+	private final double SELECTION_4 = 2.67;
+	private final double SELECTION_5 = 2.14;
+	private final double SELECTION_6 = 1.60;
+	private final double SELECTION_7 = 1.07;
+	private final double SELECTION_8 = 0.54;
+	private final double SELECTION_9 = 0.00;
 	/*********************************************************************************************************************************
 	 **********************************************AUTO COMMANDS**********************************************************************
 	 *********************************************************************************************************************************/
@@ -181,7 +184,9 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private void getAutoMode(){
 		double voltage = selectorSwitch.getVoltage();
-		if(voltage >= SELECTION_1){
+		if (voltage >= SELECTION_0){
+		
+		}else if(voltage >= SELECTION_1){
 			
 		}else if(voltage >= SELECTION_2){
 			
@@ -192,6 +197,13 @@ public class Autonomous extends GenericSubsystem{
 		}else if(voltage >= SELECTION_5){
 			
 		}else if(voltage >= SELECTION_6){
+		
+		}else if(voltage >= SELECTION_7){
+			
+		}else if(voltage >= SELECTION_8){
+			
+		}else if(voltage >= SELECTION_9){ 
+		
 			
 		}else{
 			

@@ -239,8 +239,8 @@ public class Drives extends GenericSubsystem{
 			}
 			if(rightWhite && leftWhite){
 				autoFunctions = State.AUTO_STAND_BY;
-				wantedLeftPower = 0;
-				wantedRightPower = 0;
+				leftPower = 0;
+				rightPower = 0;
 			}
 			break;
 		default: System.out.println("Error autoFunctions = " + autoFunctions);
@@ -248,8 +248,8 @@ public class Drives extends GenericSubsystem{
 		
 		leftFront.set(leftPower);
 		leftBack.set(-leftPower);
-		rightFront.set(rightPower);//TODO: check
-		rightBack.set(-rightPower);//TODO: check
+		rightFront.set(rightPower);
+		rightBack.set(-rightPower);
 		return false;
 	}
 
@@ -270,10 +270,12 @@ public class Drives extends GenericSubsystem{
 		System.out.println("Current speed: " + currentSpeed);
 		System.out.println("Current drive state: " + currentDriveState);
 		System.out.println("Auto State: " + autoFunctions);
-		System.out.println("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
-							"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
-		System.out.println("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
-		System.out.println("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
+//		System.out.println("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+//							"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
+//		System.out.println("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
+//		System.out.println("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
+		System.out.println("Left Encoder: " + encoderDataLeft.getDistance() +
+							" Right Encoder: " +encoderDataRight.getDistance());
 	}
 
 	/**
@@ -282,8 +284,8 @@ public class Drives extends GenericSubsystem{
 	 * @param right right motor speed
 	 */
 	public void setPower(double left, double right) {
-//		wantedLeftPower = left;
-//		wantedRightPower = right;
+		wantedLeftPower = left;
+		wantedRightPower = right;
 	}
 	
 	public void setAutoFunction(State wantedAutoState){

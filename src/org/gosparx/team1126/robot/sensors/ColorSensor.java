@@ -53,6 +53,8 @@ public class ColorSensor {
 	private static final double BLACK_THRESHOLD = (255 * 3) * .2;
 	
 	private final boolean useGreen; 
+	
+	private final boolean useGreen;
 
 	public ColorSensor(int redChannel, int greenChannel, int blueChannel, int ledChannel){
 		redAnalogInput = new AnalogInput(redChannel);

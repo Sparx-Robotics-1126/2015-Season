@@ -174,7 +174,6 @@ public class Autonomous extends GenericSubsystem{
 	@Override
 	protected void writeLog() {
 		System.out.println("Current Step:" + currentStep);
-		System.out.println()
 	}
 	
 	/**

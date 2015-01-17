@@ -1,5 +1,6 @@
 package org.gosparx.team1126.robot;
 
+import org.gosparx.team1126.robot.subsystem.CanAcquisition;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -20,6 +21,11 @@ public class Autonomous extends GenericSubsystem{
 	 * Supports singleton
 	 */
 	private static Autonomous auto;
+	
+	/**
+	 * Instance of the can acquisition 
+	 */
+	private CanAcquisition canAcq;
 	
 	/**
 	 * The Physical selector switch for auto modes
@@ -54,46 +60,56 @@ public class Autonomous extends GenericSubsystem{
 	/**
 	 * The voltages of the different choices on the selection switch
 	 */
-	private final double SELECTION_1 = 0.0;
-	private final double SELECTION_2 = 0.0;
-	private final double SELECTION_3 = 0.0;
-	private final double SELECTION_4 = 0.0;
-	private final double SELECTION_5 = 0.0;
-	private final double SELECTION_6 = 0.0;
+	private static final double SELECTION_1 = 0.0;
+	private static final double SELECTION_2 = 0.0;
+	private static final double SELECTION_3 = 0.0;
+	private static final double SELECTION_4 = 0.0;
+	private static final double SELECTION_5 = 0.0;
+	private static final double SELECTION_6 = 0.0;
 	
 	/*********************************************************************************************************************************
 	 **********************************************AUTO COMMANDS**********************************************************************
 	 *********************************************************************************************************************************/
 	
-	private final int DRIVES_GO_FORWARD = 1;
-	private final int DRIVES_GO_REVERSE = 2;
-	private final int DRIVES_TURN_RIGHT = 3;
-	private final int DRIVES_TURN_LEFT = 4;
-	private final int DRIVES_STOP = 5;
-	private final int DRIVES_DONE = 9;
+	private static final int DRIVES_GO_FORWARD = 1;
+	private static final int DRIVES_GO_REVERSE = 2;
+	private static final int DRIVES_TURN_RIGHT = 3;
+	private static final int DRIVES_TURN_LEFT = 4;
+	private static final int DRIVES_STOP = 5;
+	private static final int DRIVE_TILL_STEP = 6;
+	private static final int DRIVES_DONE = 9;
 	
-	private final int ARMS_DROP = 10;
-	private final int ARMS_RAISE = 11;
-	private final int ARMS_EXPAND = 12;
-	private final int ARMS_CONTRACT = 13;
-	private final int ARMS_STOP = 14;
-	private final int ARMS_DONE = 19;
+	private static final int ARMS_DROP = 10;
+	private static final int ARMS_RAISE = 11;
+	private static final int ARMS_EXPAND = 12;
+	private static final int ARMS_CONTRACT = 13;
+	private static final int ARMS_STOP = 14;
+	private static final int ARMS_DONE = 19;
 	
-	private final int ACQ_LOWER = 20;
-	private final int ACQ_RAISE = 21;
-	private final int ACQ_ROLLERS_ON = 22;
-	private final int ACQ_ROLLERS_OFF = 23;
-	private final int ACQ_STOP = 24;
-	private final int ACQ_DONE = 29;
+	private static final int ACQ_LOWER = 20;
+	private static final int ACQ_RAISE = 21;
+	private static final int ACQ_ROLLERS_ON = 22;
+	private static final int ACQ_ROLLERS_OFF = 23;
+	private static final int ACQ_STOP = 24;
+	private static final int ACQ_DONE = 29;
 	
-	private final int TOTES_RAISE = 30;
-	private final int TOTES_LOWER = 31;
-	private final int TOTES_EJECT = 32;
-	private final int TOTES_STOP = 33;
-	private final int TOTES_DONE = 39;
+	private static final int TOTES_RAISE = 30;
+	private static final int TOTES_LOWER = 31;
+	private static final int TOTES_EJECT = 32;
+	private static final int TOTES_STOP = 33;
+	private static final int TOTES_DONE = 39;
 	
-	private final int WAIT = 98;
-	private final int END = 99; 
+	private static final int WAIT = 98;
+	private static final int END = 99; 
+	
+	/**
+	 * Move 2 containers from step into Auto zone
+	 */
+	private static final int [][] twoCanStep = {
+		{DRIVE_TILL_STEP},
+		{DRIVES_DONE},
+		{ARMS_DROP}
+	};
 	
 	/**
 	 * Singleton
@@ -192,9 +208,13 @@ public class Autonomous extends GenericSubsystem{
 				break;
 			case DRIVES_STOP:
 				break;
+			case DRIVE_TILL_STEP:
+				//drives.driveTillStep();
+				break;
 			case DRIVES_DONE:
 				break;
 			case ARMS_DROP:
+				canAcq.armsDrop();
 				break;
 			case ARMS_RAISE:
 				break;
@@ -237,5 +257,4 @@ public class Autonomous extends GenericSubsystem{
 				currentStep++;
 		}
 	}
-
 }

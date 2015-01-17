@@ -3,6 +3,7 @@
 /.classpath
 
 # Compiled Files
+/bin/
 *.class
 
 # Package Files

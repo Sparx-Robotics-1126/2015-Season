@@ -181,7 +181,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private void getAutoMode(){
 		double voltage = selectorSwitch.getVoltage();
-		if(voltage == SELECTION_1){
+		if(voltage >= SELECTION_1){
 			
 		}else if(voltage >= SELECTION_2){
 			

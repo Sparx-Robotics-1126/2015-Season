@@ -4,6 +4,7 @@ import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * A class to control Autonomous
@@ -52,6 +53,26 @@ public class Autonomous extends GenericSubsystem{
 	private boolean increaseStep;
 	
 	/**
+	 * Should we check the if the time is critical
+	 */
+	private boolean checkTime;
+	
+	/**
+	 * What action to do when time is critical
+	 */
+	private int criticalStep;
+	
+	/**
+	 * What time left is considered critical
+	 */
+	private double criticalTime;
+	
+	/**
+	 * Time auto starts
+	 */
+	private double autoStart;
+	
+	/**
 	 * The voltages of the different choices on the selection switch
 	 */
 	private final double SELECTION_1 = 0.0;
@@ -92,6 +113,7 @@ public class Autonomous extends GenericSubsystem{
 	private final int TOTES_STOP = 33;
 	private final int TOTES_DONE = 39;
 	
+	private final int CHECK_TIME = 97; //{CHECK_TIME, criticalStep, criticalTime}
 	private final int WAIT = 98;
 	private final int END = 99; 
 	
@@ -133,6 +155,7 @@ public class Autonomous extends GenericSubsystem{
 		}else{
 			getAutoMode();
 			currentStep = 0;
+			autoStart = Timer.getFPGATimestamp();
 		}
 		return false;
 	}
@@ -228,6 +251,11 @@ public class Autonomous extends GenericSubsystem{
 				break;
 			case TOTES_DONE:
 				break;
+			case CHECK_TIME:
+				checkTime = true;
+				criticalStep = currentAuto[currentStep][1];
+				criticalTime = currentAuto[currentStep][2];
+				break;
 			case WAIT:
 				break;
 			case END:
@@ -235,7 +263,11 @@ public class Autonomous extends GenericSubsystem{
 			}
 			if(increaseStep)
 				currentStep++;
+			if(checkTime && Timer.getFPGATimestamp() - autoStart <= criticalTime && currentStep < criticalStep){
+				currentStep = criticalStep;
+				checkTime = false;
+			}
 		}
 	}
-
+	
 }

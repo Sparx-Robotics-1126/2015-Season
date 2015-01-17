@@ -40,7 +40,7 @@ public class Robot extends SampleRobot {
 	 *  Called one time when the robot enters teleop
 	 */
 	public void operatorControl() {
-
+		
 	}
 
 	/**

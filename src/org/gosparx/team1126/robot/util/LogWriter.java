@@ -79,6 +79,7 @@ public class LogWriter extends GenericSubsystem{
 			}
 			file.createNewFile();
 		} catch (Exception e) {
+			
 		}
 		return true;
 	}
@@ -121,10 +122,11 @@ public class LogWriter extends GenericSubsystem{
 	 */
 	private synchronized void write(byte[] bytes) {
 		try {
-			dos = new FileOutputStream(file);
+			dos = new FileOutputStream(file,true);
 			dos.write(bytes);
 			dos.flush();
 			dos.close();
+			dos = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

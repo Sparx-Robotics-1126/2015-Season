@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
  * @date 1/8/15
  */
 public class Logger{
-	
+
 	/**
 	 * A LogWriter to log our messages
 	 */
@@ -21,27 +21,32 @@ public class Logger{
 	 * Used to get field times and robot status
 	 */
 	private DriverStation ds;
-	
+
 	/**
 	 * The name of the subsystem
 	 */
 	private String subsystemName;
-	
+
 	/**
 	 * The DecimalFormatter to properly format a decimal
 	 */
-	private DecimalFormat formatter = new DecimalFormat("0000.0000");
-	
+	private DecimalFormat formatter;
+
 	/**
 	 * Creates a new Logger
 	 * @param subsystem The name of the subsystem
 	 */
 	public Logger(String subsystem){
-		subsystemName = subsystem;
-		ds = DriverStation.getInstance();
-		writer = LogWriter.getInstance();
+		try{
+			subsystemName = subsystem;
+			ds = DriverStation.getInstance();
+			writer = LogWriter.getInstance();
+			formatter = new DecimalFormat("0000.0000");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 	/**
 	 * Sends a log message to the Writer with the format DEBUG[status]{subsystem}(time):message 
 	 * @param message - the message to send
@@ -49,7 +54,7 @@ public class Logger{
 	public void logMessage(String message){
 		logMessage(message, false);
 	}
-	
+
 	/**
 	 * Sends a log message to the Writer with the format ERROR[status]{subsystem}(time):message 
 	 * @param message - the message to send
@@ -57,7 +62,7 @@ public class Logger{
 	public void logError(String message){
 		logMessage(message, true);
 	}
-	
+
 	/**
 	 * Sends the message to the LogWriter with the proper formatting
 	 * @param message - the message to log
@@ -73,7 +78,9 @@ public class Logger{
 			status = "Tel";
 		}
 		String timeFormatted = formatter.format(Timer.getFPGATimestamp());
-		String toLog = (error ? ("ERROR") : ("DEBUG"))+ "[" + status + "]{" + subsystemName + "}(" + timeFormatted + "):" + message;
+		String toLog = (error ? ("ERROR") : ("DEBUG"))+ "[" + status + "]{" + subsystemName + "}(" + timeFormatted + "):" + message+ "\n";
 		writer.logString(toLog);
+		timeFormatted = null;
+		toLog = null;
 	}
 }

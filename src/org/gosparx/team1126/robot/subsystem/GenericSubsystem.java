@@ -15,12 +15,13 @@ import edu.wpi.first.wpilibj.Timer;
  *
  */
 public abstract class GenericSubsystem extends Thread {
-	
+
 	/**
 	 * This is the logger for the specific subsystem.
 	 */
 	protected Logger LOG;
-	
+	private boolean isLW;
+
 	/**
 	 * This constructs a new subsystem with the given name and priority.
 	 * 
@@ -34,16 +35,19 @@ public abstract class GenericSubsystem extends Thread {
 		if(priority != Thread.MIN_PRIORITY && priority != Thread.NORM_PRIORITY && priority != MAX_PRIORITY)
 			throw new InvalidParameterException();
 		setPriority(priority);
-		LOG = new Logger(name);
+		if(name != "LogWriter"){
+			isLW = true;
+			LOG = new Logger(name);
+		}
 	}
-	
+
 	/**
 	 * This is called one time after start is called.
 	 * 
 	 * @return true if we have successfully inited, false otherwise.
 	 */
 	abstract protected boolean init();
-	
+
 	/**
 	 * Once start is called, this method is called until it returns true.
 	 * 
@@ -51,26 +55,26 @@ public abstract class GenericSubsystem extends Thread {
 	 *         restarted, false otherwise.
 	 */
 	abstract protected boolean execute();
-	
+
 	/**
 	 * The amount of time you want to sleep for after a cycle.
 	 * 
 	 * @return the number of milliseconds you want to sleep after a cycle.
 	 */
 	abstract protected long sleepTime();
-	
+
 	/**
 	 * The amount of time between calling writeLog().
 	 * 
 	 * @return the number of seconds you want between writeLog() calls.
 	 */
 	protected double logTime() { return 5; }
-	
+
 	/**
 	 * Logs all info appropriate to the subsystem.
 	 */
 	abstract protected void writeLog();
-	
+
 	/**
 	 * Runs and loops the execute() until execute returns false, logging ever logTime() seconds.
 	 */
@@ -83,17 +87,24 @@ public abstract class GenericSubsystem extends Thread {
 			try{
 				retVal = execute();
 			}catch(Exception e){
-				LOG.logError("Uncaught Exception! " + e.getMessage());
+				if(!isLW)
+					LOG.logError("Uncaught Exception! " + e.getMessage());
 				e.printStackTrace(System.err);
 			}
 			if(Timer.getFPGATimestamp() >= lastLogged + logTime()){
 				writeLog();
 				lastLogged = Timer.getFPGATimestamp();
 			}
+			try {
+				Thread.sleep(sleepTime());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}while(!retVal);
-		LOG.logMessage("Completing thread: " + getName());
+		if(!isLW)
+			LOG.logMessage("Completing thread: " + getName());
 	}
-	
+
 	/**
 	 * returns a String version of the class
 	 */

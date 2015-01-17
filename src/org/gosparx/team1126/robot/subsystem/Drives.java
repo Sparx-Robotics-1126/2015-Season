@@ -91,11 +91,11 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * the speed required to shift up, not accurate yet
 	 */
-	private static final double UPPERSHIFTSPEED = 70;
+	private static final double UPPERSHIFTSPEED = 60;
 	/**
 	 * the time required to shift, not accurate yet
 	 */
-	private static final double SHIFTING_TIME = 0.5;
+	private static final double SHIFTING_TIME = 10;
 	/**
 	 * actual time it took to shift
 	 */
@@ -112,10 +112,10 @@ public class Drives extends GenericSubsystem{
 	 * Variable for determining which state the color sensor
 	 */
 	private State autoFunctions;
-	
+
 	private double rightPower;
 	private double leftPower;
-	
+
 	/**
 	 * stops the motors for auto
 	 */
@@ -178,6 +178,7 @@ public class Drives extends GenericSubsystem{
 		switch(currentDriveState){
 		case IN_LOW_GEAR:
 			if(currentSpeed >= LOWERSHIFTSPEED){
+				System.out.println("SHIFTING HIGH");
 				shiftingSol.set(!LOW_GEAR);
 				shiftTime = Timer.getFPGATimestamp();
 				currentDriveState = State.SHIFTING_HIGH;
@@ -198,6 +199,7 @@ public class Drives extends GenericSubsystem{
 			break;
 		case IN_HIGH_GEAR:
 			if(currentSpeed <= UPPERSHIFTSPEED){
+				System.out.println("SHIFTING LOW");
 				shiftingSol.set(LOW_GEAR);
 				shiftTime = Timer.getFPGATimestamp();
 				currentDriveState = State.SHIFTING_LOW;
@@ -218,7 +220,7 @@ public class Drives extends GenericSubsystem{
 		default:
 			System.out.println("Error currentDriveState = " + currentDriveState);
 		}
-		
+
 		switch(autoFunctions){
 		case AUTO_STAND_BY:
 			rightPower = wantedRightPower;
@@ -245,7 +247,7 @@ public class Drives extends GenericSubsystem{
 			break;
 		default: System.out.println("Error autoFunctions = " + autoFunctions);
 		}
-		
+
 		leftFront.set(leftPower);
 		leftBack.set(-leftPower);
 		rightFront.set(rightPower);
@@ -270,12 +272,12 @@ public class Drives extends GenericSubsystem{
 		System.out.println("Current speed: " + currentSpeed);
 		System.out.println("Current drive state: " + currentDriveState);
 		System.out.println("Auto State: " + autoFunctions);
-//		System.out.println("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
-//							"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
-//		System.out.println("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
-//		System.out.println("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
+		//		System.out.println("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+		//							"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
+		//		System.out.println("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
+		//		System.out.println("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
 		System.out.println("Left Encoder: " + encoderDataLeft.getDistance() +
-							" Right Encoder: " +encoderDataRight.getDistance());
+				" Right Encoder: " +encoderDataRight.getDistance());
 	}
 
 	/**
@@ -284,10 +286,20 @@ public class Drives extends GenericSubsystem{
 	 * @param right right motor speed
 	 */
 	public void setPower(double left, double right) {
-		wantedLeftPower = left;
-		wantedRightPower = right;
+		if(left > 0){
+			wantedLeftPower = (5/4)*Math.sqrt(left);
+		}else{
+			wantedLeftPower = -(5/4)*Math.sqrt(-left);
+		}
+		if(right > 0){
+			wantedRightPower = (5/4)*Math.sqrt(right);
+		}else{
+			wantedRightPower = -(5/4)*Math.sqrt(-right);
+		}
+//		wantedRightPower = right;
+//		wantedLeftPower = left;
 	}
-	
+
 	public void setAutoFunction(State wantedAutoState){
 		autoFunctions = wantedAutoState;
 	}
@@ -327,7 +339,7 @@ public class Drives extends GenericSubsystem{
 			}
 		}
 	}
-	
+
 	@Override
 	protected void liveWindow() {
 		String subsytemName = "Drives";

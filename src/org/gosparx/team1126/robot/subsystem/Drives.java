@@ -167,7 +167,7 @@ public class Drives extends GenericSubsystem{
 		rightPID = new PID(0.026, 0.02, 1, 0.00, true, false);
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
 		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
-		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
+		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_GREEN, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
 		leftPower = 0;
 		rightPower = 0;
 		currentDriveState = State.IN_LOW_GEAR;
@@ -318,8 +318,6 @@ public class Drives extends GenericSubsystem{
 //		}else{
 //			wantedRightPower = -(5/4)*Math.sqrt(-right);
 //		}
-//		wantedRightPower = right;
-//		wantedLeftPower = left;
 		rightPID.setGoal(right*100);
 		leftPID.setGoal(left*100);
 	}

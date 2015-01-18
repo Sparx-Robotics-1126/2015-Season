@@ -6,13 +6,11 @@ import org.gosparx.team1126.robot.sensors.ColorSensor;
 import org.gosparx.team1126.robot.sensors.ColorSensor.Color;
 import org.gosparx.team1126.robot.sensors.PID;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /**
  * Makes the drives system to have the robot move.
  *@author Mike the camel
@@ -69,6 +67,7 @@ public class Drives extends GenericSubsystem{
 	
 	private PID rightPID;
 	private PID leftPID;
+	
 	/**
 	 * the amount of distance the shortbot will make per tick
 	 */
@@ -92,15 +91,15 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * the speed required to shift down, not accurate yet
 	 */
-	private static final double LOWERSHIFTSPEED = 80;
+	private static final double LOWERSHIFTSPEED = 20;
 	/**
 	 * the speed required to shift up, not accurate yet
 	 */
-	private static final double UPPERSHIFTSPEED = 100;
+	private static final double UPPERSHIFTSPEED = 40;
 	/**
 	 * the time required to shift, not accurate yet, in seconds
 	 */
-	private static final double SHIFTING_TIME = 0.5;
+	private static final double SHIFTING_TIME = 0.15;
 	/**
 	 * actual time it took to shift
 	 */
@@ -112,11 +111,11 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * the speed required to shift
 	 */
-	private static final double SHIFTINGSPEED = 0.25;
+	private static final double SHIFTINGSPEED = 0.35;
 	/**
 	 * determines if it's in high or low gear
 	 */
-	private static final boolean LOW_GEAR = false;
+	private static final boolean LOW_GEAR = true;
 	/**
 	 * Variable for determining which state the color sensor
 	 */
@@ -167,7 +166,7 @@ public class Drives extends GenericSubsystem{
 		rightPID = new PID(0.026, 0.02, 1, 0.00, true, false);
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
 		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
-		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_GREEN, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
+		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
 		leftPower = 0;
 		rightPower = 0;
 		currentDriveState = State.IN_LOW_GEAR;
@@ -186,51 +185,51 @@ public class Drives extends GenericSubsystem{
 		encoderDataRight.calculateSpeed();
 		encoderDataLeft.calculateSpeed();
 		currentSpeed = (encoderDataRight.getSpeed() + encoderDataLeft.getSpeed()) / 2;
-//		switch(currentDriveState){
-//		case IN_LOW_GEAR:
-//			if(Math.abs(currentSpeed) >= LOWERSHIFTSPEED){
-//				System.out.println("SHIFTING HIGH");
-//				shiftingSol.set(!LOW_GEAR);
-//				shiftTime = Timer.getFPGATimestamp();
-//				currentDriveState = State.SHIFTING_HIGH;
-//			}
-//			break;
-//		case SHIFTING_LOW:
-//			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
-//				currentDriveState = State.IN_LOW_GEAR;
-//			}
-//			if(currentSpeed < 0){
-//				rightPower = SHIFTINGSPEED * - 1;
-//				leftPower = SHIFTINGSPEED * - 1;
-//			}else{
-//				rightPower = SHIFTINGSPEED;
-//
-//				leftPower = SHIFTINGSPEED;
-//			}
-//			break;
-//		case IN_HIGH_GEAR:
-//			if(Math.abs(currentSpeed) <= UPPERSHIFTSPEED){
-//				System.out.println("SHIFTING LOW");
-//				shiftingSol.set(LOW_GEAR);
-//				shiftTime = Timer.getFPGATimestamp();
-//				currentDriveState = State.SHIFTING_LOW;
-//			}
-//			break;
-//		case SHIFTING_HIGH:
-//			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
-//				currentDriveState = State.IN_HIGH_GEAR;
-//			}
-//			if(currentSpeed < 0){
-//				rightPower = SHIFTINGSPEED * - 1;
-//				leftPower = SHIFTINGSPEED * - 1;
-//			}else{
-//				rightPower = SHIFTINGSPEED;
-//				leftPower = SHIFTINGSPEED;
-//			}
-//			break;
-//		default:
-//			System.out.println("Error currentDriveState = " + currentDriveState);
-//		}
+		switch(currentDriveState){
+		case IN_LOW_GEAR:
+			if(Math.abs(currentSpeed) >= UPPERSHIFTSPEED){
+				System.out.println("SHIFTING HIGH");
+				shiftingSol.set(!LOW_GEAR);
+				shiftTime = Timer.getFPGATimestamp();
+				currentDriveState = State.SHIFTING_HIGH;
+			}
+			break;
+		case SHIFTING_LOW:
+			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
+				currentDriveState = State.IN_LOW_GEAR;
+			}
+			if(currentSpeed < 0){
+				rightPower = SHIFTINGSPEED * - 1;
+				leftPower = SHIFTINGSPEED * - 1;
+			}else{
+				rightPower = SHIFTINGSPEED;
+
+				leftPower = SHIFTINGSPEED;
+			}
+			break;
+		case IN_HIGH_GEAR:
+			if(Math.abs(currentSpeed) <= LOWERSHIFTSPEED){
+				System.out.println("SHIFTING LOW");
+				shiftingSol.set(LOW_GEAR);
+				shiftTime = Timer.getFPGATimestamp();
+				currentDriveState = State.SHIFTING_LOW;
+			}
+			break;
+		case SHIFTING_HIGH:
+			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
+				currentDriveState = State.IN_HIGH_GEAR;
+			}
+			if(currentSpeed < 0){
+				rightPower = SHIFTINGSPEED * - 1;
+				leftPower = SHIFTINGSPEED * - 1;
+			}else{
+				rightPower = SHIFTINGSPEED;
+				leftPower = SHIFTINGSPEED;
+			}
+			break;
+		default:
+			System.out.println("Error currentDriveState = " + currentDriveState);
+		}
 
 		switch(autoFunctions){
 		case AUTO_STAND_BY:
@@ -261,8 +260,8 @@ public class Drives extends GenericSubsystem{
 		default: System.out.println("Error autoFunctions = " + autoFunctions);
 		}
 
-		rightPower = rightPID.update(encoderDataRight.getSpeed());
-		leftPower = leftPID.update(encoderDataLeft.getSpeed());
+//		rightPower = rightPID.update(encoderDataRight.getSpeed());
+//		leftPower = leftPID.update(encoderDataLeft.getSpeed());
 		
 		leftFront.set(leftPower);
 		leftBack.set(-leftPower);
@@ -302,24 +301,24 @@ public class Drives extends GenericSubsystem{
 	 * @param right right motor speed
 	 */
 	public void setPower(double left, double right) {
-//		if(Math.abs(left) < DEAD_ZONE){
-//			left = 0;
-//		}
-//		if(Math.abs(right) < DEAD_ZONE){
-//			right = 0;
-//		}
-//		if(left > 0){
-//			wantedLeftPower = (5/4)*Math.sqrt(left);
-//		}else{
-//			wantedLeftPower = -(5/4)*Math.sqrt(-left);
-//		}
-//		if(right > 0){
-//			wantedRightPower = (5/4)*Math.sqrt(right);
-//		}else{
-//			wantedRightPower = -(5/4)*Math.sqrt(-right);
-//		}
-		rightPID.setGoal(right*100);
-		leftPID.setGoal(left*100);
+		if(Math.abs(left) < DEAD_ZONE){
+			left = 0;
+		}
+		if(Math.abs(right) < DEAD_ZONE){
+			right = 0;
+		}
+		if(left > 0){
+			wantedLeftPower = (5/4)*Math.sqrt(left);
+		}else{
+			wantedLeftPower = -(5/4)*Math.sqrt(-left);
+		}
+		if(right > 0){
+			wantedRightPower = (5/4)*Math.sqrt(right);
+		}else{
+			wantedRightPower = -(5/4)*Math.sqrt(-right);
+		}
+//		rightPID.setGoal(right*100);
+//		leftPID.setGoal(left*100);
 	}
 
 	public void setAutoFunction(State wantedAutoState){

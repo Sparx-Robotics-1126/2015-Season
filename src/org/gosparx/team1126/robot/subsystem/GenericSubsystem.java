@@ -76,6 +76,7 @@ public abstract class GenericSubsystem extends Thread {
 		boolean retVal = false;
 		double lastLogged = 0;
 		init();
+		System.out.println("***Starting: " + getName());
 		liveWindow();
 		do{
 			try{

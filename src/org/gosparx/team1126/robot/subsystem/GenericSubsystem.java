@@ -83,6 +83,11 @@ public abstract class GenericSubsystem extends Thread {
 				writeLog();
 				lastLogged = Timer.getFPGATimestamp();
 			}
+			try {
+				Thread.sleep(sleepTime());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}while(!retVal);
 		System.out.println("Completing thread: " + getName());
 	}

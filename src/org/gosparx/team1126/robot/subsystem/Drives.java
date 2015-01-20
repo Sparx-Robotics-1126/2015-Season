@@ -115,7 +115,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * determines if it's in high or low gear
 	 */
-	private static final boolean LOW_GEAR = true;
+	private static final boolean LOW_GEAR = false;
 	/**
 	 * Variable for determining which state the color sensor
 	 */

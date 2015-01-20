@@ -28,11 +28,6 @@ public class Autonomous extends GenericSubsystem{
 	private AnalogInput selectorSwitch;
 	
 	/**
-	 * The channel that the selector switch is in 
-	 */
-	private final int SELECTOR_SWITCH_CHANNEL = 0;
-	
-	/**
 	 * An instance of a driverstation
 	 */
 	private DriverStation ds;
@@ -143,7 +138,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		selectorSwitch = new AnalogInput(SELECTOR_SWITCH_CHANNEL);
+		selectorSwitch = new AnalogInput(IO.ANA_AUTOSWITCH);
 		ds = DriverStation.getInstance();
 		return false;
 	}
@@ -275,11 +270,23 @@ public class Autonomous extends GenericSubsystem{
 			}
 			if(increaseStep)
 				currentStep++;
-			if(checkTime && Timer.getFPGATimestamp() - autoStart <= criticalTime && currentStep < criticalStep){
+			if(checkTime && Timer.getFPGATimestamp() - autoStart >= criticalTime && currentStep < criticalStep){
 				currentStep = criticalStep;
 				checkTime = false;
 			}
 		}
 	}
 	
+	/**
+	 * Updates increaseStep with the current value
+	 * @param done
+	 */
+	private void isLastCommandDone(boolean done){
+		if(!done){
+			increaseStep = false;
+		}else{
+			increaseStep = true;
+		}
+		return;
+	}
 }

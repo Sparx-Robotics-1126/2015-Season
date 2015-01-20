@@ -101,6 +101,7 @@ public class Autonomous extends GenericSubsystem{
 	private static final int DRIVES_TURN_LEFT = 4;
 	private static final int DRIVES_STOP = 5;
 	private static final int DRIVE_TILL_STEP = 6;
+	private static final int DRIVES_DANCE = 7;
 	private static final int DRIVES_DONE = 9;
 	
 	private static final int ARMS_DROP = 10;
@@ -123,7 +124,8 @@ public class Autonomous extends GenericSubsystem{
 	private static final int TOTES_STOP = 33;
 	private static final int TOTES_DONE = 39;
 	
-	private final int CHECK_TIME = 97; //{CHECK_TIME, criticalStep, criticalTime}
+	private static final int CHECK_TIME = 97; //{CHECK_TIME, criticalStep, criticalTime}
+	private static final int WAIT = 98;
 	private static final int END = 99; 
 	
 	/**
@@ -131,8 +133,10 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private static final int [][] twoCanStep = {
 		{DRIVE_TILL_STEP},
-		{DRIVES_DONE},
-		{ARMS_DROP}
+		{ARMS_DROP},
+		{WAIT, 500}, // TODO find the actual time it takes the arms to drop and touch the can.
+		{DRIVES_DANCE},
+		{BOTH_CLAW_IN_CAN}
 	};
 	
 	/**
@@ -243,9 +247,18 @@ public class Autonomous extends GenericSubsystem{
 			case DRIVES_STOP:
 				break;
 			case DRIVE_TILL_STEP:
-				//drives.driveTillStep();
+				// TODO implement drive till step in drives
+				// drives.driveTillStep();
+				break;
+			case DRIVES_DANCE:
+				// TODO Implement drives dance
+				// drives.dance();
+				// runNextStatement(true);
 				break;
 			case DRIVES_DONE:
+				// TODO Implement drive last command Done
+				// TODO Implement run next statement
+				// runNextStatement(drives.isLastCommandDone());
 				break;
 			case ARMS_DROP:
 				canAcq.armsDrop();
@@ -259,6 +272,8 @@ public class Autonomous extends GenericSubsystem{
 			case ARMS_STOP:
 				break;
 			case ARMS_DONE:
+				// TODO Implement run next statement
+				// runNextStatement(canAcq.isLastCommandDone());
 				break;
 			case ACQ_LOWER:
 				break;

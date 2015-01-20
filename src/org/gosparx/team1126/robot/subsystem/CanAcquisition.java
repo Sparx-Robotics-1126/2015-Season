@@ -94,7 +94,12 @@ public class CanAcquisition extends GenericSubsystem{
 		switch(canAcquisitionState){
 			case State.ARMS_DROP:
 				releasingArmsServo.set(DROP_RELEASE_POSITION);
+				canAcquisitionState = State.ARMS_RELEASED; 
 				break;
+			case State.ARMS_RELEASED:
+				if (releasingArmsServo.get() == DROP_RELEASE_POSITION) {
+					canAcquisitionState = State.IDLE;
+				}
 			case State.IDLE:
 				break;
 			default:
@@ -121,15 +126,25 @@ public class CanAcquisition extends GenericSubsystem{
 		canAcquisitionState = State.ARMS_DROP;
 	}
 	
+	/**
+	 * Returns if the last command is done
+	 */
+	public boolean isLastCommandDone() {
+		return(canAcquisitionState == State.IDLE);
+	}
+	
 	private static class State{
 		static final int IDLE = 0;
 		static final int ARMS_DROP = 1;
+		static final int ARMS_RELEASED = 2;
 		public static String getState(int state){
 			switch(state){
 				case IDLE:
 					return "Idle";
 				case ARMS_DROP:
 					return "Dropping Arms";
+				case ARMS_RELEASED:
+					return "Arms Released";
 			}
 			return "Unknown state";
 		}

@@ -1,10 +1,12 @@
-package org.gosparx.team1126.robot;
+	package org.gosparx.team1126.robot;
 
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * A class to control Autonomous
@@ -145,7 +147,20 @@ public class Autonomous extends GenericSubsystem{
 	protected boolean init() {
 		selectorSwitch = new AnalogInput(SELECTOR_SWITCH_CHANNEL);
 		ds = DriverStation.getInstance();
+		SendableChooser chooser = new SendableChooser();
+		chooser.addDefault("NO_AUTO", new Integer(0));
+		chooser.addObject("AUTO_1", new Integer(1));
+		chooser.addObject("AUTO_2", new Integer(2));
+		chooser.addObject("AUTO_3", new Integer(3));
+		chooser.addObject("AUTO_4", new Integer(4));
+		chooser.addObject("AUTO_5", new Integer(5));
+		chooser.addObject("AUTO_6", new Integer(6));
+		chooser.addObject("AUTO_7", new Integer(7));
+		chooser.addObject("AUTO_8", new Integer(8));
+		chooser.addObject("AUTO_9", new Integer(9));
+		SmartDashboard.putData("Auto Mode", chooser);
 		return false;
+		
 	}
 
 	/**

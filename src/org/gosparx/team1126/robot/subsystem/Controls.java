@@ -11,18 +11,22 @@ public class Controls extends GenericSubsystem{
 	 * declares a Joystick object named driverJoyLeft
 	 */
 	private Joystick driverJoyLeft;
+	
 	/**
 	 * declares a Joystick object named driverJoyRight
 	 */
 	private Joystick driverJoyRight;
+	
 	/**
 	 * declares a Controls object named controls
 	 */
 	private static Controls controls;
+	
 	/**
 	 * declares a Drives object named drives
 	 */
 	private Drives drives;
+	
 	/**
 	 * if controls == null, make a new controls
 	 * @return the new controls
@@ -33,6 +37,7 @@ public class Controls extends GenericSubsystem{
 		}
 		return controls;
 	}
+	
 	/**
 	 * @param name the name of the control
 	 * @param priority the priority of the control
@@ -41,17 +46,19 @@ public class Controls extends GenericSubsystem{
 	private Controls() {
 		super("controls", Thread.NORM_PRIORITY);
 	}
+	
 	/**
 	 * instantiates a Joystick and Drives
 	 * @return false ~ keeps looping true ~ stops loop
 	 */
 	@Override
 	protected boolean init() {
-		driverJoyLeft = new Joystick(IO.DRIVER_JOYSTICK_PORT1);
-		driverJoyRight = new Joystick(IO.DRIVER_JOYSTICK_PORT2);
+		driverJoyLeft = new Joystick(IO.DRIVER_JOYSTICK_LEFT);
+		driverJoyRight = new Joystick(IO.DRIVER_JOYSTICK_RIGHT);
 		drives = Drives.getInstance(); 
 		return true;
 	}
+	
 	/**
 	 * sets the speed of the control axis to drives
 	 * @return false ~ keeping looping true ~ end loop
@@ -64,6 +71,7 @@ public class Controls extends GenericSubsystem{
 		}
 		return false;
 	}
+	
 	/** 
 	 * The amount of time you want to sleep for after a cycle.
 	 * @return the number of milliseconds you want to sleep after a cycle.
@@ -72,12 +80,14 @@ public class Controls extends GenericSubsystem{
 	protected long sleepTime() {
 		return 20;
 	}
+	
 	/**
 	 * Where all the logged info goes
 	 */
 	@Override
 	protected void writeLog() {
 	}
+	
 	@Override
 	protected void liveWindow() {
 		// TODO Auto-generated method stub

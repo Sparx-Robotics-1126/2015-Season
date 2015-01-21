@@ -41,18 +41,7 @@ public class Robot extends SampleRobot{
 	 *  Called one time when the robot enters teleop
 	 */
 	public void operatorControl() {
-		Servo ser = new Servo(7);
-		while(true){
-			for(double i = 0; i < 1; i+=0.01){
-				ser.set(i);
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
+
 	}
 
 	/**

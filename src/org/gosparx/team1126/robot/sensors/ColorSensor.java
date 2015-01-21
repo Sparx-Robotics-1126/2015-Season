@@ -43,7 +43,7 @@ public class ColorSensor {
 	private DigitalOutput lightLED;
 	
 	/**
-	 * we treat white as 80% of the addition of all of the colors and above
+	 * we treat white as 70 % of light returned
 	 */
 	static final double WHITE_THRESHOLD = 70;//(255 * 3) * .8; 
 	
@@ -54,6 +54,13 @@ public class ColorSensor {
 	
 	private final boolean useGreen;
 
+	/**
+	 * Constructs a colorSenosr object
+	 * @param redChannel - red analog channel
+	 * @param greenChannel - green analog channel
+	 * @param blueChannel - blue analog channel
+	 * @param ledChannel - DIO LED channel
+	 */
 	public ColorSensor(int redChannel, int greenChannel, int blueChannel, int ledChannel){
 		redAnalogInput = new AnalogInput(redChannel);
 		greenAnalogInput = new AnalogInput(greenChannel);
@@ -63,6 +70,12 @@ public class ColorSensor {
 		useGreen = true;
 	}
 	
+	/**
+	 * Constructs a colorSensor object without a green input
+	 * @param redChannel - red analog channel
+	 * @param blueChannel - blue analog channel
+	 * @param ledChannel - DIO LED channel
+	 */
 	public ColorSensor(int redChannel, int blueChannel, int ledChannel){
 		redAnalogInput = new AnalogInput(redChannel);
 		blueAnalogInput = new AnalogInput(blueChannel);

@@ -7,14 +7,50 @@ import edu.wpi.first.wpilibj.DriverStation;
  * values.
  */
 public class PID {
-    private double error, integral, derivative, lastInput; //P, I, and D
-    private double pGain, iGain, dGain; //Scaling factors
-    private double iMax; // integral limit
-    private double lowerLimit, upperLimit; //output limits
-    private boolean updated_FLAG, reverse_FLAG, brake_FLAG; //Flags
-    private double goal; //goal
-    private double output; //output value
-    private long lasttime; //last time in ms when pid loop ran
+	
+	/*
+	 * P, I, D 
+	 */
+    private double error, integral, derivative, lastInput;
+    
+    /**
+     * Scaling factors
+     */
+    private double pGain, iGain, dGain;
+    
+    /**
+     * Integral limit
+     */
+    private double iMax;
+    
+    /**
+     * Output limit
+     */
+    private double lowerLimit, upperLimit;
+    
+    /**
+     * Booleans to set correct output
+     */
+    private boolean updated_FLAG, reverse_FLAG, brake_FLAG;
+    
+    /**
+     *SetPoint
+     */
+    private double goal;
+    
+    /**
+     * Output value
+     */
+    private double output;
+    
+    /**
+     * Last time in MS when PID loop ran
+     */
+    private long lasttime;
+    
+    /**
+     * The time since the last run of the PID loop
+     */
     private double elapsedtime;
 
     /**

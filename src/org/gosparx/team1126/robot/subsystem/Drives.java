@@ -17,50 +17,62 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  *@author Mike the camel
  */
 public class Drives extends GenericSubsystem{
+	
 	/**
 	 * Makes a drives object that will be called to use the drives class
 	 */
 	private static Drives drives;
+	
 	/**
 	 * Object used to control the left front motor
 	 */
 	private Victor leftFront;
+	
 	/**
 	 * Object used to control the left back motor
 	 */
 	private Victor leftBack;
+	
 	/**
 	 * Object used to control the right front motor
 	 */
 	private Victor rightFront;
+	
 	/**
 	 * Object used to control the right back motor
 	 */
 	private Victor rightBack;
+	
 	/**
 	 * Used to get the distance the robot has traveled 
 	 */
 	private Encoder encoderLeft;
+	
 	/**
 	 * Used to get the distance the robot has traveled
 	 */
 	private Encoder encoderRight;
+	
 	/**
 	 * makes the left encoder data which calculates how far the robot traveled in inches
 	 */
 	private EncoderData encoderDataLeft;
+	
 	/**
 	 * makes the right encoder data which calculates how far the robot traveled in inches
 	 */
 	private EncoderData encoderDataRight;
+	
 	/**
 	 * the solenoid used for shifting
 	 */
 	private Solenoid shiftingSol;
+	
 	/**
 	 * the left color sensor for detecting the colors in front of the robot
 	 */
 	private ColorSensor colorSensorLeft;
+	
 	/**
 	 * the right color sensor for detecting the colors in front of the robot
 	 */
@@ -76,46 +88,61 @@ public class Drives extends GenericSubsystem{
 	 * the amount of distance the shortbot will make per tick
 	 */
 	private final double DISTANCE_PER_TICK = 0.04908738;
+	
 	/**
 	 * the wanted speed for the left motors
 	 */
 	private double wantedLeftPower;
+	
 	/**
 	 * the wanted speed for the right motors
 	 */
 	private double wantedRightPower;
+	
 	/**
 	 * the current state the drives is in
 	 */
 	private State currentDriveState;
+	
 	/**
 	 * the current average speed between the left and right motors
 	 */
 	private double currentSpeed;
+	
 	/**
 	 * the speed required to shift down, not accurate yet
 	 */
 	private static final double LOWERSHIFTSPEED = 20;
+	
 	/**
 	 * the speed required to shift up, not accurate yet
 	 */
 	private static final double UPPERSHIFTSPEED = 40;
+	
 	/**
 	 * the time required to shift, not accurate yet, in seconds
 	 */
 	private static final double SHIFTING_TIME = 0.15;
+	
 	/**
 	 * actual time it took to shift
 	 */
 	private double shiftTime;
+	
 	/**
 	 * 
 	 */
 	public static final double DEAD_ZONE = 0.05;
+	
 	/**
 	 * the speed required to shift
 	 */
 	private static final double SHIFTINGSPEED = 0.35;
+	
+	/**
+	 * Alex said I didn't need comments (=
+	 */
+	private static final double LINEUP_SPEED = 0.45;
 	/**
 	 * determines if it's in high or low gear
 	 */
@@ -267,17 +294,19 @@ public class Drives extends GenericSubsystem{
 			boolean right = rightTouch.get();
 			boolean left = leftTouch.get();
 			if(right){
-				rightPower = 0;
+				rightPower = -LINEUP_SPEED;
 			}else{
-				rightPower = 0.2;
+				rightPower = LINEUP_SPEED;
 			}
 			if(left){
-				leftPower = 0;
+				leftPower = -LINEUP_SPEED;
 			}else{
-				leftPower = 0.2;
+				leftPower = LINEUP_SPEED;
 			}
 			if(left && right){
 				autoFunctions = State.AUTO_STAND_BY;
+				rightPower = 0;
+				leftPower = 0;
 			}
 			break;
 		default: System.out.println("Error autoFunctions = " + autoFunctions);

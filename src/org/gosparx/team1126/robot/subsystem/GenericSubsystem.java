@@ -20,7 +20,6 @@ public abstract class GenericSubsystem extends Thread {
 	 * This is the logger for the specific subsystem.
 	 */
 	protected Logger LOG;
-	private boolean isLW;
 
 	/**
 	 * This constructs a new subsystem with the given name and priority.
@@ -36,7 +35,6 @@ public abstract class GenericSubsystem extends Thread {
 			throw new InvalidParameterException();
 		setPriority(priority);
 		if(name != "LogWriter"){
-			isLW = true;
 			LOG = new Logger(name);
 		}
 	}
@@ -87,7 +85,7 @@ public abstract class GenericSubsystem extends Thread {
 			try{
 				retVal = execute();
 			}catch(Exception e){
-				if(!isLW)
+				if(LOG != null)
 					LOG.logError("Uncaught Exception! " + e.getMessage());
 				e.printStackTrace(System.err);
 			}
@@ -101,7 +99,7 @@ public abstract class GenericSubsystem extends Thread {
 				e.printStackTrace();
 			}
 		}while(!retVal);
-		if(!isLW)
+		if(LOG != null)
 			LOG.logMessage("Completing thread: " + getName());
 	}
 

@@ -109,7 +109,9 @@ public class Autonomous extends GenericSubsystem{
 	private static final int ARMS_EXPAND = 12;
 	private static final int ARMS_CONTRACT = 13;
 	private static final int ARMS_STOP = 14;
+	private static final int ARMS_IN_CAN = 15;
 	private static final int ARMS_DONE = 19;
+	
 	
 	private static final int ACQ_LOWER = 20;
 	private static final int ACQ_RAISE = 21;
@@ -138,7 +140,7 @@ public class Autonomous extends GenericSubsystem{
 		{WAIT, 500}, // TODO find the actual time it takes the arms to drop and touch the can.
 		{DRIVES_DANCE},
 		{CHECK_TIME, 7, 5},
-		{BOTH_CLAW_IN_CAN},
+		{ARMS_IN_CAN},
 		{DRIVES_STOP},
 	};
 	
@@ -273,6 +275,13 @@ public class Autonomous extends GenericSubsystem{
 			case ARMS_CONTRACT:
 				break;
 			case ARMS_STOP:
+				break;
+			case ARMS_IN_CAN:
+				// Keep looping into this case until both hands are in can
+				if (!canAcq.rightHandInCan() || !canAcq.leftHandInCan())
+				{
+					increaseStep = false;
+				}
 				break;
 			case ARMS_DONE:
 				// TODO Implement run next statement

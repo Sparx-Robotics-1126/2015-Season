@@ -17,11 +17,11 @@ public class CanAcquisition extends GenericSubsystem{
 	/**
 	 * This is the sensors that tells us the right claw is inside can
 	 */
-	private DigitalInput rightClawInCan;
+	private DigitalInput rightArmInCan;
 	/**
 	 * This is the sensors that tells us the left claw is inside can
 	 */
-	private DigitalInput leftClawInCan;
+	private DigitalInput leftArmInCan;
 	/**
 	 * This is the servo that releases both the arms
 	 */
@@ -77,8 +77,8 @@ public class CanAcquisition extends GenericSubsystem{
 	 */
 	protected boolean init() {
 		// TODO get all IO from IO class
-		rightClawInCan = new DigitalInput(0);
-		leftClawInCan = new DigitalInput(0);
+		rightArmInCan = new DigitalInput(0);
+		leftArmInCan = new DigitalInput(0);
 		releasingArmsServo = new Servo(0);
 		rightLiftArm = new Servo(0);
 		leftLiftArm = new Servo(0);
@@ -131,6 +131,20 @@ public class CanAcquisition extends GenericSubsystem{
 	 */
 	public boolean isLastCommandDone() {
 		return(canAcquisitionState == State.IDLE);
+	}
+	
+	/**
+	 * Returns if right hand is in the can
+	 */
+	public boolean rightHandInCan() {
+		return(rightArmInCan.get());
+	}
+	
+	/**
+	 * Returns if left hand is in the can
+	 */
+	public boolean leftHandInCan() {
+		return(leftArmInCan.get());
 	}
 	
 	private static class State{

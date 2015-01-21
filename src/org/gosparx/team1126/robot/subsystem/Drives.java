@@ -6,6 +6,7 @@ import org.gosparx.team1126.robot.sensors.ColorSensor;
 import org.gosparx.team1126.robot.sensors.ColorSensor.Color;
 import org.gosparx.team1126.robot.sensors.PID;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
@@ -64,6 +65,9 @@ public class Drives extends GenericSubsystem{
 	 * the right color sensor for detecting the colors in front of the robot
 	 */
 	private ColorSensor colorSensorRight;
+	
+	private DigitalInput rightTouch;
+	private DigitalInput leftTouch;
 	
 	private PID rightPID;
 	private PID leftPID;
@@ -167,6 +171,8 @@ public class Drives extends GenericSubsystem{
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
 		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
 		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
+		rightTouch = new DigitalInput(6);
+		leftTouch = new DigitalInput(7);
 		leftPower = 0;
 		rightPower = 0;
 		currentDriveState = State.IN_LOW_GEAR;
@@ -257,6 +263,23 @@ public class Drives extends GenericSubsystem{
 				rightPower = 0;
 			}
 			break;
+		case AUTO_STEP_LINEUP:
+			boolean right = rightTouch.get();
+			boolean left = leftTouch.get();
+			if(right){
+				rightPower = 0;
+			}else{
+				rightPower = 0.2;
+			}
+			if(left){
+				leftPower = 0;
+			}else{
+				leftPower = 0.2;
+			}
+			if(left && right){
+				autoFunctions = State.AUTO_STAND_BY;
+			}
+			break;
 		default: System.out.println("Error autoFunctions = " + autoFunctions);
 		}
 
@@ -291,8 +314,9 @@ public class Drives extends GenericSubsystem{
 //									"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
 //				System.out.println("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
 //				System.out.println("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-		System.out.println("Left Encoder: " + encoderDataLeft.getSpeed() +
-				" Right Encoder: " +encoderDataRight.getSpeed());
+//		System.out.println("Left Encoder: " + encoderDataLeft.getSpeed() +
+//				" Right Encoder: " +encoderDataRight.getSpeed());
+		System.out.println("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
 	}
 
 	/**
@@ -333,7 +357,8 @@ public class Drives extends GenericSubsystem{
 		IN_HIGH_GEAR,
 		SHIFTING_HIGH,
 		AUTO_STAND_BY,
-		AUTO_LIGHT_LINE_UP;
+		AUTO_LIGHT_LINE_UP,
+		AUTO_STEP_LINEUP;
 
 
 		/**

@@ -60,7 +60,7 @@ public class Controls extends GenericSubsystem{
 	protected boolean execute() {
 		drives.setPower(-driverJoyLeft.getRawAxis(1), -driverJoyRight.getRawAxis(1));
 		if(driverJoyRight.getRawButton(1)){
-			drives.setAutoFunction(Drives.State.AUTO_LIGHT_LINE_UP);
+			drives.setAutoFunction(Drives.State.AUTO_STEP_LINEUP);
 		}
 		return false;
 	}

@@ -133,10 +133,13 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private static final int [][] twoCanStep = {
 		{DRIVE_TILL_STEP},
+		{DRIVES_DONE},
 		{ARMS_DROP},
 		{WAIT, 500}, // TODO find the actual time it takes the arms to drop and touch the can.
 		{DRIVES_DANCE},
-		{BOTH_CLAW_IN_CAN}
+		{CHECK_TIME, 7, 5},
+		{BOTH_CLAW_IN_CAN},
+		{DRIVES_STOP},
 	};
 	
 	/**

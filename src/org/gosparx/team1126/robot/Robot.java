@@ -6,11 +6,9 @@ import org.gosparx.team1126.robot.util.LogWriter;
 import edu.wpi.first.wpilibj.SampleRobot;
 
 /**
- * The entrypoint for the robot. The constructor is called once the robot is turned on.
- * @author Alex
+ * The entry point for the robot. The constructor is called once the robot is turned on.
  */
-public class Robot extends SampleRobot {
-
+public class Robot extends SampleRobot{
 	/**
 	 * An array of all of the subsystems on the robot
 	 */
@@ -23,7 +21,7 @@ public class Robot extends SampleRobot {
 		subsystems = new GenericSubsystem[]{	
 				LogWriter.getInstance()
 		};
-
+		
 		for(GenericSubsystem system: subsystems){
 			system.start();
 		}

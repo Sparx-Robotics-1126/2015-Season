@@ -33,8 +33,7 @@ public class MagnetSensor {
 	 * @param inverse - do we inverse the output
 	 */
 	public MagnetSensor(int port, boolean inverse){
-		in = new DigitalInput(port);
-		inversed = inverse;
+		this(new DigitalInput(port), inverse);
 	}
 
 	/**

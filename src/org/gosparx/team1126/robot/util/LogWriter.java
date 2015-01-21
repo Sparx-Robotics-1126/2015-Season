@@ -10,8 +10,7 @@ import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
 /**
  * Used to log messages to files. This is the singleton LogWriter that writes to the files.
- * @author Alex
- * @date 1/8/15
+ * @author Alex Mechler {amechler1998@gmail.com}
  */
 public class LogWriter extends GenericSubsystem{
 

@@ -67,7 +67,7 @@ public class Autonomous extends GenericSubsystem{
 	/**
 	 * Time auto starts
 	 */
-	private double autoStart;
+	private double autoStartTime;
 	
 	/**
 	 * The voltages of the different choices on the selection switch
@@ -168,7 +168,7 @@ public class Autonomous extends GenericSubsystem{
 		}else{
 			getAutoMode();
 			currentStep = 0;
-			autoStart = Timer.getFPGATimestamp();
+			autoStartTime = Timer.getFPGATimestamp();
 		}
 		return false;
 	}
@@ -226,7 +226,7 @@ public class Autonomous extends GenericSubsystem{
 	private void runAuto(){
 		increaseStep = true;
 		if(ds.isAutonomous() && ds.isEnabled()){
-			switch(currentAuto[currentStep][0]){  //add automodes later when we have them
+			switch(currentAuto[currentStep][0]){
 			case DRIVES_GO_FORWARD:
 				break;
 			case DRIVES_GO_REVERSE:
@@ -285,7 +285,7 @@ public class Autonomous extends GenericSubsystem{
 			}
 			if(increaseStep)
 				currentStep++;
-			if(checkTime && Timer.getFPGATimestamp() - autoStart >= criticalTime && currentStep < criticalStep){
+			if(checkTime && Timer.getFPGATimestamp() - autoStartTime >= criticalTime && currentStep < criticalStep){
 				currentStep = criticalStep;
 				checkTime = false;
 			}

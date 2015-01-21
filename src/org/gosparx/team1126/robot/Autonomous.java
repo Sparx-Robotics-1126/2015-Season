@@ -140,7 +140,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		selectorSwitch = new AnalogInput(IO.ANA_AUTOSWITCH);
+		selectorSwitch = new AnalogInput(IO.SELECTOR_SWITCH_CHANNEL);
 		ds = DriverStation.getInstance();
 		SendableChooser chooser = new SendableChooser();
 		chooser.addDefault("NO_AUTO", new Integer(0));

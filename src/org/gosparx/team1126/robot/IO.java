@@ -24,7 +24,7 @@ public class IO {
 	public static final int ANA_COLOR_LEFT_BLUE																		 = 5;
 	public static final int ANA_COLOR_RIGHT_RED																		 = 6;
 	public static final int ANA_COLOR_RIGHT_BLUE																		 = 7;
-	
+	public static final int SELECTOR_SWITCH_CHANNEL                                                                      =8;
 	/**
 	 * DIO
 	 */

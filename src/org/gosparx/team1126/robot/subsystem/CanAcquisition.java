@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Solenoid;
  * Stores the state of the can acquisition and controls the arm and claw
  * version 1.0 Season 2015
  */
-public class CanAcquisition extends GenericSubsystem{
+public class CanAcquisition{
 	/**
 	 * Position for which the arms to drop
 	 */
@@ -35,19 +35,13 @@ public class CanAcquisition extends GenericSubsystem{
 	 */
 	private Servo leftLiftArm;
 	/**
-	 * This is the solenoid for the right claw
+	 * This is the solenoid for the right arm
 	 */
-	private Solenoid actuateRightClaw;
+	private Solenoid actuateRightArm;
 	/** 
-	 * This is the solenoid for the left claw
+	 * This is the solenoid for the left arm
 	 */
-	private Solenoid actuateLeftClaw;
-	
-	/**
-	 * The current state of the can acquisition
-	 */
-	private int canAcquisitionState;
-	
+	private Solenoid actuateLeftArm;
 	/**
 	 * The can acquisition for the singleton model
 	 */
@@ -67,102 +61,34 @@ public class CanAcquisition extends GenericSubsystem{
 	 * Creates new CanAqcuisition
 	 */
 	private CanAcquisition() {
-		// TODO get the name of this subsystem from the logger in GenericSubsystem when it gets implemented
-		super("CanAcqui", Thread.NORM_PRIORITY);
-	}
-		
-		
-	/**
-	 * Initializes everything
-	 */
-	protected boolean init() {
 		// TODO get all IO from IO class
 		rightArmInCan = new DigitalInput(0);
 		leftArmInCan = new DigitalInput(0);
 		releasingArmsServo = new Servo(0);
 		rightLiftArm = new Servo(0);
 		leftLiftArm = new Servo(0);
-		actuateRightClaw = new Solenoid(0);
-		actuateLeftClaw = new Solenoid(0);
-		return false;
+		actuateRightArm = new Solenoid(0);
+		actuateLeftArm = new Solenoid(0);
 	}
-
-	/**
-	 * Loops.
-	 */
-	protected boolean execute() {
-		switch(canAcquisitionState){
-			case State.ARMS_DROP:
-				releasingArmsServo.set(DROP_RELEASE_POSITION);
-				canAcquisitionState = State.ARMS_RELEASED; 
-				break;
-			case State.ARMS_RELEASED:
-				if (releasingArmsServo.get() == DROP_RELEASE_POSITION) {
-					canAcquisitionState = State.IDLE;
-				}
-			case State.IDLE:
-				break;
-			default:
-		}
-		// TODO what is this return?
-		return true;
-	}
-
-	@Override
-	protected long sleepTime() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	protected void writeLog() {
-		// TODO Auto-generated method stub
 	
-	}
 	/**
-	 * Drops both arms and goes to armsDone when the servo reaches the release position
+	 * Drops both arms
 	 */
 	public void armsDrop() {
-		canAcquisitionState = State.ARMS_DROP;
+		releasingArmsServo.set(DROP_RELEASE_POSITION);
 	}
 	
 	/**
-	 * Returns if the last command is done
-	 */
-	public boolean isLastCommandDone() {
-		return(canAcquisitionState == State.IDLE);
-	}
-	
-	/**
-	 * Returns if right hand is in the can
+	 * Returns TRUE if right hand is in the can
 	 */
 	public boolean rightHandInCan() {
 		return(rightArmInCan.get());
 	}
 	
 	/**
-	 * Returns if left hand is in the can
+	 * Returns FALSE if left hand is in the can
 	 */
 	public boolean leftHandInCan() {
 		return(leftArmInCan.get());
-	}
-	
-	private static class State{
-		static final int IDLE = 0;
-		static final int ARMS_DROP = 1;
-		static final int ARMS_RELEASED = 2;
-		public static String getState(int state){
-			switch(state){
-				case IDLE:
-					return "Idle";
-				case ARMS_DROP:
-					return "Dropping Arms";
-				case ARMS_RELEASED:
-					return "Arms Released";
-			}
-			return "Unknown state";
-		}
-	}
-
-		
+	}	
 }

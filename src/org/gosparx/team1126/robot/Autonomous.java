@@ -258,7 +258,6 @@ public class Autonomous extends GenericSubsystem{
 			case DRIVES_DANCE:
 				// TODO Implement drives dance
 				// drives.dance();
-				// runNextStatement(true);
 				break;
 			case DRIVES_DONE:
 				// TODO Implement drive last command Done
@@ -284,8 +283,6 @@ public class Autonomous extends GenericSubsystem{
 				}
 				break;
 			case ARMS_DONE:
-				// TODO Implement run next statement
-				// runNextStatement(canAcq.isLastCommandDone());
 				break;
 			case ACQ_LOWER:
 				break;

@@ -377,6 +377,31 @@ public class Drives extends GenericSubsystem{
 	public void setAutoFunction(State wantedAutoState){
 		autoFunctions = wantedAutoState;
 	}
+	
+	/**
+	 * Turns to robot
+	 * @param degrees - positive(right) || negative(left)
+	 */
+	public void autoTurn(int degrees){
+		
+	}
+	
+	/**
+	 * Drives robot forward set distance
+	 * @param inchDistance - distance to travel in inches
+	 * @param speed - desired speed(0 - 1)
+	 */
+	public void driveStraight(int inchDistance, double speed){
+		
+	}
+	
+	/**
+	 * @return is drives is done with last auto command
+	 */
+	public boolean isDone(){
+		return (autoFunctions == State.AUTO_STAND_BY);
+	}
+	
 	/**
 	 *Makes the states for drives
 	 */

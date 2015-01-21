@@ -171,8 +171,8 @@ public class Drives extends GenericSubsystem{
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
 		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
 		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
-		rightTouch = new DigitalInput(6);
-		leftTouch = new DigitalInput(7);
+		rightTouch = new DigitalInput(7);
+		leftTouch = new DigitalInput(6);
 		leftPower = 0;
 		rightPower = 0;
 		currentDriveState = State.IN_LOW_GEAR;

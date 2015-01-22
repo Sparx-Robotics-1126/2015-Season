@@ -23,7 +23,7 @@ public class Robot extends SampleRobot{
 	public Robot() {
 		subsystems = new GenericSubsystem[]{	
         	Controls.getInstance(),
-		LogWriter.getInstance()
+        	LogWriter.getInstance(),
         	Drives.getInstance()
 		};
 		
@@ -50,6 +50,6 @@ public class Robot extends SampleRobot{
 	 *  Called one time when the robot enters test
 	 */
 	public void test() {
-		THIS.WILL.NOT.COMPILE!!!!!!!
+		
 	}
 }

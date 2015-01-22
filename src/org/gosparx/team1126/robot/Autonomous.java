@@ -39,7 +39,7 @@ public class Autonomous extends GenericSubsystem{
 	 * The current autonomous 
 	 */
 	private AutoCommands[] currentAuto;
-	
+
 	/**
 	 * An array of the parameters
 	 */
@@ -88,7 +88,7 @@ public class Autonomous extends GenericSubsystem{
 	private final double SELECTION_7 = 1.07;
 	private final double SELECTION_8 = 0.54;
 	private final double SELECTION_9 = 0.00;
-	
+
 	/*********************************************************************************************************************************
 	 **********************************************AUTO COMMANDS**********************************************************************
 	 *********************************************************************************************************************************/
@@ -288,8 +288,19 @@ public class Autonomous extends GenericSubsystem{
 			case END:
 				break;
 			}
-			if(increaseStep)
+			if(increaseStep){
 				currentStep++;
+				String currEnum = currentAuto[currentStep] + "(";
+				boolean params = false;
+				for(int i = 0; i < autoCommands[currentStep].length; i++){
+					currEnum += autoCommands[currentStep][i] + ",";
+					params = true;
+				}
+				if(params)
+					currEnum = currEnum.substring(0, currEnum.length());
+				currEnum += ")";
+				LOG.logMessage(currEnum);
+			}
 			if(checkTime && Timer.getFPGATimestamp() - autoStartTime >= criticalTime && currentStep < criticalStep){
 				currentStep = criticalStep;
 				checkTime = false;

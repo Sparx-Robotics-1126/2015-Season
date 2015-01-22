@@ -191,7 +191,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		
+
 	}
 
 	/**
@@ -287,6 +287,9 @@ public class Autonomous extends GenericSubsystem{
 				break;
 			case END:
 				break;
+			default:
+				runAuto = false;
+				LOG.logError("Unknown autocommand: " + currentAuto[currentStep]);
 			}
 			if(increaseStep){
 				currentStep++;

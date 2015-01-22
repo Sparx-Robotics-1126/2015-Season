@@ -159,6 +159,7 @@ public class Drives extends GenericSubsystem{
 	 * stops the motors for auto
 	 */
 	private static final int STOP_MOTOR = 0;
+	
 	/**
 	 * if drives == null, make a new drives
 	 * @return the new drives

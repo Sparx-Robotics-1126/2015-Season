@@ -10,7 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * A class to control Autonomous
- * @author Alex y Andrew
+ * @author Alex 
+ * @author Andrew Thompson andrewt015@gmail.com
  */
 public class Autonomous extends GenericSubsystem{
 	
@@ -86,36 +87,34 @@ public class Autonomous extends GenericSubsystem{
 	 **********************************************AUTO COMMANDS**********************************************************************
 	 *********************************************************************************************************************************/
 	
-	private final int DRIVES_GO_FORWARD = 1;
-	private final int DRIVES_GO_REVERSE = 2;
-	private final int DRIVES_TURN_RIGHT = 3;
-	private final int DRIVES_TURN_LEFT = 4;
-	private final int DRIVES_STOP = 5;
-	private final int DRIVES_DONE = 9;
-	
-	private final int ARMS_DROP = 10;
-	private final int ARMS_RAISE = 11;
-	private final int ARMS_EXPAND = 12;
-	private final int ARMS_CONTRACT = 13;
-	private final int ARMS_STOP = 14;
-	private final int ARMS_DONE = 19;
-	
-	private final int ACQ_LOWER = 20;
-	private final int ACQ_RAISE = 21;
-	private final int ACQ_ROLLERS_ON = 22;
-	private final int ACQ_ROLLERS_OFF = 23;
-	private final int ACQ_STOP = 24;
-	private final int ACQ_DONE = 29;
-	
-	private final int TOTES_RAISE = 30;
-	private final int TOTES_LOWER = 31;
-	private final int TOTES_EJECT = 32;
-	private final int TOTES_STOP = 33;
-	private final int TOTES_DONE = 39;
-	
-	private final int CHECK_TIME = 97; //{CHECK_TIME, criticalStep, criticalTime}
-	private final int WAIT = 98;
-	private final int END = 99; 
+	public enum AutoCommands {
+		DRIVES_GO_FORWARD,
+		DRIVES_GO_REVERSE,
+		DRIVES_TURN_RIGHT,
+		DRIVES_TURN_LEFT,
+		DRIVES_STOP,
+		DRIVES_DONE,
+		ARMS_DROP,
+		ARMS_RAISE,
+		ARMS_EXPAND,
+		ARMS_CONTRACT,
+		ARMS_STOP,
+		ARMS_DONE,
+		ACQ_LOWER,
+		ACQ_RAISE,
+		ACQ_ROLLERS_ON,
+		ACQ_ROLLERS_OFF,
+		ACQ_STOP,
+		ACQ_DONE,
+		TOTES_RAISE,
+		TOTES_LOWER,
+		TOTES_EJECT,
+		TOTES_STOP,
+		TOTES_DONE,
+		CHECK_TIME, //{CHECK_TIME, criticalStep, criticalTime}
+		WAIT,
+		END,
+	}
 	
 	/**
 	 * Singleton
@@ -159,7 +158,7 @@ public class Autonomous extends GenericSubsystem{
 	}
 
 	/**
-	 * Loops
+	 * Gets the automode
 	 */
 	@Override
 	protected boolean execute() {

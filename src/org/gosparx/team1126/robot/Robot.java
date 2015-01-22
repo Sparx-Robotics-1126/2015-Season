@@ -19,7 +19,7 @@ public class Robot extends SampleRobot{
 	 */
 	public Robot() {
 		subsystems = new GenericSubsystem[]{	
-				Autonomous.getInstance()
+				Autonomous.getInstance(),
 				LogWriter.getInstance()
 		};
 		

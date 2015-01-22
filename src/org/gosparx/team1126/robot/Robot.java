@@ -3,6 +3,7 @@ package org.gosparx.team1126.robot;
 import org.gosparx.team1126.robot.subsystem.Controls;
 import org.gosparx.team1126.robot.subsystem.Drives;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
+import org.gosparx.team1126.robot.util.LogWriter;
 
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Servo;
@@ -20,8 +21,9 @@ public class Robot extends SampleRobot{
 	 * Called once every time the robot is powered on
 	 */
 	public Robot() {
-		subsystems = new GenericSubsystem[]{
+		subsystems = new GenericSubsystem[]{	
         	Controls.getInstance(),
+		LogWriter.getInstance()
         	Drives.getInstance()
 		};
 		

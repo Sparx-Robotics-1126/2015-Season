@@ -2,6 +2,8 @@ package org.gosparx.team1126.robot.subsystem;
 
 import java.security.InvalidParameterException;
 
+import org.gosparx.team1126.robot.util.Logger;
+
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -13,7 +15,12 @@ import edu.wpi.first.wpilibj.Timer;
  *
  */
 public abstract class GenericSubsystem extends Thread {
-	
+
+	/**
+	 * This is the logger for the specific subsystem.
+	 */
+	protected Logger LOG;
+
 	/**
 	 * This constructs a new subsystem with the given name and priority.
 	 * 
@@ -27,15 +34,18 @@ public abstract class GenericSubsystem extends Thread {
 		if(priority != Thread.MIN_PRIORITY && priority != Thread.NORM_PRIORITY && priority != MAX_PRIORITY)
 			throw new InvalidParameterException();
 		setPriority(priority);
+		if(name != "LogWriter"){
+			LOG = new Logger(name);
+		}
 	}
-	
+
 	/**
 	 * This is called one time after start is called.
 	 * 
 	 * @return true if we have successfully inited, false otherwise.
 	 */
 	abstract protected boolean init();
-	
+
 	/**
 	 * This is used to create a liveWindow setup
 	 */
@@ -48,26 +58,26 @@ public abstract class GenericSubsystem extends Thread {
 	 *         restarted, false otherwise.
 	 */
 	abstract protected boolean execute();
-	
+
 	/**
 	 * The amount of time you want to sleep for after a cycle.
 	 * 
 	 * @return the number of milliseconds you want to sleep after a cycle.
 	 */
 	abstract protected long sleepTime();
-	
+
 	/**
 	 * The amount of time between calling writeLog().
 	 * 
 	 * @return the number of seconds you want between writeLog() calls.
 	 */
 	protected double logTime() { return 5; }
-	
+
 	/**
 	 * Logs all info appropriate to the subsystem.
 	 */
 	abstract protected void writeLog();
-	
+
 	/**
 	 * Runs and loops the execute() until execute returns false, logging ever logTime() seconds.
 	 */
@@ -82,8 +92,8 @@ public abstract class GenericSubsystem extends Thread {
 			try{
 				retVal = execute();
 			}catch(Exception e){
-				//Log the exception!
-				System.err.println("Uncaught Exception!" + e.getMessage());
+				if(LOG != null)
+					LOG.logError("Uncaught Exception! " + e.getMessage());
 				e.printStackTrace(System.err);
 			}
 			if(Timer.getFPGATimestamp() >= lastLogged + logTime()){
@@ -92,13 +102,14 @@ public abstract class GenericSubsystem extends Thread {
 			}
 			try {
 				Thread.sleep(sleepTime());
-			} catch (Exception e) {
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}while(!retVal);
-		System.out.println("Completing thread: " + getName());
+		if(LOG != null)
+			LOG.logMessage("Completing thread: " + getName());
 	}
-	
+
 	/**
 	 * returns a String version of the class
 	 */

@@ -293,16 +293,16 @@ public class Autonomous extends GenericSubsystem{
 			}
 			if(increaseStep){
 				currentStep++;
-				String currEnum = currentAuto[currentStep] + "(";
-				boolean params = false;
-				for(int i = 0; i < autoCommands[currentStep].length; i++){
-					currEnum += autoCommands[currentStep][i] + ",";
-					params = true;
+				StringBuilder sb = new StringBuilder();
+				sb.append(currentAuto[currentStep]).append("(");
+				String prefix = "";
+				for(int i:autoCommands[currentStep]){
+					sb.append(prefix);
+					prefix = ", ";
+					sb.append(autoCommands[currentStep][i]);
 				}
-				if(params)
-					currEnum = currEnum.substring(0, currEnum.length());
-				currEnum += ")";
-				LOG.logMessage(currEnum);
+				sb.append(")");
+				LOG.logMessage(sb.toString());
 			}
 			if(checkTime && Timer.getFPGATimestamp() - autoStartTime >= criticalTime && currentStep < criticalStep){
 				currentStep = criticalStep;

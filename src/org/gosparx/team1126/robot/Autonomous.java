@@ -1,4 +1,4 @@
-	package org.gosparx.team1126.robot;
+package org.gosparx.team1126.robot;
 
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * A class to control Autonomous
- * @author Alex 
- * @author Andrew Thompson andrewt015@gmail.com
+ * @author Alex Mechler {amechler1998@gmail.com}
+ * @author Andrew Thompson {andrewt015@gmail.com}
  */
 public class Autonomous extends GenericSubsystem{
-	
+
 	/**
 	 * True if we are running auto
 	 */
@@ -24,52 +24,57 @@ public class Autonomous extends GenericSubsystem{
 	 * Supports singleton
 	 */
 	private static Autonomous auto;
-	
+
 	/**
 	 * The Physical selector switch for auto modes
 	 */
 	private AnalogInput selectorSwitch;
-	
+
 	/**
 	 * An instance of a driverstation
 	 */
 	private DriverStation ds;
-	
+
 	/**
 	 * The current autonomous 
 	 */
-	private int[][] currentAuto;
+	private AutoCommands[] currentAuto;
 	
+	/**
+	 * An array of the parameters
+	 */
+	private int[][] autoCommands;
+
 	/**
 	 * The current step of the autonomous we are on
 	 */
 	private int currentStep;
-	
+
 	/**
 	 * Should we go to the next step?
 	 */
 	private boolean increaseStep;
-	
+
 	/**
 	 * Should we check the if the time is critical
 	 */
 	private boolean checkTime;
-	
+
 	/**
 	 * What action to do when time is critical
 	 */
 	private int criticalStep;
-	
+
 	/**
 	 * What time left is considered critical
 	 */
 	private double criticalTime;
-	
+
 	/**
 	 * Time auto starts
 	 */
 	private double autoStartTime;
-	
+
 	/**
 	 * The voltages of the different choices on the selection switch
 	 */
@@ -83,10 +88,11 @@ public class Autonomous extends GenericSubsystem{
 	private final double SELECTION_7 = 1.07;
 	private final double SELECTION_8 = 0.54;
 	private final double SELECTION_9 = 0.00;
+	
 	/*********************************************************************************************************************************
 	 **********************************************AUTO COMMANDS**********************************************************************
 	 *********************************************************************************************************************************/
-	
+
 	public enum AutoCommands {
 		DRIVES_GO_FORWARD,
 		DRIVES_GO_REVERSE,
@@ -115,7 +121,7 @@ public class Autonomous extends GenericSubsystem{
 		WAIT,
 		END,
 	}
-	
+
 	/**
 	 * Singleton
 	 * @return the only instance of Autonomous ever
@@ -126,7 +132,7 @@ public class Autonomous extends GenericSubsystem{
 		}
 		return auto;
 	}
-	
+
 	/**
 	 * Creates a new Autonomous
 	 */
@@ -154,11 +160,11 @@ public class Autonomous extends GenericSubsystem{
 		chooser.addObject("AUTO_9", new Integer(9));
 		SmartDashboard.putData("Auto Mode", chooser);
 		return false;
-		
+
 	}
 
 	/**
-	 * Gets the automode
+	 * Gets the automode if autonomous is not running, otherwise runs auto.
 	 */
 	@Override
 	protected boolean execute() {
@@ -187,45 +193,45 @@ public class Autonomous extends GenericSubsystem{
 	protected void writeLog() {
 		System.out.println("Current Step:" + currentStep);
 	}
-	
+
 	/**
 	 * Gets the current automode based on the voltages
 	 */
 	private void getAutoMode(){
 		double voltage = selectorSwitch.getVoltage();
 		if (voltage >= SELECTION_0){
-		
+
 		}else if(voltage >= SELECTION_1){
-			
+
 		}else if(voltage >= SELECTION_2){
-			
+
 		}else if(voltage >= SELECTION_3){
-			
+
 		}else if(voltage >= SELECTION_4){
-		
+
 		}else if(voltage >= SELECTION_5){
-			
+
 		}else if(voltage >= SELECTION_6){
-		
+
 		}else if(voltage >= SELECTION_7){
-			
+
 		}else if(voltage >= SELECTION_8){
-			
+
 		}else if(voltage >= SELECTION_9){ 
-		
-			
+
+
 		}else{
-			
+
 		}
 	}
-	
+
 	/**
 	 * Executes commands
 	 */
 	private void runAuto(){
 		increaseStep = true;
 		if(ds.isAutonomous() && ds.isEnabled()){
-			switch(currentAuto[currentStep][0]){
+			switch(currentAuto[currentStep]){
 			case DRIVES_GO_FORWARD:
 				break;
 			case DRIVES_GO_REVERSE:
@@ -274,8 +280,8 @@ public class Autonomous extends GenericSubsystem{
 				break;
 			case CHECK_TIME:
 				checkTime = true;
-				criticalStep = currentAuto[currentStep][1];
-				criticalTime = currentAuto[currentStep][2];
+				criticalStep =  autoCommands[currentStep][0];
+				criticalTime = autoCommands[currentStep][1];
 				break;
 			case WAIT:
 				break;
@@ -289,18 +295,5 @@ public class Autonomous extends GenericSubsystem{
 				checkTime = false;
 			}
 		}
-	}
-	
-	/**
-	 * Updates increaseStep with the current value
-	 * @param done
-	 */
-	private void isLastCommandDone(boolean done){
-		if(!done){
-			increaseStep = false;
-		}else{
-			increaseStep = true;
-		}
-		return;
 	}
 }

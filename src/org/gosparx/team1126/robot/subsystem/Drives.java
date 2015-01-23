@@ -5,6 +5,7 @@ import org.gosparx.team1126.robot.IO;
 import org.gosparx.team1126.robot.sensors.ColorSensor;
 import org.gosparx.team1126.robot.sensors.ColorSensor.Color;
 import org.gosparx.team1126.robot.sensors.PID;
+import org.gosparx.team1126.robot.util.Logger;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
@@ -18,11 +19,38 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  */
 public class Drives extends GenericSubsystem{
 	
+	//***************************INSTANCES****************************
 	/**
 	 * Makes a drives object that will be called to use the drives class
 	 */
 	private static Drives drives;
 	
+	/**
+	 * Access to the File logger
+	 */
+	private Logger log;
+	
+	/**
+	 * Right drive PID loop
+	 */
+	private PID rightPID;
+	
+	/**
+	 * Left drive PID loop
+	 */
+	private PID leftPID;
+	
+	/**
+	 * the current state the drives is in
+	 */
+	private State currentDriveState;
+	
+	/**
+	 * Variable for determining which state the color sensor
+	 */
+	private State autoFunctions;
+	
+	//*********************************MOTOR VICTORS*************************
 	/**
 	 * Object used to control the left front motor
 	 */
@@ -43,6 +71,13 @@ public class Drives extends GenericSubsystem{
 	 */
 	private Victor rightBack;
 	
+	//****************************PNU**************************
+	/**
+	 * the solenoid used for shifting
+	 */
+	private Solenoid shiftingSol;
+	
+	//****************************SENSORS**********************
 	/**
 	 * Used to get the distance the robot has traveled 
 	 */
@@ -64,11 +99,6 @@ public class Drives extends GenericSubsystem{
 	private EncoderData encoderDataRight;
 	
 	/**
-	 * the solenoid used for shifting
-	 */
-	private Solenoid shiftingSol;
-	
-	/**
 	 * the left color sensor for detecting the colors in front of the robot
 	 */
 	private ColorSensor colorSensorLeft;
@@ -78,36 +108,36 @@ public class Drives extends GenericSubsystem{
 	 */
 	private ColorSensor colorSensorRight;
 	
+	/**
+	 * Right touch sensor
+	 */
 	private DigitalInput rightTouch;
+	
+	/**
+	 * Left touch sensor
+	 */
 	private DigitalInput leftTouch;
 	
-	private PID rightPID;
-	private PID leftPID;
+	//********************************CONSTANTS****************************
+	/**
+	 * The P value in the drives left/right PID loop
+	 */
+	private static final double P = 0.026;
+	
+	/**
+	 * The I value in the drives left/right PID loop
+	 */
+	private static final double I = 0.02;
+	
+	/**
+	 * The D
+	 */
+	private static final double D = 0;
 	
 	/**
 	 * the amount of distance the shortbot will make per tick
 	 */
 	private final double DISTANCE_PER_TICK = 0.04908738;
-	
-	/**
-	 * the wanted speed for the left motors
-	 */
-	private double wantedLeftPower;
-	
-	/**
-	 * the wanted speed for the right motors
-	 */
-	private double wantedRightPower;
-	
-	/**
-	 * the current state the drives is in
-	 */
-	private State currentDriveState;
-	
-	/**
-	 * the current average speed between the left and right motors
-	 */
-	private double currentSpeed;
 	
 	/**
 	 * the speed required to shift down, not accurate yet
@@ -125,12 +155,7 @@ public class Drives extends GenericSubsystem{
 	private static final double SHIFTING_TIME = 0.15;
 	
 	/**
-	 * actual time it took to shift
-	 */
-	private double shiftTime;
-	
-	/**
-	 * 
+	 * Joystick deadzone, +/-
 	 */
 	public static final double DEAD_ZONE = 0.05;
 	
@@ -143,22 +168,47 @@ public class Drives extends GenericSubsystem{
 	 * Alex said I didn't need comments (=
 	 */
 	private static final double LINEUP_SPEED = 0.45;
+	
 	/**
 	 * determines if it's in high or low gear
 	 */
 	private static final boolean LOW_GEAR = false;
-	/**
-	 * Variable for determining which state the color sensor
-	 */
-	private State autoFunctions;
-
-	private double rightPower;
-	private double leftPower;
-
+	
 	/**
 	 * stops the motors for auto
 	 */
 	private static final int STOP_MOTOR = 0;
+	
+	//*********************************VARIBLES****************************
+	/**
+	 * the wanted speed for the left motors
+	 */
+	private double wantedLeftPower;
+	
+	/**
+	 * the wanted speed for the right motors
+	 */
+	private double wantedRightPower;
+		
+	/**
+	 * the current average speed between the left and right motors
+	 */
+	private double currentSpeed;
+	
+	/**
+	 * actual time it took to shift
+	 */
+	private double shiftTime;
+	
+	/**
+	 * The wanted power of the right drives (-1 - 1)
+	 */
+	private double rightPower;
+	
+	/**
+	 * The wanted power of the left drives (-1 - 1)
+	 */
+	private double leftPower;
 	
 	/**
 	 * if drives == null, make a new drives
@@ -186,23 +236,29 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		rightFront = new Victor(IO.PWM_RIGHT_FRONT_DRIVES);
-		rightBack = new Victor(IO.PWM_RIGHT_BACK_DRIVES);
+		//LEFT
 		leftFront = new Victor(IO.PWM_LEFT_FRONT_DRIVES);
 		leftBack = new Victor(IO.PWM_LEFT_BACK_DRIVES);
 		encoderLeft = new Encoder(IO.ENCODER_LEFT_DRIVES_A, IO.ENCODER_LEFT_DRIVES_B);
 		encoderDataLeft = new EncoderData(encoderLeft, DISTANCE_PER_TICK);
-		leftPID = new PID(0.026, 0.02, 1, 0.00, true, false);
+		leftPID = new PID(P, I, 1, D, true, false);
+		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
+		leftTouch = new DigitalInput(IO.SWITCH_LEFT_DRIVES);
+		leftPower = 0;
+		
+		//RIGHT
+		rightFront = new Victor(IO.PWM_RIGHT_FRONT_DRIVES);
+		rightBack = new Victor(IO.PWM_RIGHT_BACK_DRIVES);
 		encoderRight = new Encoder(IO.ENCODER_RIGHT_DRIVES_A, IO.ENCODER_RIGHT_DRIVES_B);
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
-		rightPID = new PID(0.026, 0.02, 1, 0.00, true, false);
-		shiftingSol = new Solenoid(IO.PNU_SHIFTING);
-		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
+		rightPID = new PID(P, I, 1, D, true, false);
 		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
-		rightTouch = new DigitalInput(7);
-		leftTouch = new DigitalInput(6);
-		leftPower = 0;
+		rightTouch = new DigitalInput(IO.SWTICH_RIGHT_DRIVES);
 		rightPower = 0;
+		
+		//OTHER
+		log = new Logger(getName());
+		shiftingSol = new Solenoid(IO.PNU_SHIFTING);	
 		currentDriveState = State.IN_LOW_GEAR;
 		currentSpeed = 0;
 		shiftTime = 0;
@@ -337,16 +393,16 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		System.out.println("Current speed: " + currentSpeed);
-		System.out.println("Current drive state: " + currentDriveState);
-		System.out.println("Auto State: " + autoFunctions);
-//				System.out.println("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+		log.logMessage("Current speed: " + currentSpeed);
+		log.logMessage("Current drive state: " + currentDriveState);
+		log.logMessage("Auto State: " + autoFunctions);
+//				log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
 //									"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
-//				System.out.println("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
-//				System.out.println("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-//		System.out.println("Left Encoder: " + encoderDataLeft.getSpeed() +
+//				log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
+//				log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
+//				log.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
 //				" Right Encoder: " +encoderDataRight.getSpeed());
-		System.out.println("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
+		log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
 	}
 
 	/**

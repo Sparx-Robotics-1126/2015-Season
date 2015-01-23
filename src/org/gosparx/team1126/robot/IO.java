@@ -29,6 +29,8 @@ public final class IO {
 	public static final int COLOR_LEFT_BLUE				= 1;
 	public static final int COLOR_LEFT_GREEN			= 8;//NOT USED
 	public static final int COLOR_LEFT_LED				= 4;
+	public static final int SWTICH_RIGHT_DRIVES 		= 6;
+	public static final int SWITCH_LEFT_DRIVES 			= 7;
 	
 	
 	

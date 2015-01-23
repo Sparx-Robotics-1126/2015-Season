@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Joystick;
  * @author Mike the camel
  */
 public class Controls extends GenericSubsystem{
+	
 	/**
 	 * declares a Joystick object named driverJoyLeft
 	 */
@@ -26,6 +27,16 @@ public class Controls extends GenericSubsystem{
 	 * declares a Drives object named drives
 	 */
 	private Drives drives;
+	
+	/*/********************************************
+	 *****************Logitech 1.0*****************
+	 **********************************************
+	 */
+	private static final int LOGITECH_1_BUTTON_1		= 1;
+	private static final int LOGITECH_1_BUTTON_2		= 2;
+	private static final int LOGITECH_1_Y_AXIS 			= 1;
+	private static final int LOGITECH_1_X_AXIS			= 0;
+	private static final int LOGITECH_1_Z_AXIS			= 2;
 	
 	/**
 	 * if controls == null, make a new controls
@@ -65,8 +76,9 @@ public class Controls extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		drives.setPower(-driverJoyLeft.getRawAxis(1), -driverJoyRight.getRawAxis(1));
-		if(driverJoyRight.getRawButton(1)){
+		drives.setPower(-driverJoyLeft.getRawAxis(LOGITECH_1_Y_AXIS),
+						-driverJoyRight.getRawAxis(LOGITECH_1_Y_AXIS));
+		if(driverJoyRight.getRawButton(LOGITECH_1_BUTTON_1)){
 			drives.setAutoFunction(Drives.State.AUTO_STEP_LINEUP);
 		}
 		return false;

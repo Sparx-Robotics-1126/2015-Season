@@ -52,6 +52,9 @@ public class ColorSensor {
 	 */
 	static final double BLACK_THRESHOLD = (255 * 3) * .2;
 	
+	/**
+	 * Determines if green analog input is used
+	 */
 	private final boolean useGreen;
 
 	/**

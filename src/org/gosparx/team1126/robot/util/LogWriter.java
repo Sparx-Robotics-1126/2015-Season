@@ -138,4 +138,10 @@ public class LogWriter extends GenericSubsystem{
 	public void logString(String message){
 		toLog.add(message);
 	}
+
+	@Override
+	protected void liveWindow() {
+		// TODO Auto-generated method stub
+		
+	}
 }

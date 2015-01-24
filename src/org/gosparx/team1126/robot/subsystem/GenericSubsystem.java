@@ -47,6 +47,11 @@ public abstract class GenericSubsystem extends Thread {
 	abstract protected boolean init();
 
 	/**
+	 * This is used to create a liveWindow setup
+	 */
+	abstract protected void liveWindow();
+	
+	/**
 	 * Once start is called, this method is called until it returns true.
 	 * 
 	 * @return true if execution has complete and we do not need the method
@@ -81,6 +86,8 @@ public abstract class GenericSubsystem extends Thread {
 		boolean retVal = false;
 		double lastLogged = 0;
 		init();
+		System.out.println("***Starting: " + getName());
+		liveWindow();
 		do{
 			try{
 				retVal = execute();

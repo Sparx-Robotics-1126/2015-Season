@@ -43,27 +43,54 @@ public class ColorSensor {
 	private DigitalOutput lightLED;
 	
 	/**
-	 * we treat white as 80% of the addition of all of the colors and above
+	 * we treat white as 70 % of light returned
 	 */
-	static final double WHITE_THRESHOLD = (255 * 3) * .8; 
+	static final double WHITE_THRESHOLD = 70;//(255 * 3) * .8; 
 	
 	/**
 	 * we treat black as 20% of the addition of all of the colors and below
 	 */
 	static final double BLACK_THRESHOLD = (255 * 3) * .2;
+	
+	/**
+	 * Determines if green analog input is used
+	 */
+	private final boolean useGreen;
 
+	/**
+	 * Constructs a colorSenosr object
+	 * @param redChannel - red analog channel
+	 * @param greenChannel - green analog channel
+	 * @param blueChannel - blue analog channel
+	 * @param ledChannel - DIO LED channel
+	 */
 	public ColorSensor(int redChannel, int greenChannel, int blueChannel, int ledChannel){
 		redAnalogInput = new AnalogInput(redChannel);
 		greenAnalogInput = new AnalogInput(greenChannel);
 		blueAnalogInput = new AnalogInput(blueChannel);
 		lightLED = new DigitalOutput(ledChannel);
 		lightLED.set(true);
+		useGreen = true;
+	}
+	
+	/**
+	 * Constructs a colorSensor object without a green input
+	 * @param redChannel - red analog channel
+	 * @param blueChannel - blue analog channel
+	 * @param ledChannel - DIO LED channel
+	 */
+	public ColorSensor(int redChannel, int blueChannel, int ledChannel){
+		redAnalogInput = new AnalogInput(redChannel);
+		blueAnalogInput = new AnalogInput(blueChannel);
+		lightLED = new DigitalOutput(ledChannel);
+		lightLED.set(true);
+		useGreen = false;
 	}
 
 	/**
 	 * @return value of red (0 - 255) values may be bigger than 255
 	 */
-	private int getRed(){
+	public int getRed(){
 		return redAnalogInput.getValue();
 	}
 	
@@ -71,13 +98,17 @@ public class ColorSensor {
 	 * @return value of green (0 - 255) values may be bigger than 255
 	 */
 	private int getGreen(){
-		return greenAnalogInput.getValue();
+		if(useGreen){
+			return greenAnalogInput.getValue();
+		}else{
+			return 0;
+		}
 	}
 	
 	/**
 	 * @return value of blue (0 - 255) values may be bigger than 255
 	 */
-	private int getBlue(){
+	public int getBlue(){
 		return blueAnalogInput.getValue();
 	}
 	

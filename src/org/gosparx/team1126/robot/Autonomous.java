@@ -278,7 +278,7 @@ public class Autonomous extends GenericSubsystem{
 		{}
 	};
 	
-	private static final String DRIVES_TO_AUTOZONE_FROM_STAGING_NAME = "Drive to Autozone from wall";
+	private static final String DRIVES_TO_AUTOZONE_FROM_STAGING_NAME = "Into Autozone from wall";
 
 	/**
 	 * Drives from edge of Autozone into Autozone
@@ -318,7 +318,90 @@ public class Autonomous extends GenericSubsystem{
 			{}
 	};
 	
-	private static final String ONE_YELLOW_TOTE_FROM_STAGING_NAME = "One yellow tote from staging to Sutozone";
+	private static final String ONE_YELLOW_TOTE_FROM_STAGING_NAME = "One yellow tote into Autozone";
+	
+	/**
+	 * Acquires 2 yellow totes, stacks them and placed and Autozone
+	 */
+	private static final AutoCommands[] TWO_YELLOW_TOTES_FROM_STAGING = {
+		AutoCommands.ACQ_LOWER,
+		AutoCommands.ACQ_ROLLERS_ON,
+		AutoCommands.DRIVES_GO_FORWARD,
+		AutoCommands.ACQ_DONE,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.TOTES_RAISE,
+		AutoCommands.ACQ_ROLLERS_OFF,
+		AutoCommands.DRIVES_TURN_RIGHT,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.DRIVES_GO_FORWARD,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.DRIVES_TURN_LEFT,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.DRIVES_GO_FORWARD,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.DRIVES_TURN_LEFT,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.DRIVES_GO_FORWARD,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.DRIVES_TURN_RIGHT,
+		AutoCommands.ACQ_ROLLERS_ON,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.DRIVES_GO_FORWARD,
+		AutoCommands.ACQ_DONE,
+		AutoCommands.TOTES_LOWER,
+		AutoCommands.TOTES_DONE,
+		AutoCommands.DRIVES_TURN_LEFT,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.DRIVES_GO_FORWARD,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.TOTES_EJECT,
+		AutoCommands.TOTES_DONE,
+		AutoCommands.DRIVES_GO_REVERSE,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.END
+		
+		
+	};
+	private int[][] TWO_YELLOW_TOTES_FROM_STAGING_PARAMS = {
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{}
+			
+	};
+	
+	private static final String TWO_YELLOW_TOTES_FROM_STAGING_NAME = "Two yellow totes into Autozone"; 
 	
 	
 	/**

@@ -9,6 +9,7 @@ import org.gosparx.team1126.robot.util.Logger;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
@@ -18,198 +19,211 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  *@author Mike the camel
  */
 public class Drives extends GenericSubsystem{
-	
+
 	//***************************INSTANCES****************************
 	/**
 	 * Makes a drives object that will be called to use the drives class
 	 */
 	private static Drives drives;
-	
+
 	/**
 	 * Access to the File logger
 	 */
 	private Logger log;
-	
+
 	/**
 	 * Right drive PID loop
 	 */
 	private PID rightPID;
-	
+
 	/**
 	 * Left drive PID loop
 	 */
 	private PID leftPID;
-	
+
 	/**
 	 * the current state the drives is in
 	 */
 	private State currentDriveState;
-	
+
 	/**
 	 * Variable for determining which state the color sensor
 	 */
 	private State autoFunctions;
-	
+
 	//*********************************MOTOR VICTORS*************************
 	/**
 	 * Object used to control the left front motor
 	 */
 	private Victor leftFront;
-	
+
 	/**
 	 * Object used to control the left back motor
 	 */
 	private Victor leftBack;
-	
+
 	/**
 	 * Object used to control the right front motor
 	 */
 	private Victor rightFront;
-	
+
 	/**
 	 * Object used to control the right back motor
 	 */
 	private Victor rightBack;
-	
+
 	//****************************PNU**************************
 	/**
 	 * the solenoid used for shifting
 	 */
 	private Solenoid shiftingSol;
-	
+
 	//****************************SENSORS**********************
 	/**
 	 * Used to get the distance the robot has traveled 
 	 */
 	private Encoder encoderLeft;
-	
+
 	/**
 	 * Used to get the distance the robot has traveled
 	 */
 	private Encoder encoderRight;
-	
+
 	/**
 	 * makes the left encoder data which calculates how far the robot traveled in inches
 	 */
 	private EncoderData encoderDataLeft;
-	
+
 	/**
 	 * makes the right encoder data which calculates how far the robot traveled in inches
 	 */
 	private EncoderData encoderDataRight;
-	
+
 	/**
 	 * the left color sensor for detecting the colors in front of the robot
 	 */
 	private ColorSensor colorSensorLeft;
-	
+
 	/**
 	 * the right color sensor for detecting the colors in front of the robot
 	 */
 	private ColorSensor colorSensorRight;
-	
+
 	/**
 	 * Right touch sensor
 	 */
 	private DigitalInput rightTouch;
-	
+
 	/**
 	 * Left touch sensor
 	 */
 	private DigitalInput leftTouch;
-	
+
+
+	private Gyro gyro;
+
 	//********************************CONSTANTS****************************
 	/**
 	 * The P value in the drives left/right PID loop
 	 */
 	private static final double P = 0.026;
-	
+
 	/**
 	 * The I value in the drives left/right PID loop
 	 */
 	private static final double I = 0.02;
-	
+
 	/**
 	 * The D
 	 */
 	private static final double D = 0;
-	
+
 	/**
 	 * the amount of distance the shortbot will make per tick
 	 */
 	private final double DISTANCE_PER_TICK = 0.04908738;
-	
+
 	/**
 	 * the speed required to shift down, not accurate yet
 	 */
 	private static final double LOWERSHIFTSPEED = 20;
-	
+
 	/**
 	 * the speed required to shift up, not accurate yet
 	 */
 	private static final double UPPERSHIFTSPEED = 40;
-	
+
 	/**
 	 * the time required to shift, not accurate yet, in seconds
 	 */
 	private static final double SHIFTING_TIME = 0.15;
-	
+
 	/**
 	 * Joystick deadzone, +/-
 	 */
 	public static final double DEAD_ZONE = 0.05;
-	
+
 	/**
 	 * the speed required to shift
 	 */
 	private static final double SHIFTINGSPEED = 0.35;
-	
+
 	/**
 	 * Alex said I didn't need comments (=
 	 */
 	private static final double LINEUP_SPEED = 0.45;
-	
+
 	/**
 	 * determines if it's in high or low gear
 	 */
 	private static final boolean LOW_GEAR = false;
-	
+
 	/**
 	 * stops the motors for auto
 	 */
 	private static final int STOP_MOTOR = 0;
-	
+
 	//*********************************VARIBLES****************************
 	/**
 	 * the wanted speed for the left motors
 	 */
 	private double wantedLeftPower;
-	
+
 	/**
 	 * the wanted speed for the right motors
 	 */
 	private double wantedRightPower;
-		
+
 	/**
 	 * the current average speed between the left and right motors
 	 */
 	private double currentSpeed;
-	
+
 	/**
 	 * actual time it took to shift
 	 */
 	private double shiftTime;
-	
+
 	/**
 	 * The wanted power of the right drives (-1 - 1)
 	 */
 	private double rightPower;
-	
+
 	/**
 	 * The wanted power of the left drives (-1 - 1)
 	 */
 	private double leftPower;
-	
+
+	/**
+	 * The wanted auto turn angle in degrees, (- left) (+ right)
+	 */
+	private double autoWantedTurn = 0;
+
+	/**
+	 * The wanted distance to travel in inches
+	 */
+	private double autoDistance = 0;
+
 	/**
 	 * if drives == null, make a new drives
 	 * @return the new drives
@@ -242,21 +256,22 @@ public class Drives extends GenericSubsystem{
 		encoderLeft = new Encoder(IO.ENCODER_LEFT_DRIVES_A, IO.ENCODER_LEFT_DRIVES_B);
 		encoderDataLeft = new EncoderData(encoderLeft, DISTANCE_PER_TICK);
 		leftPID = new PID(P, I, 1, D, true, false);
-		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
+		//		colorSensorLeft = new ColorSensor(IO.COLOR_LEFT_RED, IO.COLOR_LEFT_BLUE, IO.COLOR_LEFT_LED);
 		leftTouch = new DigitalInput(IO.SWITCH_LEFT_DRIVES);
 		leftPower = 0;
-		
+
 		//RIGHT
 		rightFront = new Victor(IO.PWM_RIGHT_FRONT_DRIVES);
 		rightBack = new Victor(IO.PWM_RIGHT_BACK_DRIVES);
 		encoderRight = new Encoder(IO.ENCODER_RIGHT_DRIVES_A, IO.ENCODER_RIGHT_DRIVES_B);
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		rightPID = new PID(P, I, 1, D, true, false);
-		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
+		//		colorSensorRight = new ColorSensor(IO.COLOR_RIGHT_RED, IO.COLOR_RIGHT_BLUE, IO.COLOR_RIGHT_LED);
 		rightTouch = new DigitalInput(IO.SWTICH_RIGHT_DRIVES);
 		rightPower = 0;
-		
+
 		//OTHER
+		gyro = new Gyro(0);
 		log = new Logger(getName());
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);	
 		currentDriveState = State.IN_LOW_GEAR;
@@ -366,12 +381,35 @@ public class Drives extends GenericSubsystem{
 				leftPower = 0;
 			}
 			break;
+		case AUTO_TURN:
+			double currentAngle = gyro.getAngle() + 5;
+			if(currentAngle < autoWantedTurn){
+				rightPower = -0.4;
+				leftPower = 0.3;
+			}else{
+				rightPower = 0.3;
+				leftPower = -0.4;
+			}
+			if(currentAngle > (autoWantedTurn - 0.5) && currentAngle < (autoWantedTurn + 0.5)){
+				rightPower = 0;
+				leftPower = 0;
+				autoFunctions = State.AUTO_STAND_BY;
+			}
+			break;
+		case AUTO_DRIVE:
+			while((encoderDataRight.getDistance() + encoderDataLeft.getDistance())/2 < autoDistance){
+				rightPower = 0.4;
+				leftPower = 0.4;
+				rightPower += gyroOffset();
+				leftPower -= gyroOffset();
+			}
+			break;
 		default: System.out.println("Error autoFunctions = " + autoFunctions);
 		}
 
-//		rightPower = rightPID.update(encoderDataRight.getSpeed());
-//		leftPower = leftPID.update(encoderDataLeft.getSpeed());
-		
+		//		rightPower = rightPID.update(encoderDataRight.getSpeed());
+		//		leftPower = leftPID.update(encoderDataLeft.getSpeed());
+
 		leftFront.set(leftPower);
 		leftBack.set(-leftPower);
 		rightFront.set(rightPower);
@@ -393,16 +431,17 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		log.logMessage("Current speed: " + currentSpeed);
-		log.logMessage("Current drive state: " + currentDriveState);
-		log.logMessage("Auto State: " + autoFunctions);
-//				log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
-//									"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
-//				log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
-//				log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-//				log.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
-//				" Right Encoder: " +encoderDataRight.getSpeed());
-		log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
+		//		log.logMessage("Current speed: " + currentSpeed);
+		//		log.logMessage("Current drive state: " + currentDriveState);
+		//		log.logMessage("Auto State: " + autoFunctions);
+		//				log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+		//									"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
+		//				log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
+		//				log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
+		//				log.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
+		//				" Right Encoder: " +encoderDataRight.getSpeed());
+		//		log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
+		log.logMessage("Gyro: " + gyro.getAngle());
 	}
 
 	/**
@@ -427,38 +466,58 @@ public class Drives extends GenericSubsystem{
 		}else{
 			wantedRightPower = -(5/4)*Math.sqrt(-right);
 		}
-//		rightPID.setGoal(right*100);
-//		leftPID.setGoal(left*100);
+		//		rightPID.setGoal(right*100);
+		//		leftPID.setGoal(left*100);
 	}
 
 	public void setAutoFunction(State wantedAutoState){
 		autoFunctions = wantedAutoState;
 	}
-	
+
 	/**
 	 * Turns to robot
 	 * @param degrees - positive(right) || negative(left)
 	 */
 	public void autoTurn(int degrees){
-		
+		autoFunctions = State.AUTO_TURN;
+		autoWantedTurn = degrees;
+		gyro.reset();
 	}
-	
+
 	/**
 	 * Drives robot forward set distance
 	 * @param inchDistance - distance to travel in inches
 	 * @param speed - desired speed(0 - 1)
 	 */
 	public void driveStraight(int inchDistance, double speed){
-		
+		autoFunctions = State.AUTO_DRIVE;
+		autoDistance = inchDistance;
 	}
-	
+
 	/**
 	 * @return is drives is done with last auto command
 	 */
 	public boolean isDone(){
 		return (autoFunctions == State.AUTO_STAND_BY);
 	}
-	
+
+	/**
+	 * 
+	 * @return (-1 - 1)
+	 */
+	private double gyroOffset(){
+		double currentPosition = gyro.getAngle();
+		double increaseRight;
+		if(currentPosition > 1){
+			increaseRight = 0.1;
+		}else if(currentPosition < -1){
+			increaseRight = -0.1;
+		}else{
+			increaseRight = 0;
+		}
+		return increaseRight;
+	}
+
 	/**
 	 *Makes the states for drives
 	 */
@@ -468,6 +527,8 @@ public class Drives extends GenericSubsystem{
 		IN_HIGH_GEAR,
 		SHIFTING_HIGH,
 		AUTO_STAND_BY,
+		AUTO_TURN,
+		AUTO_DRIVE,
 		AUTO_LIGHT_LINE_UP,
 		AUTO_STEP_LINEUP;
 

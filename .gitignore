@@ -3,6 +3,7 @@
 /.classpath
 
 # Compiled Files
+/bin/
 *.class
 
 # Package Files
@@ -12,3 +13,5 @@
 
 # Eclipse Settings
 .settings/
+
+sysProps.xml

@@ -1,9 +1,12 @@
 package org.gosparx.team1126.robot;
 
+import org.gosparx.team1126.robot.subsystem.Controls;
+import org.gosparx.team1126.robot.subsystem.Drives;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 import org.gosparx.team1126.robot.util.LogWriter;
 
 import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.Servo;
 
 /**
  * The entry point for the robot. The constructor is called once the robot is turned on.
@@ -20,7 +23,9 @@ public class Robot extends SampleRobot{
 	public Robot() {
 		subsystems = new GenericSubsystem[]{	
 				Autonomous.getInstance(),
-				LogWriter.getInstance()
+        	Controls.getInstance(),
+        	LogWriter.getInstance(),
+        	Drives.getInstance()
 		};
 		
 		for(GenericSubsystem system: subsystems){
@@ -39,12 +44,13 @@ public class Robot extends SampleRobot{
 	 *  Called one time when the robot enters teleop
 	 */
 	public void operatorControl() {
-		
+
 	}
 
 	/**
 	 *  Called one time when the robot enters test
 	 */
 	public void test() {
+		
 	}
 }

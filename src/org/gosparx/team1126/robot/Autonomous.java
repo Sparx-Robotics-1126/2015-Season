@@ -439,4 +439,9 @@ public class Autonomous extends GenericSubsystem{
 			}
 		}
 	}
+
+	@Override
+	protected void liveWindow() {
+	
+	}
 }

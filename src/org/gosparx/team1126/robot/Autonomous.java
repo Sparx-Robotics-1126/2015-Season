@@ -37,7 +37,7 @@ public class Autonomous extends GenericSubsystem{
 	private AnalogInput selectorSwitch;
 
 	/**
-	 * An instance of a driverstation
+	 * An instance of a driver station
 	 */
 	private DriverStation ds;
 
@@ -264,7 +264,7 @@ public class Autonomous extends GenericSubsystem{
 	/**
 	 * Drives from the alliance wall to the center of the auto zone 
 	 */
-	private AutoCommands[] DRIVE_TO_AUTOZONE_FROM_STAGING = {
+	private static final AutoCommands[] DRIVE_TO_AUTOZONE_FROM_STAGING = {
 			AutoCommands.DRIVES_GO_FORWARD,
 			AutoCommands.DRIVES_DONE,
 			AutoCommands.DRIVES_STOP,
@@ -280,6 +280,47 @@ public class Autonomous extends GenericSubsystem{
 	
 	private static final String DRIVES_TO_AUTOZONE_FROM_STAGING_NAME = "Drive to Autozone from wall";
 
+	/**
+	 * Drives from edge of Autozone into Autozone
+	 */
+	private static final AutoCommands[] DRIVE_TO_AUTOZONE_FROM_EDGE = {
+			AutoCommands.DRIVES_GO_FORWARD,
+			AutoCommands.DRIVES_DONE,
+			AutoCommands.DRIVES_STOP,
+			AutoCommands.END	
+	};
+	
+	private int[][] DRIVES_TO_AUTOZONE_FROM_EDGE_PARAMS = {
+			{48, 24},
+			{},
+			{},
+			{}
+	};
+	
+	private static final String DRIVES_TO_AUTOZONE_FROM_EDGE_NAME = "Into Autozone from edge of Autozone";
+	
+	/**
+	 * Moves one yellow tote from the staging zone to the Autozone, robot starts at alliance wall
+	 */
+	private static final AutoCommands[] ONE_YELLOW_TOTE_FROM_STAGING = {
+			AutoCommands.DRIVES_GO_FORWARD,
+			AutoCommands.DRIVES_GO_REVERSE,
+			AutoCommands.DRIVES_DONE,
+			AutoCommands.DRIVES_STOP,
+			AutoCommands.END
+	};
+	
+	private int[][] ONE_YELLOW_TOTE_FROM_STAGING_PARAMS = {
+			{175, 24}, //TEST POWER!
+			{6, 24}, //TEST POWER!
+			{},
+			{},
+			{}
+	};
+	
+	private static final String ONE_YELLOW_TOTE_FROM_STAGING_NAME = "One yellow tote from staging to Sutozone";
+	
+	
 	/**
 	 * Singleton
 	 * @return the only instance of Autonomous ever

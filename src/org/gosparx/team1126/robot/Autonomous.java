@@ -369,16 +369,22 @@ public class Autonomous extends GenericSubsystem{
 		if(ds.isAutonomous() && ds.isEnabled()){
 			switch(currentAuto[currentStep]){
 			case DRIVES_GO_FORWARD:
+				drives.driveStraight(autoCommands[currentStep][0], autoCommands[currentStep][1]);
 				break;
 			case DRIVES_GO_REVERSE:
+				drives.driveStraight(-autoCommands[currentStep][0], autoCommands[currentStep][1]);
 				break;
 			case DRIVES_TURN_RIGHT:
+				drives.autoTurn(autoCommands[currentStep][0]);
 				break;
 			case DRIVES_TURN_LEFT:
+				drives.autoTurn(-autoCommands[currentStep][0]);
 				break;
 			case DRIVES_STOP:
+				//drives.forceStop();
 				break;
 			case DRIVES_DONE:
+				increaseStep = drives.isDone();
 				break;
 			case ARMS_DROP:
 				break;

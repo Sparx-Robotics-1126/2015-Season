@@ -256,6 +256,29 @@ public class Autonomous extends GenericSubsystem{
 		 */
 		END,
 	}
+	
+	/*********************************************************************************************************************************
+	 **************************************************AUTO MODES*********************************************************************
+	 *********************************************************************************************************************************/
+	
+	/**
+	 * Drives from the alliance wall to the center of the auto zone 
+	 */
+	private AutoCommands[] DRIVE_TO_AUTOZONE_FROM_STAGING = {
+			AutoCommands.DRIVES_GO_FORWARD,
+			AutoCommands.DRIVES_DONE,
+			AutoCommands.DRIVES_STOP,
+			AutoCommands.END
+	};
+	
+	private int[][] DRIVES_TO_AUTOZONE_FROM_STAGING_PARAMS = {
+		{163, 24},
+		{},
+		{},
+		{}
+	};
+	
+	private static final String DRIVES_TO_AUTOZONE_FROM_STAGING_NAME = "Drive to Autozone from wall";
 
 	/**
 	 * Singleton

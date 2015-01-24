@@ -1,6 +1,7 @@
 package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.team1126.robot.IO;
+
 import edu.wpi.first.wpilibj.Joystick;
 /**
  * This is how the controller is able to work with drives
@@ -80,7 +81,13 @@ public class Controls extends GenericSubsystem{
 						-driverJoyRight.getRawAxis(LOGITECH_1_Y_AXIS));
 		if(driverJoyRight.getRawButton(LOGITECH_1_BUTTON_1)){
 //			drives.setAutoFunction(Drives.State.AUTO_STEP_LINEUP);
-			drives.autoTurn(90);
+			drives.driveStraight(36, 0);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}

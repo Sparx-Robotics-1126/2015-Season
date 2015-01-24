@@ -6,6 +6,8 @@ public final class IO {
 	public static final int PWM_LEFT_BACK_DRIVES		= 1;
 	public static final int PWM_RIGHT_FRONT_DRIVES		= 3;
 	public static final int PWM_RIGHT_BACK_DRIVES		= 2;
+	public static final int PWM_LEFT_ELEVATION          = 4;
+	public static final int PWM_RIGHT_ELEVATION 		= 5;
 	
 	//PNU
 	public static final int PNU_SHIFTING 				= 0;

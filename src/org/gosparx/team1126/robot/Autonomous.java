@@ -94,21 +94,100 @@ public class Autonomous extends GenericSubsystem{
 	 *********************************************************************************************************************************/
 
 	public enum AutoCommands {
+		/**
+		 * Makes the drives go forward
+		 * {Inches, Inches per second}
+		 */
 		DRIVES_GO_FORWARD,
+		
+		/**
+		 * Makes the drives go in reverse
+		 * {Inches, inches per second}
+		 */
 		DRIVES_GO_REVERSE,
+		
+		/**
+		 * Turns right
+		 * {Degrees}
+		 */
 		DRIVES_TURN_RIGHT,
+		
+		/**
+		 * Turns left
+		 * {Degrees}
+		 */
 		DRIVES_TURN_LEFT,
+		
+		/**
+		 * Stops the drives in case of emergency
+		 * {}
+		 */
 		DRIVES_STOP,
+		
+		/**
+		 * Waits until drives is done with its last command
+		 * {}
+		 */
 		DRIVES_DONE,
+		
+		/**
+		 * Lowers the arms to container level
+		 * {}
+		 */
 		ARMS_DROP,
+		
+		/**
+		 * Raises the arms back up from container level
+		 * {}
+		 */
 		ARMS_RAISE,
+		
+		/**
+		 * Expands the claws that grab the container
+		 * {}
+		 */
 		ARMS_EXPAND,
+		
+		/**
+		 * Contracts the claws that grab the container
+		 * {}
+		 */
 		ARMS_CONTRACT,
+		
+		/**
+		 * Stops arms in case of emergency
+		 * {} 
+		 */
 		ARMS_STOP,
+		
+		/**
+		 * Waits until arms is done with its last command
+		 * {}
+		 */
 		ARMS_DONE,
+		
+		/**
+		 * Lowers the acquisition mechanism
+		 * {}
+		 */
 		ACQ_LOWER,
+		
+		/**
+		 * Raises the acquisition mechanism
+		 * {} 
+		 */
 		ACQ_RAISE,
+		
+		/**
+		 * Turns acquisition rollers on
+		 * {}
+		 */
 		ACQ_ROLLERS_ON,
+		
+		/**
+		 * Turns roller acquisition rollers off
+		 * {}
+		 */
 		ACQ_ROLLERS_OFF,
 		
 		/**

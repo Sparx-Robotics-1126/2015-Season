@@ -81,7 +81,17 @@ public class Controls extends GenericSubsystem{
 						-driverJoyRight.getRawAxis(LOGITECH_1_Y_AXIS));
 		if(driverJoyRight.getRawButton(LOGITECH_1_BUTTON_1)){
 //			drives.setAutoFunction(Drives.State.AUTO_STEP_LINEUP);
-			drives.driveStraight(36, 0);
+//			drives.driveStraight(36, 0);
+			drives.autoTurn(90);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else if(driverJoyRight.getRawButton(LOGITECH_1_BUTTON_2)){
+//			drives.driveStraight(-36, 0);
+			drives.autoTurn(-90);
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {

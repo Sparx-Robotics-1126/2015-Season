@@ -408,8 +408,9 @@ public class Drives extends GenericSubsystem{
 			break;
 		case AUTO_TURN:
 			double currentAngle = gyro.getAngle();
-			double speed = (1.0/16)*(Math.sqrt(autoWantedTurn - currentAngle));
-			speed = speed < Math.PI/8 ? Math.PI/8: speed;
+			double angleDiff = autoWantedTurn - currentAngle;
+			double speed = (1.0/16) * (angleDiff > 0 ? Math.sqrt(angleDiff) : -Math.sqrt(-angleDiff));
+			speed = speed < Math.PI/8 ? Math.PI/8 : speed;
 			log.logMessage(speed + "");
 			if(currentAngle < autoWantedTurn){
 				rightPower = -speed;
@@ -429,15 +430,15 @@ public class Drives extends GenericSubsystem{
 			double driveSpeed = (1.0/10)*(Math.sqrt(autoDistance - currentDistance));
 			driveSpeed = driveSpeed < Math.PI/16 ? Math.PI/16: driveSpeed;
 			driveSpeed = 0.4;
-			log.logMessage("Gyro Offset: " + gyroOffset());
+			
 			if(currentDistance < autoDistance){
 				rightPower = driveSpeed + gyroOffset();
 				leftPower = driveSpeed - gyroOffset();
 			}else{
-				rightPower = -driveSpeed - gyroOffset();
-				leftPower = - driveSpeed + gyroOffset();
+				rightPower = -driveSpeed + gyroOffset();
+				leftPower = -driveSpeed - gyroOffset();
 			}
-			if(autoDistance - currentDistance < 0.5 && autoDistance - currentDistance > 0.5){
+			if(autoDistance - currentDistance < 0.5 && autoDistance - currentDistance > -0.5){
 				rightPower = 0;
 				leftPower = 0;
 				autoFunctions = State.AUTO_STAND_BY;
@@ -521,7 +522,7 @@ public void setPower(double left, double right) {
  * Set auto function
  * @param wantedAutoState - State from drives
  */
-private void setAutoFunction(State wantedAutoState){
+public void setAutoFunction(State wantedAutoState){
 	autoFunctions = wantedAutoState;
 }
 

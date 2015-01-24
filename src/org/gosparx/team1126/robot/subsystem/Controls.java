@@ -1,43 +1,74 @@
 package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.team1126.robot.IO;
-import edu.wpi.first.wpilibj.Joystick;
+import org.gosparx.team1126.robot.util.AdvancedJoystick;
+import org.gosparx.team1126.robot.util.AdvancedJoystick.ButtonEvent;
+import org.gosparx.team1126.robot.util.AdvancedJoystick.JoystickListener;
+
 /**
  * This is how the controller is able to work with drives
  * @author Mike the camel
+ * @author Alex Mechler {amechler1998@gmail.com}
  */
-public class Controls extends GenericSubsystem{
-	
+public class Controls extends GenericSubsystem implements JoystickListener{
+
 	/**
 	 * declares a Joystick object named driverJoyLeft
 	 */
-	private Joystick driverJoyLeft;
-	
+	private AdvancedJoystick driverJoyLeft;
+
 	/**
 	 * declares a Joystick object named driverJoyRight
 	 */
-	private Joystick driverJoyRight;
-	
+	private AdvancedJoystick driverJoyRight;
+
 	/**
 	 * declares a Controls object named controls
 	 */
 	private static Controls controls;
-	
+
 	/**
 	 * declares a Drives object named drives
 	 */
 	private Drives drives;
-	
-	/*/********************************************
-	 *****************Logitech 1.0*****************
-	 **********************************************
+
+	//**************************************************************************
+	//*****************************Logitech f310 mapping************************
+	//**************************************************************************
+	private static final int LOGI_LEFT_X_AXIS = 1;
+	private static final int LOGI_LEFT_Y_AXIS = 2;
+	private static final int LOGI_RIGHT_X_AXIS = 3;
+	private static final int LOGI_RIGHT_Y_AXIS = 4;
+	/**
+	 * right = 1, left = -1
 	 */
-	private static final int LOGITECH_1_BUTTON_1		= 1;
-	private static final int LOGITECH_1_BUTTON_2		= 2;
-	private static final int LOGITECH_1_Y_AXIS 			= 1;
-	private static final int LOGITECH_1_X_AXIS			= 0;
-	private static final int LOGITECH_1_Z_AXIS			= 2;
-	
+	private static final int LOGI_DPAD_X_AXIS = 5;
+	/**
+	 * up = -1, down = 1
+	 */
+	private static final int LOGI_DPAD_Y_AXIS = 6;
+	private static final int LOGI_X = 1;
+	private static final int LOGI_A = 2;
+	private static final int LOGI_B = 3;
+	private static final int LOGI_Y = 4;
+	private static final int LOGI_L1 = 5;
+	private static final int LOGI_R1 = 6;
+	private static final int LOGI_L2 = 7;
+	private static final int LOGI_R2 = 8;
+	private static final int LOGI_BACK = 9;
+	private static final int LOGI_START = 10;
+	private static final int LOGI_L3 = 11;
+	private static final int LOGI_R3 = 12;
+
+	//********************************************************************
+	//*******************Driver Controller Mapping**********************
+	//********************************************************************
+	private static final int ATTACK3_Y_AXIS = 2;
+	private static final int ATTACK3_X_AXIS = 2;
+	private static final int ATTACK3_Z_AXIS = 3;
+	private static final int ATTACK3_TRIGGER = 1;
+	private static final int ATTACK3_TOP_BUTTON = 2;
+
 	/**
 	 * if controls == null, make a new controls
 	 * @return the new controls
@@ -48,7 +79,7 @@ public class Controls extends GenericSubsystem{
 		}
 		return controls;
 	}
-	
+
 	/**
 	 * @param name the name of the control
 	 * @param priority the priority of the control
@@ -57,33 +88,32 @@ public class Controls extends GenericSubsystem{
 	private Controls() {
 		super("controls", Thread.NORM_PRIORITY);
 	}
-	
+
 	/**
 	 * instantiates a Joystick and Drives
 	 * @return false ~ keeps looping true ~ stops loop
 	 */
 	@Override
 	protected boolean init() {
-		driverJoyLeft = new Joystick(IO.DRIVER_JOYSTICK_LEFT);
-		driverJoyRight = new Joystick(IO.DRIVER_JOYSTICK_RIGHT);
+		driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT);
+		driverJoyLeft.addActionListener(this);
+		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT);
+		driverJoyRight.addActionListener(this);
 		drives = Drives.getInstance(); 
 		return true;
 	}
-	
+
 	/**
 	 * sets the speed of the control axis to drives
 	 * @return false ~ keeping looping true ~ end loop
 	 */
 	@Override
 	protected boolean execute() {
-		drives.setPower(-driverJoyLeft.getRawAxis(LOGITECH_1_Y_AXIS),
-						-driverJoyRight.getRawAxis(LOGITECH_1_Y_AXIS));
-		if(driverJoyRight.getRawButton(LOGITECH_1_BUTTON_1)){
-			drives.setAutoFunction(Drives.State.AUTO_STEP_LINEUP);
-		}
+		drives.setPower(-driverJoyLeft.getAxis(ATTACK3_Y_AXIS),
+				-driverJoyRight.getAxis(ATTACK3_Y_AXIS));
 		return false;
 	}
-	
+
 	/** 
 	 * The amount of time you want to sleep for after a cycle.
 	 * @return the number of milliseconds you want to sleep after a cycle.
@@ -92,18 +122,102 @@ public class Controls extends GenericSubsystem{
 	protected long sleepTime() {
 		return 20;
 	}
-	
+
 	/**
 	 * Where all the logged info goes
 	 */
 	@Override
 	protected void writeLog() {
-	}
 	
+	}
+
+	/**
+	 * Uses Livewindow 
+	 */
 	@Override
 	protected void liveWindow() {
-		// TODO Auto-generated method stub
 		
+	}
+
+	/**
+	 * Responds to button events
+	 * @param e - the buttonevent
+	 */
+	@Override
+	public void actionPerformed(ButtonEvent e) {
+		switch (e.getPort()) {
+		case IO.DRIVER_JOYSTICK_LEFT:
+			switch (e.getID()) {
+			case ATTACK3_TOP_BUTTON:
+
+				break;
+			case ATTACK3_TRIGGER:
+
+				break;
+			default:
+				LOG.logError("Unknown button: " +  e.getID());
+				break;
+			}
+			break;
+		case IO.DRIVER_JOYSTICK_RIGHT:
+			switch(e.getID()){
+			case ATTACK3_TOP_BUTTON:
+				if(e.isRising()){
+					drives.setAutoFunction(Drives.State.AUTO_STEP_LINEUP);
+				}
+				break;
+			case ATTACK3_TRIGGER:
+
+				break;
+			default: 
+				LOG.logError("Unknown button: " +  e.getID());
+				break;
+			}
+		case IO.OPERATOR_JOYSTICK:
+			switch (e.getID()) {
+			case LOGI_A:
+
+				break;
+			case LOGI_B:
+
+				break;
+			case LOGI_X:
+
+				break;
+			case LOGI_Y:
+
+				break;
+			case LOGI_START:
+
+				break;
+			case LOGI_BACK:
+
+				break;
+			case LOGI_L1:
+				
+				break;
+			case LOGI_L2:
+				
+				break;
+			case LOGI_L3:
+				
+				break;
+			case LOGI_R1:
+				
+				break;
+			case LOGI_R2:
+				
+				break;
+			case LOGI_R3:
+				
+				break;
+			default:
+				LOG.logError("Unknown button: " +  e.getID());
+				break;
+			}
+		default:
+			break;
+		}
 	}
 
 }

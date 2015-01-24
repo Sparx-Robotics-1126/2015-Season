@@ -19,6 +19,7 @@ public final class IO {
 	//Joystick
 	public static final int DRIVER_JOYSTICK_LEFT		= 0;
 	public static final int DRIVER_JOYSTICK_RIGHT		= 1;
+	public static final int OPERATOR_JOYSTICK 			= 2;
 	
 	//Sensors 
 	public static final int COLOR_RIGHT_RED				= 2;

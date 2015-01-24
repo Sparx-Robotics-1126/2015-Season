@@ -1,137 +1,187 @@
 package org.gosparx.team1126.robot.util;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
+
 import edu.wpi.first.wpilibj.Joystick;
 
 /**
  * A class for more advanced data collection from the joysticks.
- * @author Alex Mechler
+ * @author Alex Mechler {amechler1998@gmail.com}
  */
-public class AdvancedJoystick{
+public class AdvancedJoystick extends GenericSubsystem{
 
 	/**
-	 * The Joystick to get the data from
+	 * The joystick we are gathering data from
 	 */
-	private Joystick stick;
+	private Joystick joy;
 
 	/**
-	 * The number of buttons on the joystick
+	 * The previous value of the joystick buttons
 	 */
-	private int numButtons;
+	private boolean[] prevValues;
 
 	/**
-	 * The number of Axis on the joystick
+	 * The listener that is listening for the rising/falling edges
 	 */
-	private int numAxis;
+	private JoystickListener listener;
 
 	/**
-	 * A map of all of the previous button values, used for rising/falling edge detection
+	 * the port the joystick is in
 	 */
-	private boolean[] prevButton;
+	private int port;
 
 	/**
-	 * A map of all of the current button values, used for rising/falling edge detection
+	 * Any axis value under this will be treated as 0
 	 */
-	private boolean[] currButton;
+	private static final double DEADBAND = .04;
 
 	/**
-	 * A map of all of the previous axis values, currently unused
+	 * Creates a new advanced joystick
+	 * @param name - The name of the thread
+	 * @param joyPort - the port the joystick is in
 	 */
-	private double[] prevAxis;
-
-	/**
-	 * A map of all of the current axis values
-	 */
-	private double[] currAxis;
-
-	/**
-	 * An instance of driverstation
-	 */
-	private DriverStation ds;
-
-	/**
-	 * Creates a new AdvancedJoystick
-	 * @param joy The Joystick to collect data from
-	 * @param numButtons The number of buttons on the Joystick
-	 * @param numAxis The number of Axis on the Joystick
-	 */
-	public AdvancedJoystick(Joystick joy, int numButtons, int numAxis){
-		stick = joy;
-		this.numButtons = numButtons;
-		this.numAxis = numAxis;
-		prevButton = new boolean[numButtons];
-		currButton = new boolean[numButtons];
-		prevAxis = new double[numAxis];
-		currAxis = new double[numAxis];
-		ds = DriverStation.getInstance();
-	}
-	
-	/**
-	 * Creates a new AdvancedJoystick
-	 * @param port The port of the Joystick to collect data from
-	 * @param numButtons The number of buttons on the Joystick
-	 * @param numAxis The number of Axis on the Joystick
-	 */
-	public AdvancedJoystick(int port, int numButtons, int numAxis){
-		stick = new Joystick(port);
-		this.numButtons = numButtons;
-		this.numAxis = numAxis;
-		prevButton = new boolean[numButtons];
-		currButton = new boolean[numButtons];
-		prevAxis = new double[numAxis];
-		currAxis = new double[numAxis];
-		ds = DriverStation.getInstance();
+	public AdvancedJoystick(String name, int joyPort) {
+		super(name, Thread.NORM_PRIORITY);
+		joy = new Joystick(joyPort);
+		port = joyPort;
+		prevValues = new boolean[joy.getButtonCount()];
 	}
 
 	/**
-	 * Call this before any other method using the values. Updates all of the maps
+	 * Initializes things.
 	 */
-	public void updateValues(){
-		if(ds.isEnabled() && ds.isOperatorControl()){
-			prevButton = currButton.clone();
-			for(int i = 1; i <= numButtons; i++){
-				currButton[i-1] = stick.getRawButton(i);
-			}
-			prevAxis = currAxis.clone();
-			for (int i = 1; i <= numAxis; i++){
-				currAxis[i-1] = stick.getRawAxis(i);
+	@Override
+	protected boolean init() {
+		return true;
+	}
+
+	/**
+	 * Uses livewindow
+	 */
+	@Override
+	protected void liveWindow() {
+
+	}
+
+	/**
+	 * loops, updates and compares values
+	 */
+	@Override
+	protected boolean execute() {
+		for(int i = 0; i < joy.getButtonCount(); i++){
+			hasChanged(i);
+			prevValues[i] = joy.getRawButton(i);
+		}
+		return false;
+	}
+
+	/**
+	 * How long to sleep in ms
+	 */
+	@Override
+	protected long sleepTime() {
+		return 20;
+	}
+
+	/**
+	 * writes log info
+	 */
+	@Override
+	protected void writeLog() {
+
+	}
+
+	/**
+	 * checks to see if the button has had a rising/falling edge and will notify the listener if it is
+	 * @param button - the id of the button
+	 */
+	private void hasChanged(int button){
+		if(joy.getRawButton(button) != prevValues[button]){
+			if(listener != null){
+				listener.actionPerformed(new ButtonEvent(port, button, joy.getRawButton(button)));
+				LOG.logMessage("ButtonEvent( " + port + ", " + button + ", " + joy.getRawButton(button));
 			}
 		}
 	}
 
 	/**
-	 * returns the current value of the axis
-	 * @param id the id of the Axis
-	 * @return the current value of the axis
+	 * Get the axis value accounting for the deadband
+	 * @param axis - the int of the axis to get
+	 * @return the modified axis value
 	 */
-	public double getAxis(int id){
-		return currAxis[id-1];
+	public double getAxis(int axis){
+		return (joy.getRawAxis(axis) > DEADBAND) ? joy.getRawAxis(axis) : 0;
 	}
 
 	/**
-	 * Gets the current state of the button
-	 * @param id the id of the button to collect
-	 * @return true if pressed, false if not
+	 * Adds a new ActionListener
+	 * @param listener - the listener
 	 */
-	public boolean getButton(int id){
-		return currButton[id-1];
+	public void addActionListener(JoystickListener listener){
+		this.listener = listener;
 	}
 
 	/**
-	 * Returns if the button is on a rising edge
-	 * @param id the buttons id
-	 * @return true if it is a rising edge
+	 * A class that represents all of the button events that could happen
+	 * @author Alex Mechler {amechler1998@gmail.com}
 	 */
-	public boolean getRisingEdge(int id){
-		return currButton[id-1] && !prevButton[id-1];
+	public class ButtonEvent{
+
+		/**
+		 * True if this is a rising edge, false if its a falling edge
+		 */
+		private boolean risingEdge;
+		
+		/**
+		 * The button id that triggered the event
+		 */
+		private int buttonID;
+		
+		/**
+		 * The port of the joystick that triggered the event
+		 */
+		private int joy;
+		
+		/**
+		 * Creates a new ButtonEvent
+		 * @param port - the port of the joystick
+		 * @param buttonID - the button that created the event
+		 * @param risingEdge - if this is a rising edge or falling edge
+		 */
+		public ButtonEvent(int port, int buttonID, boolean risingEdge){
+			this.buttonID = buttonID;
+			this.risingEdge = risingEdge;
+			joy = port;
+		}
+
+		/**
+		 * @return true - if rising edge
+		 * 		   false - if falling edge
+		 */
+		public boolean isRising(){
+			return risingEdge;
+		}
+
+		/**
+		 * @return the button id that the event was triggered from 
+		 */
+		public int getID(){
+			return buttonID;
+		}
+
+		/**
+		 * @return The port of the joystick that triggered the event
+		 */
+		public int getPort(){
+			return joy;
+		}
 	}
 
 	/**
-	 * Returns if the button is on a falling edge
-	 * @param id the id of the button
-	 * @return returns if it is on a falling edge
+	 * An interface that allows for listening to the advanced joystick.
+	 * @author Alex Mechler {amechler1998@gmail.com}
 	 */
-	public boolean getFallingEdge(int id){
-		return !currButton[id-1] && prevButton[id-1];
+	public interface JoystickListener{
+		public void actionPerformed(ButtonEvent e);
 	}
 }

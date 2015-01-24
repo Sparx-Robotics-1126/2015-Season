@@ -39,7 +39,7 @@ public class Autonomous extends GenericSubsystem{
 	 * The current autonomous 
 	 */
 	private AutoCommands[] currentAuto;
-	
+
 	/**
 	 * An array of the parameters
 	 */
@@ -88,154 +88,87 @@ public class Autonomous extends GenericSubsystem{
 	private final double SELECTION_7 = 1.07;
 	private final double SELECTION_8 = 0.54;
 	private final double SELECTION_9 = 0.00;
-	
+
 	/*********************************************************************************************************************************
 	 **********************************************AUTO COMMANDS**********************************************************************
 	 *********************************************************************************************************************************/
 
 	public enum AutoCommands {
-		
-		/**
-		 * Drives forward
-		 * {inches, inches per second}
-		 */
 		DRIVES_GO_FORWARD,
-		
-		/**
-		 * Drives reverse 
-		 * {inches, inches per second}
-		 */
 		DRIVES_GO_REVERSE,
-		
-		/**
-		 * Drives turn right
-		 * {degrees}
-		 */
 		DRIVES_TURN_RIGHT,
-		
-		/**
-		 * Drives turn left
-		 * {degrees}
-		 */
 		DRIVES_TURN_LEFT,
-		
-		/**
-		 * Stops the drives in emergency
-		 * {}
-		 */
 		DRIVES_STOP,
-		
-		/**
-		 * Stops drives once autonomous completed
-		 * {}
-		 */
 		DRIVES_DONE,
-		
-		/**
-		 *Lowers the arms down to can level
-		 *{}   
-		 */
 		ARMS_DROP,
-		
-		/**
-		 * Raises the arms back up
-		 * {}
-		 */
 		ARMS_RAISE,
-		
-		/**
-		 * Expands the arms on the claw to pick up can
-		 * {}
-		 */
 		ARMS_EXPAND,
-		
-		/**
-		 * Contracts the claws
-		 * {}
-		 */
 		ARMS_CONTRACT,
-		
-		/**
-		 * Stops the arms in case of emergency
-		 * {}
-		 */
 		ARMS_STOP,
-		
-		/**
-		 * Stops the arms once autonomous is completed
-		 * {}
-		 */
 		ARMS_DONE,
-		
-		/**
-		 * Lowers the acquisition mechanism 
-		 * {}
-		 */
 		ACQ_LOWER,
-		
-		/**
-		 * Raises the acquisition mechanism
-		 * {}
-		 */
 		ACQ_RAISE,
-		
-		/**
-		 * Turns rollers that acquire the totes on
-		 * {}
-		 */
 		ACQ_ROLLERS_ON,
-		
-		/**
-		 * Turns rollers that acquire totes off
-		 * {} 
-		 */
 		ACQ_ROLLERS_OFF,
 		
 		/**
-		 * Stops the acquisition rollers in case of emergency
-		 * {} 
+		 * Stops the acquisitions
+		 * {}
 		 */
 		ACQ_STOP,
 		
 		/**
-		 * Stops the acquisition rollers once autonomous is completed
+		 * Waits until the acquisitions is done
 		 * {}
 		 */
 		ACQ_DONE,
 		
 		/**
-		 * Raises the tote lifting mechanism
-		 * {} 
+		 * Raise the stack of totes
+		 * {}
 		 */
 		TOTES_RAISE,
 		
 		/**
-		 * Lowers the tote lifting mechanism
+		 * Lower the stack of totes
 		 * {}
 		 */
 		TOTES_LOWER,
 		
 		/**
-		 * Ejects totes from lifting mechanism
+		 * Ejects the stack totes
 		 * {}
 		 */
 		TOTES_EJECT,
 		
 		/**
-		 * Stops the tote lifting mechanism in case of emergency
+		 * E-stop the tote system
 		 * {}
 		 */
 		TOTES_STOP,
 		
 		/**
-		 * Stops the tote lifting mechanism at the end of autonomous
+		 * Waits until the tote acq is done with its previous commands
 		 * {}
 		 */
 		TOTES_DONE,
 		
+		/**
+		 * Sets a critical action
+		 * {critical time, critical step}
+		 */
+		CHECK_TIME,
 		
-		CHECK_TIME, //{CHECK_TIME, criticalStep, criticalTime}
+		/**
+		 * Sleeps
+		 * {time in ms}
+		 */
 		WAIT,
+		
+		/**
+		 * Signals the end of the auto mode 
+		 * {}
+		 */
 		END,
 	}
 
@@ -308,7 +241,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		System.out.println("Current Step:" + currentStep);
+
 	}
 
 	/**
@@ -404,9 +337,23 @@ public class Autonomous extends GenericSubsystem{
 				break;
 			case END:
 				break;
+			default:
+				runAuto = false;
+				LOG.logError("Unknown autocommand: " + currentAuto[currentStep]);
 			}
-			if(increaseStep)
+			if(increaseStep){
 				currentStep++;
+				StringBuilder sb = new StringBuilder();
+				sb.append(currentAuto[currentStep]).append("(");
+				String prefix = "";
+				for(int i:autoCommands[currentStep]){
+					sb.append(prefix);
+					prefix = ", ";
+					sb.append(autoCommands[currentStep][i]);
+				}
+				sb.append(")");
+				LOG.logMessage(sb.toString());
+			}
 			if(checkTime && Timer.getFPGATimestamp() - autoStartTime >= criticalTime && currentStep < criticalStep){
 				currentStep = criticalStep;
 				checkTime = false;

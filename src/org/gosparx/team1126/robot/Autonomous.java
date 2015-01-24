@@ -110,15 +110,65 @@ public class Autonomous extends GenericSubsystem{
 		ACQ_RAISE,
 		ACQ_ROLLERS_ON,
 		ACQ_ROLLERS_OFF,
+		
+		/**
+		 * Stops the acquisitions
+		 * {}
+		 */
 		ACQ_STOP,
+		
+		/**
+		 * Waits until the acquisitions is done
+		 * {}
+		 */
 		ACQ_DONE,
+		
+		/**
+		 * Raise the stack of totes
+		 * {}
+		 */
 		TOTES_RAISE,
+		
+		/**
+		 * Lower the stack of totes
+		 * {}
+		 */
 		TOTES_LOWER,
+		
+		/**
+		 * Ejects the stack totes
+		 * {}
+		 */
 		TOTES_EJECT,
+		
+		/**
+		 * E-stop the tote system
+		 * {}
+		 */
 		TOTES_STOP,
+		
+		/**
+		 * Waits until the tote acq is done with its previous commands
+		 * {}
+		 */
 		TOTES_DONE,
-		CHECK_TIME, //{CHECK_TIME, criticalStep, criticalTime}
+		
+		/**
+		 * Sets a critical action
+		 * {critical time, critical step}
+		 */
+		CHECK_TIME,
+		
+		/**
+		 * Sleeps
+		 * {time in ms}
+		 */
 		WAIT,
+		
+		/**
+		 * Signals the end of the auto mode 
+		 * {}
+		 */
 		END,
 	}
 

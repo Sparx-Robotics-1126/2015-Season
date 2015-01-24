@@ -94,29 +94,146 @@ public class Autonomous extends GenericSubsystem{
 	 *********************************************************************************************************************************/
 
 	public enum AutoCommands {
+		
+		/**
+		 * Drives forward
+		 * {inches, inches per second}
+		 */
 		DRIVES_GO_FORWARD,
+		
+		/**
+		 * Drives reverse 
+		 * {inches, inches per second}
+		 */
 		DRIVES_GO_REVERSE,
+		
+		/**
+		 * Drives turn right
+		 * {degrees}
+		 */
 		DRIVES_TURN_RIGHT,
+		
+		/**
+		 * Drives turn left
+		 * {degrees}
+		 */
 		DRIVES_TURN_LEFT,
+		
+		/**
+		 * Stops the drives in emergency
+		 * {}
+		 */
 		DRIVES_STOP,
+		
+		/**
+		 * Stops drives once autonomous completed
+		 * {}
+		 */
 		DRIVES_DONE,
+		
+		/**
+		 *Lowers the arms down to can level
+		 *{}   
+		 */
 		ARMS_DROP,
+		
+		/**
+		 * Raises the arms back up
+		 * {}
+		 */
 		ARMS_RAISE,
+		
+		/**
+		 * Expands the arms on the claw to pick up can
+		 * {}
+		 */
 		ARMS_EXPAND,
+		
+		/**
+		 * Contracts the claws
+		 * {}
+		 */
 		ARMS_CONTRACT,
+		
+		/**
+		 * Stops the arms in case of emergency
+		 * {}
+		 */
 		ARMS_STOP,
+		
+		/**
+		 * Stops the arms once autonomous is completed
+		 * {}
+		 */
 		ARMS_DONE,
+		
+		/**
+		 * Lowers the acquisition mechanism 
+		 * {}
+		 */
 		ACQ_LOWER,
+		
+		/**
+		 * Raises the acquisition mechanism
+		 * {}
+		 */
 		ACQ_RAISE,
+		
+		/**
+		 * Turns rollers that acquire the totes on
+		 * {}
+		 */
 		ACQ_ROLLERS_ON,
+		
+		/**
+		 * Turns rollers that acquire totes off
+		 * {} 
+		 */
 		ACQ_ROLLERS_OFF,
+		
+		/**
+		 * Stops the acquisition rollers in case of emergency
+		 * {} 
+		 */
 		ACQ_STOP,
+		
+		/**
+		 * Stops the acquisition rollers once autonomous is completed
+		 * {}
+		 */
 		ACQ_DONE,
+		
+		/**
+		 * Raises the tote lifting mechanism
+		 * {} 
+		 */
 		TOTES_RAISE,
+		
+		/**
+		 * Lowers the tote lifting mechanism
+		 * {}
+		 */
 		TOTES_LOWER,
+		
+		/**
+		 * Ejects totes from lifting mechanism
+		 * {}
+		 */
 		TOTES_EJECT,
+		
+		/**
+		 * Stops the tote lifting mechanism in case of emergency
+		 * {}
+		 */
 		TOTES_STOP,
+		
+		/**
+		 * Stops the tote lifting mechanism at the end of autonomous
+		 * {}
+		 */
 		TOTES_DONE,
+		
+		
 		CHECK_TIME, //{CHECK_TIME, criticalStep, criticalTime}
 		WAIT,
 		END,

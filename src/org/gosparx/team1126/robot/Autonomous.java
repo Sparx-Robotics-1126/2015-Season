@@ -142,6 +142,13 @@ public class Autonomous extends GenericSubsystem{
 		{CHECK_TIME, 7, 5},
 		{ARMS_IN_CAN},
 		{DRIVES_STOP},
+		{ARMS_EXPAND},
+		{DRIVES_GO_REVERSE, 45}, // TODO find out the distance to drive backwards
+		{DRIVES_DONE},
+		{ARMS_CONTRACT},
+	    {WAIT, 63}, //TODO find out how long to wait
+	    {ARMS_RAISE},
+	    {END}
 	};
 	
 	/**
@@ -244,6 +251,7 @@ public class Autonomous extends GenericSubsystem{
 			case DRIVES_GO_FORWARD:
 				break;
 			case DRIVES_GO_REVERSE:
+				//TODO make it go back backwards ? distance
 				break;
 			case DRIVES_TURN_RIGHT:
 				break;
@@ -268,8 +276,10 @@ public class Autonomous extends GenericSubsystem{
 				canAcq.armsDrop();
 				break;
 			case ARMS_RAISE:
+				canAcq.armsRaise();
 				break;
 			case ARMS_EXPAND:
+				canAcq.openArms();
 				break;
 			case ARMS_CONTRACT:
 				break;

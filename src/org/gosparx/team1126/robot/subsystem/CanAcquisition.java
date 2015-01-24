@@ -13,7 +13,11 @@ public class CanAcquisition{
 	/**
 	 * Position for which the arms to drop
 	 */
-	private static final double DROP_RELEASE_POSITION = 1.0;
+	private static final double DROP_RELEASE_POSITION = 1.0; //TODO find out
+	/**
+	 * Position for which the arms raise
+	 */
+	private static final double RAISE_RELEASE_POSITION = 1.0; //TODO find out
 	/**
 	 * This is the sensors that tells us the right claw is inside can
 	 */
@@ -27,13 +31,9 @@ public class CanAcquisition{
 	 */
 	private Servo releasingArmsServo;
 	/**
-	 * This is the servo to lift right arm
+	 * this is the servo to raise both arms
 	 */
-	private Servo rightLiftArm;
-	/**
-	 * This is the servo to lift left arm
-	 */
-	private Servo leftLiftArm;
+	private Servo raisingArmsServo; 
 	/**
 	 * This is the solenoid for the right arm
 	 */
@@ -65,8 +65,7 @@ public class CanAcquisition{
 		rightArmInCan = new DigitalInput(0);
 		leftArmInCan = new DigitalInput(0);
 		releasingArmsServo = new Servo(0);
-		rightLiftArm = new Servo(0);
-		leftLiftArm = new Servo(0);
+		raisingArmsServo = new Servo(0);
 		actuateRightArm = new Solenoid(0);
 		actuateLeftArm = new Solenoid(0);
 	}
@@ -77,7 +76,12 @@ public class CanAcquisition{
 	public void armsDrop() {
 		releasingArmsServo.set(DROP_RELEASE_POSITION);
 	}
-	
+	/**
+	 * Raises both arms
+	 */
+	public void armsRaise(){
+		raisingArmsServo.set(RAISE_RELEASE_POSITION);
+	}
 	/**
 	 * Returns TRUE if right hand is in the can
 	 */
@@ -91,4 +95,24 @@ public class CanAcquisition{
 	public boolean leftHandInCan() {
 		return(leftArmInCan.get());
 	}	
+
+	/**
+	 * Opens both arms
+	 */
+	public void openArms() {
+		if (rightArmInCan.get()) {
+			actuateRightArm.set(true);
+		}
+		if (leftArmInCan.get()) {
+			actuateLeftArm.set(true);
+		}
+	}
+	/**
+	 * Closes both arms 	
+	 */
+	public void closeArms() {
+		actuateRightArm.set(false); 
+		actuateLeftArm.set(false);
+	}
+		
 }

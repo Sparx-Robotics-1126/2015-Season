@@ -1,5 +1,6 @@
 package org.gosparx.team1126.robot;
 
+import org.gosparx.team1126.robot.subsystem.Drives;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -15,6 +16,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Autonomous extends GenericSubsystem{
 
+	/**
+	 * An Instance of Drives
+	 */
+	private Drives drives;
+	
 	/**
 	 * True if we are running auto
 	 */
@@ -197,6 +203,7 @@ public class Autonomous extends GenericSubsystem{
 	protected boolean init() {
 		selectorSwitch = new AnalogInput(IO.SELECTOR_SWITCH_CHANNEL);
 		ds = DriverStation.getInstance();
+		drives = Drives.getInstance();
 		SendableChooser chooser = new SendableChooser();
 		chooser.addDefault("NO_AUTO", new Integer(0));
 		chooser.addObject("AUTO_1", new Integer(1));

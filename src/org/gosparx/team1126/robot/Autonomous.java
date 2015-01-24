@@ -125,6 +125,12 @@ public class Autonomous extends GenericSubsystem{
 		DRIVES_TURN_LEFT,
 		
 		/**
+		 * "Dances" to jiggle the arms into the cans
+		 * {}
+		 */
+		DRIVES_DANCE,
+		
+		/**
 		 * Stops the drives in case of emergency
 		 * {}
 		 */
@@ -358,7 +364,8 @@ public class Autonomous extends GenericSubsystem{
 		AutoCommands.TOTES_DONE,
 		AutoCommands.DRIVES_GO_REVERSE,
 		AutoCommands.DRIVES_DONE,
-		AutoCommands.END	
+		AutoCommands.END
+		
 		
 	};
 	private int[][] TWO_YELLOW_TOTES_FROM_STAGING_PARAMS = {
@@ -397,7 +404,6 @@ public class Autonomous extends GenericSubsystem{
 			{},
 			{},
 			{}
-			
 	};
 	
 	private static final String TWO_YELLOW_TOTES_FROM_STAGING_NAME = "Two yellow totes into Autozone"; 
@@ -522,6 +528,48 @@ public class Autonomous extends GenericSubsystem{
 	};
 		
 	private static final String THREE_YELLOW_TOTES_FROM_STAGING_NAME = "Three yellow totes into Autozone"; 
+	
+	/**
+	 * Acquires 2 totes from the step and brings them to the auto zone
+	 */
+	private static final AutoCommands[] TWO_CANS_STEP = {
+		AutoCommands.DRIVES_GO_FORWARD,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.ARMS_DROP,
+		AutoCommands.DRIVES_DANCE,
+		AutoCommands.WAIT,
+		AutoCommands.DRIVES_STOP,
+		AutoCommands.ARMS_EXPAND,
+		AutoCommands.ARMS_DONE,
+		AutoCommands.DRIVES_GO_REVERSE,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.ARMS_CONTRACT,
+		AutoCommands.ARMS_DONE,
+		AutoCommands.ARMS_RAISE,
+		AutoCommands.ARMS_DONE,
+		AutoCommands.END
+	};
+	
+	private static final int[][] TWO_CANS_STEP_PARAMS= {
+		{54, 25},
+		{},
+		{},
+		{},
+		{},
+		{1000},
+		{},
+		{},
+		{},
+		{156, 25},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{}
+	};
+	
+	private static final String TWO_CANS_STEP_NAME = "Two Cans from Step";
 	
 	/**
 	 * Singleton

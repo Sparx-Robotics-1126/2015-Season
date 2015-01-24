@@ -17,6 +17,8 @@ public final class IO {
 	public static final int ENCODER_RIGHT_DRIVES_B 		= 1;
 	public static final int ENCODER_LEFT_DRIVES_A 		= 2;
 	public static final int ENCODER_LEFT_DRIVES_B		= 3;
+	public static final int ENCODER_ELEVATION_A			= 4;
+	public static final int ENCODER_ELEVATION_B			= 5;
 	
 	//Joystick
 	public static final int DRIVER_JOYSTICK_LEFT		= 0;

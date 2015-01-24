@@ -334,5 +334,11 @@ public class Autonomous extends GenericSubsystem{
 			}
 		}
 	}
+
+	@Override
+	protected void liveWindow() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

@@ -5,6 +5,7 @@ import org.gosparx.team1126.robot.subsystem.Drives;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 import org.gosparx.team1126.robot.util.LogWriter;
 
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Servo;
 
@@ -23,7 +24,7 @@ public class Robot extends SampleRobot{
 	public Robot() {
 		subsystems = new GenericSubsystem[]{	
         	Controls.getInstance(),
-//        	LogWriter.getInstance(),
+        	LogWriter.getInstance(),
         	Drives.getInstance()
 		};
 		
@@ -36,7 +37,7 @@ public class Robot extends SampleRobot{
 	 *  Called one time when the robot enters autonomous
 	 */
 	public void autonomous() {
-
+		
 	}
 
 	/**

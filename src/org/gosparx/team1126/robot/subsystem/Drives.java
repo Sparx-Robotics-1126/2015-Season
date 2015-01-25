@@ -7,6 +7,7 @@ import org.gosparx.team1126.robot.sensors.ColorSensor.Color;
 import org.gosparx.team1126.robot.sensors.PID;
 import org.gosparx.team1126.robot.util.Logger;
 
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
@@ -120,7 +121,9 @@ public class Drives extends GenericSubsystem{
 	 */
 	private DigitalInput leftTouch;
 
-
+	/**
+	 * Allow for current heading of the robot
+	 */
 	private Gyro gyro;
 
 	//********************************CONSTANTS****************************
@@ -203,7 +206,7 @@ public class Drives extends GenericSubsystem{
 	 * Use PID Debugger (DRIVES WILL NOT WORK WITH JOYSTICK INPUT)
 	 */
 	private static final boolean USE_PID_DEBUG = false;
-
+	
 	//*********************************VARIBLES****************************
 	/**
 	 * the wanted speed for the left motors
@@ -408,10 +411,13 @@ public class Drives extends GenericSubsystem{
 			break;
 		case AUTO_TURN:
 			double currentAngle = gyro.getAngle();
-			double angleDiff = autoWantedTurn - currentAngle;
-			double speed = (1.0/16) * (angleDiff > 0 ? Math.sqrt(angleDiff) : -Math.sqrt(-angleDiff));
-			speed = speed < Math.PI/8 ? Math.PI/8 : speed;
-			log.logMessage(speed + "");
+			double angleDiff = Math.abs(autoWantedTurn - currentAngle);
+			double speed = (1.0/16)*Math.sqrt(angleDiff);
+			if(speed > 0){
+				speed = speed < Math.PI/8 ? Math.PI/8 : speed;
+			}else{
+				speed = speed > -Math.PI/8 ? -Math.PI/8 : speed;
+			}
 			if(currentAngle < autoWantedTurn){
 				rightPower = -speed;
 				leftPower = speed;
@@ -427,10 +433,8 @@ public class Drives extends GenericSubsystem{
 			break;
 		case AUTO_DRIVE:
 			double currentDistance = (encoderDataRight.getDistance() + encoderDataLeft.getDistance())/2;
-			double driveSpeed = (1.0/10)*(Math.sqrt(autoDistance - currentDistance));
+			double driveSpeed = (1.0/10)*(Math.sqrt(Math.abs(autoDistance - currentDistance)));
 			driveSpeed = driveSpeed < Math.PI/16 ? Math.PI/16: driveSpeed;
-			driveSpeed = 0.4;
-			
 			if(currentDistance < autoDistance){
 				rightPower = driveSpeed + gyroOffset();
 				leftPower = driveSpeed - gyroOffset();

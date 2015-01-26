@@ -44,7 +44,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 		super(name, Thread.NORM_PRIORITY);
 		joy = new Joystick(joyPort);
 		port = joyPort;
-		prevValues = new boolean[joy.getButtonCount()];
+		prevValues = new boolean[joy.getButtonCount() + 1];
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		for(int i = 0; i < joy.getButtonCount(); i++){
+		for(int i = 1; i <= joy.getButtonCount(); i++){
 			hasChanged(i);
 			prevValues[i] = joy.getRawButton(i);
 		}

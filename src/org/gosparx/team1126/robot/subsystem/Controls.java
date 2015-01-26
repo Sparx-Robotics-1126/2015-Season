@@ -95,10 +95,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean init() {
-		driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT);
-		driverJoyLeft.addActionListener(this);
-		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT);
-		driverJoyRight.addActionListener(this);
+		//driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT);
+		//driverJoyLeft.addActionListener(this);
+		//driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT);
+		//driverJoyRight.addActionListener(this);
+		new AdvancedJoystick("Op", 1).addActionListener(this);
 		drives = Drives.getInstance(); 
 		return true;
 	}
@@ -109,8 +110,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean execute() {
-		drives.setPower(-driverJoyLeft.getAxis(ATTACK3_Y_AXIS),
-				-driverJoyRight.getAxis(ATTACK3_Y_AXIS));
+		//drives.setPower(-driverJoyLeft.getAxis(ATTACK3_Y_AXIS),
+		//		-driverJoyRight.getAxis(ATTACK3_Y_AXIS));
 		return false;
 	}
 
@@ -145,6 +146,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	public void actionPerformed(ButtonEvent e) {
+		System.out.println(e.getPort() + " " + e.getID() + " " + e.isRising());
 		switch (e.getPort()) {
 		case IO.DRIVER_JOYSTICK_LEFT:
 			switch (e.getID()) {

@@ -178,11 +178,6 @@ public class Drives extends GenericSubsystem{
 	private static final double SHIFTING_TIME = 0.15;
 
 	/**
-	 * Joystick deadzone, +/-
-	 */
-	public static final double DEAD_ZONE = 0.05;
-
-	/**
 	 * the speed required to shift
 	 */
 	private static final double SHIFTINGSPEED = 0.35;
@@ -206,7 +201,7 @@ public class Drives extends GenericSubsystem{
 	 * Use PID Debugger (DRIVES WILL NOT WORK WITH JOYSTICK INPUT)
 	 */
 	private static final boolean USE_PID_DEBUG = false;
-	
+
 	/**
 	 * The distance in inches where drives straight has been achieved +-
 	 */
@@ -251,7 +246,7 @@ public class Drives extends GenericSubsystem{
 	 * The wanted distance to travel in inches
 	 */
 	private double autoDistance = 0;
-	
+
 	/**
 	 * The max speed for drive's straight
 	 */
@@ -432,7 +427,7 @@ public class Drives extends GenericSubsystem{
 				rightPower = speed;
 				leftPower = -speed;
 			}
-			if(currentAngle > (autoWantedTurn - 0.5) && currentAngle < (autoWantedTurn + 0.5)){
+			if(currentAngle > (autoWantedTurn - MAX_TURN_ERROR) && currentAngle < (autoWantedTurn +MAX_TURN_ERROR)){
 				rightPower = 0;
 				leftPower = 0;
 				autoFunctions = State.AUTO_STAND_BY;
@@ -455,221 +450,217 @@ public class Drives extends GenericSubsystem{
 				leftPower = 0;
 				autoFunctions = State.AUTO_STAND_BY;
 			}
-		break;
-	default: System.out.println("Error autoFunctions = " + autoFunctions);
+			break;
+		default: System.out.println("Error autoFunctions = " + autoFunctions);
+		}
+
+		//PID DEBUG
+		if(USE_PID_DEBUG){
+			updatePIDEncoder();
+			rightPID.setGains(getP(true), getI(true), getD(true));
+			leftPID.setGains(getP(false), getI(false), getD(false));
+			rightPID.setGoal(getGoal(true));
+			leftPID.setGoal(getGoal(false));
+			rightPower = rightPID.update(encoderDataRight.getSpeed());
+			leftPower = leftPID.update(encoderDataLeft.getSpeed());
+		}
+
+		leftFront.set(leftPower);
+		leftBack.set(-leftPower);
+		rightFront.set(rightPower);
+		rightBack.set(-rightPower);
+		return false;
 	}
-
-	//PID DEBUG
-	if(USE_PID_DEBUG){
-		updatePIDEncoder();
-		rightPID.setGains(getP(true), getI(true), getD(true));
-		leftPID.setGains(getP(false), getI(false), getD(false));
-		rightPID.setGoal(getGoal(true));
-		leftPID.setGoal(getGoal(false));
-		rightPower = rightPID.update(encoderDataRight.getSpeed());
-		leftPower = leftPID.update(encoderDataLeft.getSpeed());
-	}
-
-	leftFront.set(leftPower);
-	leftBack.set(-leftPower);
-	rightFront.set(rightPower);
-	rightBack.set(-rightPower);
-	return false;
-}
-
-/**
- * The amount of time you want to sleep for after a cycle.
- * @return the number of milliseconds you want to sleep after a cycle.
- */
-@Override
-protected long sleepTime() {
-	return 10;
-}
-
-/**
- * Where all the logged info goes
- */
-@Override
-protected void writeLog() {
-	//		log.logMessage("Current speed: " + currentSpeed);
-	//		log.logMessage("Current drive state: " + currentDriveState);
-	//		log.logMessage("Auto State: " + autoFunctions);
-	//				log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
-	//									"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
-	//				log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
-	//				log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-	//				log.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
-	//				" Right Encoder: " +encoderDataRight.getSpeed());
-	//		log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
-	log.logMessage("Gyro: " + gyro.getAngle());
-}
-
-/**
- * sets the wanted left and right speed to the speed sent in inches
- * @param left left motor speed
- * @param right right motor speed
- */
-public void setPower(double left, double right) {
-	if(Math.abs(left) < DEAD_ZONE){
-		left = 0;
-	}
-	if(Math.abs(right) < DEAD_ZONE){
-		right = 0;
-	}
-	if(left > 0){
-		wantedLeftPower = (5/4)*Math.sqrt(left);
-	}else{
-		wantedLeftPower = -(5/4)*Math.sqrt(-left);
-	}
-	if(right > 0){
-		wantedRightPower = (5/4)*Math.sqrt(right);
-	}else{
-		wantedRightPower = -(5/4)*Math.sqrt(-right);
-	}
-	//		rightPID.setGoal(right*100);
-	//		leftPID.setGoal(left*100);
-}
-
-/**
- * Set auto function
- * @param wantedAutoState - State from drives
- */
-public void setAutoFunction(State wantedAutoState){
-	autoFunctions = wantedAutoState;
-}
-
-/**
- * Force drive to stop moving
- */
-public void autoForceStop(){
-	setAutoFunction(State.AUTO_STAND_BY);
-}
-
-/**
- * Turns to robot
- * @param degrees - positive(right) || negative(left)
- */
-public void autoTurn(int degrees){
-	setAutoFunction(State.AUTO_TURN);
-	autoWantedTurn = degrees;
-	gyro.reset();
-}
-
-/**
- * Drives robot forward set distance
- * @param inchDistance - distance to travel in inches
- * @param speed - desired speed(0 - 1)
- */
-public void driveStraight(int inchDistance, int speed/*max speed */){
-	setAutoFunction(State.AUTO_DRIVE);
-	autoDistance = inchDistance;
-	gyro.reset();
-	encoderDataRight.reset();
-	encoderDataLeft.reset();
-	autoWantedTurn = 0;
-}
-
-/**
- * @return is drives is done with last auto command
- */
-public boolean isDone(){
-	return (autoFunctions == State.AUTO_STAND_BY);
-}
-
-/**
- * 
- * @return (-1 - 1)
- */
-private double gyroOffset(){
-	double currentAngle = gyro.getAngle();
-	double position = autoWantedTurn - currentAngle;
-	return position > 0 ? -(1.0/16)*(Math.sqrt(position)) : (1.0/16)*(Math.sqrt(-position));
-}
-
-/**
- *Makes the states for drives
- */
-public enum State{
-	IN_LOW_GEAR,
-	SHIFTING_LOW,
-	IN_HIGH_GEAR,
-	SHIFTING_HIGH,
-	AUTO_STAND_BY,
-	AUTO_TURN,
-	AUTO_DRIVE,
-	AUTO_LIGHT_LINE_UP,
-	AUTO_STEP_LINEUP;
-
 
 	/**
-	 * Gets the name of the state
-	 * @return the correct state 
+	 * The amount of time you want to sleep for after a cycle.
+	 * @return the number of milliseconds you want to sleep after a cycle.
 	 */
 	@Override
-	public String toString(){
-		switch(this){
-		case IN_LOW_GEAR:
-			return "In low gear";
-		case SHIFTING_LOW:
-			return "Shifting Low";
-		case IN_HIGH_GEAR:
-			return "In high gear";
-		case SHIFTING_HIGH:
-			return "Shifting high";
-		case AUTO_STAND_BY:
-			return "In auto stand by";
-		case AUTO_LIGHT_LINE_UP:
-			return "In auto light line up";
-		default:
-			return "Error";
+	protected long sleepTime() {
+		return 10;
+	}
+
+	/**
+	 * Where all the logged info goes
+	 */
+	@Override
+	protected void writeLog() {
+		log.logMessage("Current speed: " + currentSpeed);
+		log.logMessage("Current drive state: " + currentDriveState);
+		log.logMessage("Auto State: " + autoFunctions);
+		log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
+		log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
+		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
+		log.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
+				" Right Encoder: " +encoderDataRight.getSpeed());
+		log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
+		log.logMessage("Gyro: " + gyro.getAngle());
+	}
+
+	/**
+	 * sets the wanted left and right speed to the speed sent in inches
+	 * @param left left motor speed
+	 * @param right right motor speed
+	 */
+	public void setPower(double left, double right) {
+		if(left > 0){
+			wantedLeftPower = (5/4)*Math.sqrt(left);
+		}else{
+			wantedLeftPower = -(5/4)*Math.sqrt(-left);
+		}
+		if(right > 0){
+			wantedRightPower = (5/4)*Math.sqrt(right);
+		}else{
+			wantedRightPower = -(5/4)*Math.sqrt(-right);
+		}
+		//		rightPID.setGoal(right*100);
+		//		leftPID.setGoal(left*100);
+	}
+
+	/**
+	 * Set auto function
+	 * @param wantedAutoState - State from drives
+	 */
+	public void setAutoFunction(State wantedAutoState){
+		autoFunctions = wantedAutoState;
+	}
+
+	/**
+	 * Force drive to stop moving
+	 */
+	public void autoForceStop(){
+		setAutoFunction(State.AUTO_STAND_BY);
+		rightPower = STOP_MOTOR;
+		leftPower = STOP_MOTOR;
+	}
+
+	/**
+	 * Turns to robot
+	 * @param degrees - positive(right) || negative(left)
+	 */
+	public void autoTurn(int degrees){
+		setAutoFunction(State.AUTO_TURN);
+		autoWantedTurn = degrees;
+		gyro.reset();
+	}
+
+	/**
+	 * Drives robot forward set distance
+	 * @param inchDistance - distance to travel in inches
+	 * @param speed - desired speed(0 - 1)
+	 */
+	public void driveStraight(int inchDistance, int speed/*max speed */){
+		setAutoFunction(State.AUTO_DRIVE);
+		autoDistance = inchDistance;
+		gyro.reset();
+		encoderDataRight.reset();
+		encoderDataLeft.reset();
+		autoWantedTurn = 0;
+	}
+
+	/**
+	 * @return is drives is done with last auto command
+	 */
+	public boolean isDone(){
+		return (autoFunctions == State.AUTO_STAND_BY);
+	}
+
+	/**
+	 * 
+	 * @return (-1 - 1)
+	 */
+	private double gyroOffset(){
+		double currentAngle = gyro.getAngle();
+		double position = autoWantedTurn - currentAngle;
+		return position > 0 ? -(1.0/16)*(Math.sqrt(position)) : (1.0/16)*(Math.sqrt(-position));
+	}
+
+	/**
+	 *Makes the states for drives
+	 */
+	public enum State{
+		IN_LOW_GEAR,
+		SHIFTING_LOW,
+		IN_HIGH_GEAR,
+		SHIFTING_HIGH,
+		AUTO_STAND_BY,
+		AUTO_TURN,
+		AUTO_DRIVE,
+		AUTO_LIGHT_LINE_UP,
+		AUTO_STEP_LINEUP;
+
+
+		/**
+		 * Gets the name of the state
+		 * @return the correct state 
+		 */
+		@Override
+		public String toString(){
+			switch(this){
+			case IN_LOW_GEAR:
+				return "In low gear";
+			case SHIFTING_LOW:
+				return "Shifting Low";
+			case IN_HIGH_GEAR:
+				return "In high gear";
+			case SHIFTING_HIGH:
+				return "Shifting high";
+			case AUTO_STAND_BY:
+				return "In auto stand by";
+			case AUTO_LIGHT_LINE_UP:
+				return "In auto light line up";
+			default:
+				return "Error";
+			}
 		}
 	}
-}
 
-@Override
-protected void liveWindow() {
-	String subsytemName = "Drives";
-	LiveWindow.addActuator(subsytemName, "Shifting", shiftingSol);
-	LiveWindow.addActuator(subsytemName, "Right Encoder", encoderRight);
-	LiveWindow.addActuator(subsytemName, "Right Front Motor", rightFront);
-	LiveWindow.addActuator(subsytemName, "Right Rear Motor", rightBack);
-	LiveWindow.addActuator(subsytemName, "Left Front Motor", leftFront);
-	LiveWindow.addActuator(subsytemName, "Left Front Motor", leftBack);
-	LiveWindow.addActuator(subsytemName, "Left Encoder", encoderLeft);	
-}
+	@Override
+	protected void liveWindow() {
+		String subsytemName = "Drives";
+		LiveWindow.addActuator(subsytemName, "Shifting", shiftingSol);
+		LiveWindow.addActuator(subsytemName, "Right Encoder", encoderRight);
+		LiveWindow.addActuator(subsytemName, "Right Front Motor", rightFront);
+		LiveWindow.addActuator(subsytemName, "Right Rear Motor", rightBack);
+		LiveWindow.addActuator(subsytemName, "Left Front Motor", leftFront);
+		LiveWindow.addActuator(subsytemName, "Left Front Motor", leftBack);
+		LiveWindow.addActuator(subsytemName, "Left Encoder", encoderLeft);	
+	}
 
-//PID
-private void debugPID(){
-	SmartDashboard.putNumber("Left Goal", 0);
-	SmartDashboard.putNumber("Left P", 0);
-	SmartDashboard.putNumber("Left I", 0);
-	SmartDashboard.putNumber("Left D", 0);
+	//PID
+	private void debugPID(){
+		SmartDashboard.putNumber("Left Goal", 0);
+		SmartDashboard.putNumber("Left P", 0);
+		SmartDashboard.putNumber("Left I", 0);
+		SmartDashboard.putNumber("Left D", 0);
 
-	SmartDashboard.putNumber("Right Goal", 0);
-	SmartDashboard.putNumber("Right P", 0);
-	SmartDashboard.putNumber("Right I", 0);
-	SmartDashboard.putNumber("Right D", 0);
-}
+		SmartDashboard.putNumber("Right Goal", 0);
+		SmartDashboard.putNumber("Right P", 0);
+		SmartDashboard.putNumber("Right I", 0);
+		SmartDashboard.putNumber("Right D", 0);
+	}
 
-private void updatePIDEncoder(){
-	SmartDashboard.putNumber("Right Encoder", encoderDataRight.getSpeed());
-	SmartDashboard.putNumber("Left Encoder", encoderDataLeft.getSpeed());
-}
+	private void updatePIDEncoder(){
+		SmartDashboard.putNumber("Right Encoder", encoderDataRight.getSpeed());
+		SmartDashboard.putNumber("Left Encoder", encoderDataLeft.getSpeed());
+	}
 
-private double getGoal(boolean right){
-	return right ? SmartDashboard.getNumber("Right Goal") : SmartDashboard.getNumber("Left Goal");
-}
+	private double getGoal(boolean right){
+		return right ? SmartDashboard.getNumber("Right Goal") : SmartDashboard.getNumber("Left Goal");
+	}
 
-private double getP(boolean right){
-	return right ? SmartDashboard.getNumber("Right P") : SmartDashboard.getNumber("Left P");
-}
+	private double getP(boolean right){
+		return right ? SmartDashboard.getNumber("Right P") : SmartDashboard.getNumber("Left P");
+	}
 
-private double getI(boolean right){
-	return right ? SmartDashboard.getNumber("Right I") : SmartDashboard.getNumber("Left I");
-}
+	private double getI(boolean right){
+		return right ? SmartDashboard.getNumber("Right I") : SmartDashboard.getNumber("Left I");
+	}
 
-private double getD(boolean right){
-	return right ? SmartDashboard.getNumber("Right D") : SmartDashboard.getNumber("Left D");
-}
+	private double getD(boolean right){
+		return right ? SmartDashboard.getNumber("Right D") : SmartDashboard.getNumber("Left D");
+	}
 
 }

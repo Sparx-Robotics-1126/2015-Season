@@ -207,6 +207,10 @@ public class Drives extends GenericSubsystem{
 	 */
 	private static final boolean USE_PID_DEBUG = false;
 	
+	/**
+	 * The distance in inches where drives straight has been achieved +-
+	 */
+	private static final double MAX_TURN_ERROR = 0.5;
 	//*********************************VARIBLES****************************
 	/**
 	 * the wanted speed for the left motors
@@ -247,6 +251,11 @@ public class Drives extends GenericSubsystem{
 	 * The wanted distance to travel in inches
 	 */
 	private double autoDistance = 0;
+	
+	/**
+	 * The max speed for drive's straight
+	 */
+	private double maxSpeed = 0;
 
 	/**
 	 * if drives == null, make a new drives
@@ -415,8 +424,6 @@ public class Drives extends GenericSubsystem{
 			double speed = (1.0/16)*Math.sqrt(angleDiff);
 			if(speed > 0){
 				speed = speed < Math.PI/8 ? Math.PI/8 : speed;
-			}else{
-				speed = speed > -Math.PI/8 ? -Math.PI/8 : speed;
 			}
 			if(currentAngle < autoWantedTurn){
 				rightPower = -speed;
@@ -435,6 +442,7 @@ public class Drives extends GenericSubsystem{
 			double currentDistance = (encoderDataRight.getDistance() + encoderDataLeft.getDistance())/2;
 			double driveSpeed = (1.0/10)*(Math.sqrt(Math.abs(autoDistance - currentDistance)));
 			driveSpeed = driveSpeed < Math.PI/16 ? Math.PI/16: driveSpeed;
+			driveSpeed = driveSpeed > maxSpeed ? maxSpeed : driveSpeed;
 			if(currentDistance < autoDistance){
 				rightPower = driveSpeed + gyroOffset();
 				leftPower = driveSpeed - gyroOffset();
@@ -552,7 +560,7 @@ public void autoTurn(int degrees){
  * @param inchDistance - distance to travel in inches
  * @param speed - desired speed(0 - 1)
  */
-public void driveStraight(int inchDistance, int speed){
+public void driveStraight(int inchDistance, int speed/*max speed */){
 	setAutoFunction(State.AUTO_DRIVE);
 	autoDistance = inchDistance;
 	gyro.reset();

@@ -317,8 +317,8 @@ public class Autonomous extends GenericSubsystem{
 	};
 	
 	private int[][] ONE_YELLOW_TOTE_FROM_STAGING_PARAMS = {
-			{175, 24}, //TEST POWER!
-			{6, 24}, //TEST POWER!
+			{175, 24},
+			{6, 24}, 
 			{},
 			{},
 			{}
@@ -530,7 +530,7 @@ public class Autonomous extends GenericSubsystem{
 	private static final String THREE_YELLOW_TOTES_FROM_STAGING_NAME = "Three yellow totes into Autozone"; 
 	
 	/**
-	 * Acquires 2 totes from the step and brings them to the auto zone
+	 * Acquires 2 cans from the step and brings them to the auto zone
 	 */
 	private static final AutoCommands[] TWO_CANS_STEP = {
 		AutoCommands.DRIVES_GO_FORWARD,
@@ -599,12 +599,12 @@ public class Autonomous extends GenericSubsystem{
 		drives = Drives.getInstance();
 		SendableChooser chooser = new SendableChooser();
 		chooser.addDefault("NO_AUTO", new Integer(0));
-		chooser.addObject("AUTO_1", new Integer(1));
-		chooser.addObject("AUTO_2", new Integer(2));
-		chooser.addObject("AUTO_3", new Integer(3));
-		chooser.addObject("AUTO_4", new Integer(4));
-		chooser.addObject("AUTO_5", new Integer(5));
-		chooser.addObject("AUTO_6", new Integer(6));
+		chooser.addObject("AUTO_ZONE_FROM_WALL", new Integer(1));
+		chooser.addObject("AUTO_ZONE_FROM_EDGE", new Integer(2));
+		chooser.addObject("ONE_YELLOW", new Integer(3));
+		chooser.addObject("TWO_YELLOW_STACKED", new Integer(4));
+		chooser.addObject("THREE_YELLOW_STACKED", new Integer(5));
+		chooser.addObject("TWO_CANS_FROM_STEP", new Integer(6));
 		chooser.addObject("AUTO_7", new Integer(7));
 		chooser.addObject("AUTO_8", new Integer(8));
 		chooser.addObject("AUTO_9", new Integer(9));

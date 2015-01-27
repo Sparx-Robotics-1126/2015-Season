@@ -82,12 +82,12 @@ public class Drives extends GenericSubsystem{
 
 	//****************************SENSORS**********************
 	/**
-	 * Used to get the distance the robot has traveled 
+	 * Used to get the distance the robot has traveled for the left drives 
 	 */
 	private Encoder encoderLeft;
 
 	/**
-	 * Used to get the distance the robot has traveled
+	 * Used to get the distance the robot has traveled for the right drives
 	 */
 	private Encoder encoderRight;
 

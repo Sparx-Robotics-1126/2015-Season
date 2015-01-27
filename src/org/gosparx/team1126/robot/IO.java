@@ -35,6 +35,8 @@ public final class IO {
 	public static final int COLOR_LEFT_LED				= 4;
 	public static final int SWTICH_RIGHT_DRIVES 		= 6;
 	public static final int SWITCH_LEFT_DRIVES 			= 7;
+	public static final int SWITCH_ELEVATIONS_LEFT		= 18;
+	public static final int SWITCH_ELEVATIONS_RIGHT		= 19;
 	
 	
 	

@@ -3,6 +3,7 @@ package org.gosparx.team1126.robot.subsystem;
 import org.gosparx.team1126.robot.IO;
 import org.gosparx.sensors.EncoderData;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Victor;
 
@@ -35,7 +36,7 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 * this is the holding current
 	 */
-
+	private static final double DOWN_SPEED = -0.5; //TODO find best speed
 	/**
 	 * this is the left motors
 	 */
@@ -69,6 +70,10 @@ public class Elevation extends GenericSubsystem{
 	 */
 	private double encoderThreshold;
 	/**
+	 * sensor for detecting the staring position for acquiring a tote
+	 */
+	private DigitalInput homeSwitch;
+	/**
 	 * this is the constructor of the Elevation
 	 */
 	private Elevation() {
@@ -91,10 +96,11 @@ public class Elevation extends GenericSubsystem{
 		leftElevation = new Victor(IO.PWM_LEFT_ELEVATION);
 		rightElevation = new Victor(IO.PWM_RIGHT_ELEVATION);
 		elevationEncoder = new Encoder(IO.ENCODER_ELEVATION_A, IO.ENCODER_ELEVATION_B);
-		elevationEncoderData = new EncoderData(elevationEncoder, DIST_PER_TICK);	
+		elevationEncoderData = new EncoderData(elevationEncoder, DIST_PER_TICK);
 		elevationState = State.IDLE;
 		distanceToMove = 0;
 		encoderThreshold = 0;
+		homeSwitch = new DigitalInput(IO.SWITCH_ELEVATIONS_RIGHT);
 		return false;
 	}
 	@Override
@@ -109,17 +115,18 @@ public class Elevation extends GenericSubsystem{
 	protected boolean execute() {
 		switch(elevationState){
 			case IDLE:
-				leftElevation.set(0);
-				rightElevation.set(0);
-			break;
+				break;
 			case LIFTING:
 				if (elevationEncoderData.getDistance() >= distanceToMove + encoderThreshold) {
 					elevationState = State.HOLD_POSITION;
+					leftElevation.set(0);
+					rightElevation.set(0);
 					/**
 					 * reseting encoder to hold 0 position
 					 */
 					resetEncoder();
 				}
+				break;
 			case HOLD_POSITION:
 				if (elevationEncoderData.getDistance() <= HOLDING_THRESHHOLD){
 					resetEncoder();
@@ -131,6 +138,13 @@ public class Elevation extends GenericSubsystem{
 					 */
 					distanceToMove = -1 * HOLDING_THRESHHOLD;
 					encoderThreshold = 0;
+				}
+				break;
+			case RETURNING_HOME:
+				if (homeSwitch.get()) {
+					leftElevation.set(0);
+					rightElevation.set(0);
+					elevationState = State.IDLE;
 				}
 				break;
 			default:
@@ -153,14 +167,30 @@ public class Elevation extends GenericSubsystem{
 	 * This lifts the tote enough that another tote fits under it
 	 */
 	public void liftTote(){
-		resetEncoder();
-		leftElevation.set(UP_SPEED);
-		rightElevation.set(UP_SPEED);
-		elevationState = State.LIFTING;
-		distanceToMove = TOTE_DISTANCE_CLEARED;
-		encoderThreshold = TOTE_THRESHOLD;
+		if (homeSwitch.get()){
+			resetEncoder();
+			leftElevation.set(UP_SPEED);
+			rightElevation.set(UP_SPEED);
+			elevationState = State.LIFTING;
+			distanceToMove = TOTE_DISTANCE_CLEARED;
+			encoderThreshold = TOTE_THRESHOLD;	
+		}
+		else {
+			leftElevation.set(DOWN_SPEED);
+			rightElevation.set(DOWN_SPEED);
+			elevationState = State.RETURNING_HOME;
+		}
 	}
-	
+	/**
+	 * This lowers the totes
+	 */
+	public void lowerTote(){
+		if (!homeSwitch.get()){
+			leftElevation.set(DOWN_SPEED);
+			rightElevation.set(DOWN_SPEED);
+			elevationState = State.RETURNING_HOME;
+		}
+	}
 	/**
 	 * resets the encoder
 	 */
@@ -175,13 +205,12 @@ public class Elevation extends GenericSubsystem{
 	public enum State{
 		IDLE,
 		LIFTING,
-		HOLD_POSITION;
-
+		HOLD_POSITION,
+		RETURNING_HOME;
 		/**
 		 * Gets the name of the state
 		 * @return the correct state 
 		 */
-		@Override
 		public String toString(){
 			switch(this){
 			case IDLE:
@@ -190,6 +219,8 @@ public class Elevation extends GenericSubsystem{
 				return "Lifting";
 			case HOLD_POSITION:
 				return "Hold Position";
+			case RETURNING_HOME:
+				return "Returning Home";
 			default:
 				return "Error";
 			}

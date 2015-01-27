@@ -153,7 +153,7 @@ public class Drives extends GenericSubsystem{
 	private static final double I_RIGHT = 0.055;
 
 	/**
-	 * The D
+	 * The D value
 	 */
 	private static final double D_RIGHT = 0;
 
@@ -184,6 +184,7 @@ public class Drives extends GenericSubsystem{
 
 	/**
 	 * Alex said I didn't need comments (=
+	 * The max speed at which the light sensors can line up on
 	 */
 	private static final double LINEUP_SPEED = 0.45;
 

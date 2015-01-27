@@ -138,7 +138,7 @@ public class Drives extends GenericSubsystem{
 	private static final double I_LEFT = 0.04;
 
 	/**
-	 * The D
+	 * The D value
 	 */
 	private static final double D_LEFT = 0;
 

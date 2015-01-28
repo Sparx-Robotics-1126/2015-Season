@@ -6,6 +6,7 @@ import org.gosparx.sensors.EncoderData;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
  * @author Reizwan & Raza
@@ -122,9 +123,15 @@ public class Elevation extends GenericSubsystem{
 		homeSwitch = new DigitalInput(IO.SWITCH_ELEVATIONS_RIGHT);
 		return true;
 	}
+	/**
+	 * Put things on the live window
+	 */
 	@Override
 	protected void liveWindow() {
-		// TODO Auto-generated method stub
+		String subsystemName = "Elevation";
+		LiveWindow.addActuator(subsystemName, "rightElevation", rightElevation);
+		LiveWindow.addActuator(subsystemName, "leftElevation", leftElevation);
+		LiveWindow.addActuator(subsystemName, "elevationEncoder", elevationEncoder);
 		
 	}
 
@@ -177,6 +184,7 @@ public class Elevation extends GenericSubsystem{
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
 	@Override
 	protected void writeLog() {
 		// TODO Auto-generated method stub

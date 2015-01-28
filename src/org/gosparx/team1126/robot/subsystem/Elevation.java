@@ -12,7 +12,16 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  * @author Reizwan & Raza
  * Version 1.0 Season 2015
  */
+
 public class Elevation extends GenericSubsystem{
+	//***************************Instants***************************
+	
+	/**
+	 * This is the elevation single instance
+	 */
+	private static Elevation elevation;
+	
+	//***************************Constants***************************
 	
 	/**
 	 * the speed of the elevation up
@@ -34,6 +43,9 @@ public class Elevation extends GenericSubsystem{
 	 */
 	private static final double TOTE_DISTANCE_CLEARED = 12;
 	
+	/**
+	 * Threshhold for tote distance 
+	 */
 	private static final double TOTE_THRESHOLD = 0.1; //TODO Test if this is enough clearance
 	
 	/**
@@ -46,6 +58,8 @@ public class Elevation extends GenericSubsystem{
 	 */
 	private static final double DOWN_SPEED = -0.5; //TODO find best speed
 	
+	//***************************Victors***************************
+	
 	/**
 	 * this is the left motors
 	 */
@@ -57,13 +71,11 @@ public class Elevation extends GenericSubsystem{
 	private Victor rightElevation;
 	
 	/**
-	 * This is the elevation single instance
-	 */
-	private static Elevation elevation;
-	
-	/**
 	 * this is the encoder for elevations 
 	 */
+	
+	//***************************Sensors***************************
+	
 	private Encoder elevationEncoder;
 	
 	/**
@@ -77,6 +89,13 @@ public class Elevation extends GenericSubsystem{
 	private State elevationState;
 	
 	/**
+	 * sensor for detecting the staring position for acquiring a tote
+	 */
+	private DigitalInput homeSwitch;
+	
+	//***************************Variables***************************
+	
+	/**
 	 * This is the distance we are going to lift or drop
 	 */
 	private double distanceToMove;
@@ -85,11 +104,6 @@ public class Elevation extends GenericSubsystem{
 	 * threshold for encoder
 	 */
 	private double encoderThreshold;
-	
-	/**
-	 * sensor for detecting the staring position for acquiring a tote
-	 */
-	private DigitalInput homeSwitch;
 	
 	/**
 	 * this is the constructor of the Elevation

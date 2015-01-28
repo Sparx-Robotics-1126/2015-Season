@@ -120,7 +120,7 @@ public class Elevation extends GenericSubsystem{
 		distanceToMove = 0;
 		encoderThreshold = 0;
 		homeSwitch = new DigitalInput(IO.SWITCH_ELEVATIONS_RIGHT);
-		return false;
+		return true;
 	}
 	@Override
 	protected void liveWindow() {
@@ -170,7 +170,7 @@ public class Elevation extends GenericSubsystem{
 			default:
 				break;
 		}
-		return false;
+		return true;
 	}
 	@Override
 	protected long sleepTime() {

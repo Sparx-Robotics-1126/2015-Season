@@ -247,11 +247,11 @@ public class Elevation extends GenericSubsystem{
 		public String toString(){
 			switch(this){
 			case IDLE:
-				return "Idle";
+				return "In idle";
 			case LIFTING:
 				return "Lifting";
 			case HOLD_POSITION:
-				return "Hold Position";
+				return "Holding Position";
 			case RETURNING_HOME:
 				return "Returning Home";
 			default:

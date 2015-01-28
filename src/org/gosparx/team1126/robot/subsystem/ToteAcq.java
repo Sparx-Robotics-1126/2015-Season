@@ -219,4 +219,10 @@ public class ToteAcq extends GenericSubsystem{
 			}
 		}
 	}
+
+	@Override
+	protected void liveWindow() {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -101,7 +101,7 @@ public class Elevation extends GenericSubsystem{
 	 * gets 1 instance of elevation
 	 * @return the instance of elevation
 	 */
-	public static Elevation getInstance(){
+	public static synchronized Elevation getInstance(){
 		if(elevation == null){
 			elevation = new Elevation();
 		}

@@ -20,16 +20,29 @@ public class Autonomous extends GenericSubsystem{
 	 * An Instance of Drives
 	 */
 	private Drives drives;
-	
-	/**
-	 * True if we are running auto
-	 */
-	private boolean runAuto;
+
 
 	/**
 	 * Supports singleton
 	 */
 	private static Autonomous auto;
+	
+	private SendableChooser chooser;
+
+	/**
+	 * The String name of 
+	 */
+	private static final String SD_AUTO_NAME = "Auto Mode Selector";
+
+	/**
+	 * The string name for the SmartDashboard button
+	 */
+	private static final String SD_USE_SMART_AUTO = "Use Smart Auto";
+
+	/**
+	 * The current autonomous selected
+	 */
+	private static final String SD_CURRENT_AUTO_MODE = "Current Auto Selected";
 
 	/**
 	 * The Physical selector switch for auto modes
@@ -47,14 +60,24 @@ public class Autonomous extends GenericSubsystem{
 	private AutoCommands[] currentAuto;
 
 	/**
+	 * True if we are running auto
+	 */
+	private boolean runAuto;
+
+	/**
 	 * An array of the parameters
 	 */
-	private int[][] autoCommands;
+	private int[][] currentAutoCommands;
+
+	/**
+	 * The name of the current selected auto
+	 */
+	private String currentAutoName = "";
 
 	/**
 	 * The current step of the autonomous we are on
 	 */
-	private int currentStep;
+	private int currentStep = 0;
 
 	/**
 	 * Should we go to the next step?
@@ -105,217 +128,259 @@ public class Autonomous extends GenericSubsystem{
 		 * {Inches, Inches per second}
 		 */
 		DRIVES_GO_FORWARD,
-		
+
 		/**
 		 * Makes the drives go in reverse
 		 * {Inches, inches per second}
 		 */
 		DRIVES_GO_REVERSE,
-		
+
 		/**
 		 * Turns right
 		 * {Degrees}
 		 */
 		DRIVES_TURN_RIGHT,
-		
+
 		/**
 		 * Turns left
 		 * {Degrees}
 		 */
 		DRIVES_TURN_LEFT,
-		
+
 		/**
 		 * "Dances" to jiggle the arms into the cans
 		 * {}
 		 */
 		DRIVES_DANCE,
-		
+
 		/**
 		 * Stops the drives in case of emergency
 		 * {}
 		 */
 		DRIVES_STOP,
-		
+
 		/**
 		 * Waits until drives is done with its last command
 		 * {}
 		 */
 		DRIVES_DONE,
-		
+
 		/**
 		 * Lowers the arms to container level
 		 * {}
 		 */
 		ARMS_DROP,
-		
+
 		/**
 		 * Raises the arms back up from container level
 		 * {}
 		 */
 		ARMS_RAISE,
-		
+
 		/**
 		 * Expands the claws that grab the container
 		 * {}
 		 */
 		ARMS_EXPAND,
-		
+
 		/**
 		 * Contracts the claws that grab the container
 		 * {}
 		 */
 		ARMS_CONTRACT,
-		
+
 		/**
 		 * Stops arms in case of emergency
 		 * {} 
 		 */
 		ARMS_STOP,
-		
+
 		/**
 		 * Waits until arms is done with its last command
 		 * {}
 		 */
 		ARMS_DONE,
-		
+
 		/**
 		 * Lowers the acquisition mechanism
 		 * {}
 		 */
 		ACQ_LOWER,
-		
+
 		/**
 		 * Raises the acquisition mechanism
 		 * {} 
 		 */
 		ACQ_RAISE,
-		
+
 		/**
 		 * Turns acquisition rollers on
 		 * {}
 		 */
 		ACQ_ROLLERS_ON,
-		
+
 		/**
 		 * Turns roller acquisition rollers off
 		 * {}
 		 */
 		ACQ_ROLLERS_OFF,
-		
+
 		/**
 		 * Stops the acquisitions
 		 * {}
 		 */
 		ACQ_STOP,
-		
+
 		/**
 		 * Waits until the acquisitions is done
 		 * {}
 		 */
 		ACQ_DONE,
-		
+
 		/**
 		 * Raise the stack of totes
 		 * {}
 		 */
 		TOTES_RAISE,
-		
+
 		/**
 		 * Lower the stack of totes
 		 * {}
 		 */
 		TOTES_LOWER,
-		
+
 		/**
 		 * Ejects the stack totes
 		 * {}
 		 */
 		TOTES_EJECT,
-		
+
 		/**
 		 * E-stop the tote system
 		 * {}
 		 */
 		TOTES_STOP,
-		
+
 		/**
 		 * Waits until the tote acq is done with its previous commands
 		 * {}
 		 */
 		TOTES_DONE,
-		
+
 		/**
 		 * Sets a critical action
 		 * {critical time, critical step}
 		 */
 		CHECK_TIME,
-		
+
 		/**
 		 * Sleeps
 		 * {time in ms}
 		 */
 		WAIT,
-		
+
 		/**
 		 * Signals the end of the auto mode 
 		 * {}
 		 */
-		END,
+		END;
+
+		public static String getName(AutoCommands auto){
+			switch(auto){
+			case ACQ_DONE: 			return "ACQ has finished";
+			case ACQ_LOWER: 		return "ACQ lowered";
+			case ACQ_RAISE: 		return "ACQ raised";
+			case ACQ_ROLLERS_OFF: 	return "ACQ rollers off";
+			case ACQ_ROLLERS_ON: 	return "ACQ on";
+			case ACQ_STOP: 			return "ACQ stop";
+			case ARMS_CONTRACT: 	return "ARMS contracted";
+			case ARMS_DONE: 		return "ARMS done";
+			case ARMS_DROP: 		return "ARMS dropped";
+			case ARMS_EXPAND: 		return "ARMS expanded";
+			case ARMS_RAISE: 		return "ARMS raised";
+			case ARMS_STOP: 		return "AMRS stop";
+			case CHECK_TIME: 		return "AUTO Checking time";
+			case DRIVES_DANCE: 		return "DRIVES dancing";
+			case DRIVES_DONE: 		return "DRIVES done";
+			case DRIVES_GO_FORWARD: return "DRIVES moving forward";
+			case DRIVES_GO_REVERSE: return "DRIVES moving backwards";
+			case DRIVES_STOP: 		return "DRIVES has raged quit (STOPPED)";
+			case DRIVES_TURN_LEFT: 	return "DRIVES is turning left";
+			case DRIVES_TURN_RIGHT: return "DRIVES is turning right";
+			case END: 				return "AUTO has ended";
+			case TOTES_DONE: 		return "TOTES done";
+			case TOTES_EJECT: 		return "TOTES ejected";
+			case TOTES_LOWER: 		return "TOTES lowered";
+			case TOTES_RAISE: 		return "Totes rasied";
+			case TOTES_STOP: 		return "TOTES ragged quit (STOPPED)";
+			case WAIT: 				return "AUTO WAITING....";
+			default:				return "Unknown command";
+			}
+		}
+
 	}
-	
+
 	/*********************************************************************************************************************************
 	 **************************************************AUTO MODES*********************************************************************
 	 *********************************************************************************************************************************/
-	
+
+	/**
+	 * NO AUTO
+	 */
+	private static final String NO_AUTO_NAME = "No Auto";
+	private static final AutoCommands[] NO_AUTO = {
+		AutoCommands.END
+	};
+	private int[][] NO_AUTO_PARAMS = {};
+
 	/**
 	 * Drives from the alliance wall to the center of the auto zone 
 	 */
-	private static final AutoCommands[] DRIVE_TO_AUTOZONE_FROM_STAGING = {
-			AutoCommands.DRIVES_GO_FORWARD,
-			AutoCommands.DRIVES_DONE,
-			AutoCommands.DRIVES_STOP,
-			AutoCommands.END
-	};
-	
-	private int[][] DRIVES_TO_AUTOZONE_FROM_STAGING_PARAMS = {
-		{163, 24},
-		{},
-		{},
-		{}
-	};
-	
 	private static final String DRIVES_TO_AUTOZONE_FROM_STAGING_NAME = "Into Autozone from wall";
+	private static final AutoCommands[] DRIVES_TO_AUTOZONE_FROM_STAGING = {
+		AutoCommands.DRIVES_GO_FORWARD,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.DRIVES_STOP,
+		AutoCommands.END
+	};
+	private int[][] DRIVES_TO_AUTOZONE_FROM_STAGING_PARAMS = {
+			{163, 24},
+			{},
+			{},
+			{}
+	};
+
 
 	/**
 	 * Drives from edge of Autozone into Autozone
 	 */
+	private static final String DRIVES_TO_AUTOZONE_FROM_EDGE_NAME = "Into Autozone from edge of Autozone";
 	private static final AutoCommands[] DRIVE_TO_AUTOZONE_FROM_EDGE = {
-			AutoCommands.DRIVES_GO_FORWARD,
-			AutoCommands.DRIVES_DONE,
-			AutoCommands.DRIVES_STOP,
-			AutoCommands.END	
+		AutoCommands.DRIVES_GO_FORWARD,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.DRIVES_STOP,
+		AutoCommands.END	
 	};
-	
 	private int[][] DRIVES_TO_AUTOZONE_FROM_EDGE_PARAMS = {
 			{48, 24},
 			{},
 			{},
 			{}
 	};
-	
-	private static final String DRIVES_TO_AUTOZONE_FROM_EDGE_NAME = "Into Autozone from edge of Autozone";
-	
+
+
+
 	/**
 	 * Moves one yellow tote from the staging zone to the Autozone, robot starts at alliance wall
 	 */
+	private static final String ONE_YELLOW_TOTE_FROM_STAGING_NAME = "One yellow tote into Autozone";
 	private static final AutoCommands[] ONE_YELLOW_TOTE_FROM_STAGING = {
-			AutoCommands.DRIVES_GO_FORWARD,
-			AutoCommands.DRIVES_GO_REVERSE,
-			AutoCommands.DRIVES_DONE,
-			AutoCommands.DRIVES_STOP,
-			AutoCommands.END
+		AutoCommands.DRIVES_GO_FORWARD,
+		AutoCommands.DRIVES_GO_REVERSE,
+		AutoCommands.DRIVES_DONE,
+		AutoCommands.DRIVES_STOP,
+		AutoCommands.END
 	};
-	
 	private int[][] ONE_YELLOW_TOTE_FROM_STAGING_PARAMS = {
 			{175, 24},
 			{6, 24}, 
@@ -323,12 +388,13 @@ public class Autonomous extends GenericSubsystem{
 			{},
 			{}
 	};
-	
-	private static final String ONE_YELLOW_TOTE_FROM_STAGING_NAME = "One yellow tote into Autozone";
-	
+
+
+
 	/**
 	 * Acquires 2 yellow totes, stacks them and placed and Autozone
 	 */
+	private static final String TWO_YELLOW_TOTES_FROM_STAGING_NAME = "Two yellow totes into Autozone";
 	private static final AutoCommands[] TWO_YELLOW_TOTES_FROM_STAGING = {
 		AutoCommands.ACQ_LOWER,
 		AutoCommands.ACQ_ROLLERS_ON,
@@ -365,8 +431,8 @@ public class Autonomous extends GenericSubsystem{
 		AutoCommands.DRIVES_GO_REVERSE,
 		AutoCommands.DRIVES_DONE,
 		AutoCommands.END
-		
-		
+
+
 	};
 	private int[][] TWO_YELLOW_TOTES_FROM_STAGING_PARAMS = {
 			{},
@@ -405,12 +471,12 @@ public class Autonomous extends GenericSubsystem{
 			{},
 			{}
 	};
-	
-	private static final String TWO_YELLOW_TOTES_FROM_STAGING_NAME = "Two yellow totes into Autozone"; 
-	
+
+
 	/**
 	 * Acquires 3 yellow totes, stack them and moves to autozone
 	 */
+	private static final String THREE_YELLOW_TOTES_FROM_STAGING_NAME = "Three yellow totes into Autozone"; 
 	private static final AutoCommands[] THREE_YELLOW_TOTES_FROM_STAGING = { 
 		AutoCommands.ACQ_LOWER,
 		AutoCommands.ACQ_ROLLERS_ON,
@@ -467,7 +533,7 @@ public class Autonomous extends GenericSubsystem{
 		AutoCommands.DRIVES_GO_REVERSE,
 		AutoCommands.DRIVES_DONE,
 		AutoCommands.END
-		
+
 	};
 	private int[][] THREE_YELLOW_TOTES_FROM_STAGING_PARAMS = {
 			{},
@@ -526,12 +592,12 @@ public class Autonomous extends GenericSubsystem{
 			{},
 			{},
 	};
-		
-	private static final String THREE_YELLOW_TOTES_FROM_STAGING_NAME = "Three yellow totes into Autozone"; 
-	
+
+
 	/**
 	 * Acquires 2 cans from the step and brings them to the auto zone
 	 */
+	private static final String TWO_CANS_STEP_NAME = "Two Cans from Step";
 	private static final AutoCommands[] TWO_CANS_STEP = {
 		AutoCommands.DRIVES_GO_FORWARD,
 		AutoCommands.DRIVES_DONE,
@@ -549,7 +615,6 @@ public class Autonomous extends GenericSubsystem{
 		AutoCommands.ARMS_DONE,
 		AutoCommands.END
 	};
-	
 	private static final int[][] TWO_CANS_STEP_PARAMS= {
 		{54, 25},
 		{},
@@ -568,9 +633,8 @@ public class Autonomous extends GenericSubsystem{
 		{},
 		{}
 	};
-	
-	private static final String TWO_CANS_STEP_NAME = "Two Cans from Step";
-	
+
+
 	/**
 	 * Singleton
 	 * @return the only instance of Autonomous ever
@@ -597,20 +661,7 @@ public class Autonomous extends GenericSubsystem{
 		selectorSwitch = new AnalogInput(IO.SELECTOR_SWITCH_CHANNEL);
 		ds = DriverStation.getInstance();
 		drives = Drives.getInstance();
-		SendableChooser chooser = new SendableChooser();
-		chooser.addDefault("NO_AUTO", new Integer(0));
-		chooser.addObject("AUTO_ZONE_FROM_WALL", new Integer(1));
-		chooser.addObject("AUTO_ZONE_FROM_EDGE", new Integer(2));
-		chooser.addObject("ONE_YELLOW", new Integer(3));
-		chooser.addObject("TWO_YELLOW_STACKED", new Integer(4));
-		chooser.addObject("THREE_YELLOW_STACKED", new Integer(5));
-		chooser.addObject("TWO_CANS_FROM_STEP", new Integer(6));
-		chooser.addObject("AUTO_7", new Integer(7));
-		chooser.addObject("AUTO_8", new Integer(8));
-		chooser.addObject("AUTO_9", new Integer(9));
-		SmartDashboard.putData("Auto Mode", chooser);
 		return false;
-
 	}
 
 	/**
@@ -649,30 +700,57 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private void getAutoMode(){
 		double voltage = selectorSwitch.getVoltage();
-		if (voltage >= SELECTION_0){
-
-		}else if(voltage >= SELECTION_1){
-
-		}else if(voltage >= SELECTION_2){
-
-		}else if(voltage >= SELECTION_3){
-
-		}else if(voltage >= SELECTION_4){
-
-		}else if(voltage >= SELECTION_5){
-
-		}else if(voltage >= SELECTION_6){
-
-		}else if(voltage >= SELECTION_7){
-
-		}else if(voltage >= SELECTION_8){
-
-		}else if(voltage >= SELECTION_9){ 
-
-
+		int wantedAuto = -1;
+		if(SmartDashboard.getBoolean(SD_USE_SMART_AUTO)){
+			if (voltage >= SELECTION_0){
+				wantedAuto = 1;
+			}else if(voltage >= SELECTION_1){
+				wantedAuto = 2;
+			}else if(voltage >= SELECTION_2){
+				wantedAuto = 3;
+			}else if(voltage >= SELECTION_3){
+				wantedAuto = 4;
+			}else if(voltage >= SELECTION_4){
+				wantedAuto = 5;
+			}else if(voltage >= SELECTION_5){
+				wantedAuto = 6;
+			}else if(voltage >= SELECTION_6){
+				wantedAuto = 7;
+			}else if(voltage >= SELECTION_7){
+				wantedAuto = 8;
+			}else if(voltage >= SELECTION_8){
+				wantedAuto = 9;
+			}else{
+				wantedAuto = 10;
+			}
 		}else{
-
+			wantedAuto = Integer.getInteger(SmartDashboard.getData(SD_AUTO_NAME).toString());
 		}
+
+		//SET AUTO;
+		switch(wantedAuto){
+		case 1:
+			currentAutoName = NO_AUTO_NAME;
+			currentAuto = NO_AUTO;
+			currentAutoCommands = NO_AUTO_PARAMS;
+			break;
+		case 2:
+			currentAutoName = DRIVES_TO_AUTOZONE_FROM_EDGE_NAME;
+			currentAuto = DRIVE_TO_AUTOZONE_FROM_EDGE;
+			currentAutoCommands = DRIVES_TO_AUTOZONE_FROM_EDGE_PARAMS;
+			break;
+		case 3:
+			currentAutoName = DRIVES_TO_AUTOZONE_FROM_STAGING_NAME;
+			currentAuto = DRIVES_TO_AUTOZONE_FROM_STAGING;
+			currentAutoCommands = DRIVES_TO_AUTOZONE_FROM_STAGING_PARAMS;
+			break;
+		default:
+			currentAutoName = "ERROR";
+			currentAuto = NO_AUTO;
+			currentAutoCommands = NO_AUTO_PARAMS;
+			break;
+		}
+		SmartDashboard.putString(SD_CURRENT_AUTO_MODE, currentAutoName);
 	}
 
 	/**
@@ -683,16 +761,16 @@ public class Autonomous extends GenericSubsystem{
 		if(ds.isAutonomous() && ds.isEnabled()){
 			switch(currentAuto[currentStep]){
 			case DRIVES_GO_FORWARD:
-				drives.driveStraight(autoCommands[currentStep][0], autoCommands[currentStep][1]);
+				drives.driveStraight(currentAutoCommands[currentStep][0], currentAutoCommands[currentStep][1]);
 				break;
 			case DRIVES_GO_REVERSE:
-				drives.driveStraight(-autoCommands[currentStep][0], autoCommands[currentStep][1]);
+				drives.driveStraight(-currentAutoCommands[currentStep][0], currentAutoCommands[currentStep][1]);
 				break;
 			case DRIVES_TURN_RIGHT:
-				drives.autoTurn(autoCommands[currentStep][0]);
+				drives.autoTurn(currentAutoCommands[currentStep][0]);
 				break;
 			case DRIVES_TURN_LEFT:
-				drives.autoTurn(-autoCommands[currentStep][0]);
+				drives.autoTurn(-currentAutoCommands[currentStep][0]);
 				break;
 			case DRIVES_STOP:
 				//drives.forceStop();
@@ -736,8 +814,8 @@ public class Autonomous extends GenericSubsystem{
 				break;
 			case CHECK_TIME:
 				checkTime = true;
-				criticalStep =  autoCommands[currentStep][0];
-				criticalTime = autoCommands[currentStep][1];
+				criticalStep =  currentAutoCommands[currentStep][0];
+				criticalTime = currentAutoCommands[currentStep][1];
 				break;
 			case WAIT:
 				break;
@@ -750,12 +828,12 @@ public class Autonomous extends GenericSubsystem{
 			if(increaseStep){
 				currentStep++;
 				StringBuilder sb = new StringBuilder();
-				sb.append(currentAuto[currentStep]).append("(");
+				sb.append(AutoCommands.getName(currentAuto[currentStep])).append("(");
 				String prefix = "";
-				for(int i:autoCommands[currentStep]){
+				for(int i:currentAutoCommands[currentStep]){
 					sb.append(prefix);
 					prefix = ", ";
-					sb.append(autoCommands[currentStep][i]);
+					sb.append(currentAutoCommands[currentStep][i]);
 				}
 				sb.append(")");
 				LOG.logMessage(sb.toString());
@@ -769,6 +847,21 @@ public class Autonomous extends GenericSubsystem{
 
 	@Override
 	protected void liveWindow() {
-	
+		//Auto current selected
+		SmartDashboard.putBoolean(SD_USE_SMART_AUTO, false);
+		SmartDashboard.putString(SD_CURRENT_AUTO_MODE, "TEST1");
+		//Auto Selector
+		chooser = new SendableChooser();
+		chooser.addDefault(NO_AUTO_NAME, new Integer(0));
+		chooser.addObject(DRIVES_TO_AUTOZONE_FROM_EDGE_NAME, new Integer(1));
+		SmartDashboard.putData("H", chooser);//SD_AUTO_NAME, chooser);
+		System.out.println("IT LIVES:");
+		System.out.println("CURRENT VALUE: " + SmartDashboard.getData("H"));
+		
+	}
+
+	public void runAuto(boolean run){
+		runAuto = run;
+		LOG.logMessage("Auto has been switch to: " + run);
 	}
 }

@@ -18,34 +18,38 @@ public class Robot extends SampleRobot{
 	 */
 	private GenericSubsystem[] subsystems;
 
+	
+	private Autonomous auto;
+	
 	/**
 	 * Called once every time the robot is powered on
 	 */
 	public Robot() {
 		subsystems = new GenericSubsystem[]{	
-				Autonomous.getInstance(),
+			Autonomous.getInstance(),
         	Controls.getInstance(),
-        	LogWriter.getInstance(),
+//        	LogWriter.getInstance(),
         	Drives.getInstance()
 		};
 		
 		for(GenericSubsystem system: subsystems){
 			system.start();
 		}
+		
 	}
 
 	/**
 	 *  Called one time when the robot enters autonomous
 	 */
 	public void autonomous() {
-		
+		auto.runAuto(true);
 	}
 
 	/**
 	 *  Called one time when the robot enters teleop
 	 */
 	public void operatorControl() {
-
+		auto.runAuto(false);
 	}
 
 	/**

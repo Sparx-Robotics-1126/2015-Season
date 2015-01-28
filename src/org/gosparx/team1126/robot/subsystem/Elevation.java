@@ -12,73 +12,91 @@ import edu.wpi.first.wpilibj.Victor;
  * Version 1.0 Season 2015
  */
 public class Elevation extends GenericSubsystem{
+	
 	/**
 	 * the speed of the elevation up
 	 */
 	private static final double UP_SPEED = 0.5; //TODO find best speed
+	
 	/**
 	 * the holding speed
 	 */
 	private static final double HOLDING_SPEED = 0.2; //TODO validate this speed with 5 totes
+	
 	/**
 	 * One revolution travels .125 inches. There is total of 256 ticks per revolution.
 	 */
 	private static final double DIST_PER_TICK = 0.125/256;
+	
 	/**
 	 * the tote is 12 inches in height
 	 */
 	private static final double TOTE_DISTANCE_CLEARED = 12;
+	
 	private static final double TOTE_THRESHOLD = 0.1; //TODO Test if this is enough clearance
+	
 	/**
 	 * The holding position cannot be bigger than the tote clearance threshold
 	 */
 	private static final double HOLDING_THRESHHOLD = -1 * TOTE_THRESHOLD * 0.9;
+	
 	/**
 	 * this is the holding current
 	 */
 	private static final double DOWN_SPEED = -0.5; //TODO find best speed
+	
 	/**
 	 * this is the left motors
 	 */
 	private Victor leftElevation;
+	
 	/**
 	 * this is the right motors
 	 */
 	private Victor rightElevation;
+	
 	/**
 	 * This is the elevation single instance
 	 */
 	private static Elevation elevation;
+	
 	/**
 	 * this is the encoder for elevations 
 	 */
 	private Encoder elevationEncoder;
+	
 	/**
 	 * This is the encoder data to translate the encoder into distance.
 	 */
 	private EncoderData elevationEncoderData;
+	
 	/**
 	 * This represents the current state of Elevation
 	 */
 	private State elevationState;
+	
 	/**
 	 * This is the distance we are going to lift or drop
 	 */
 	private double distanceToMove;
+	
 	/**
 	 * threshold for encoder
 	 */
 	private double encoderThreshold;
+	
 	/**
 	 * sensor for detecting the staring position for acquiring a tote
 	 */
 	private DigitalInput homeSwitch;
+	
 	/**
 	 * this is the constructor of the Elevation
 	 */
 	private Elevation() {
 		super("Elevation", Thread.NORM_PRIORITY);
 	}
+	
 	/**
 	 * gets 1 instance of elevation
 	 * @return the instance of elevation
@@ -89,6 +107,7 @@ public class Elevation extends GenericSubsystem{
 		}
 		return elevation;
 	}
+	
 	/**
 	 * Called by Generic Subsystem to initialize
 	 */
@@ -112,6 +131,7 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 * Main loop
 	 */
+	
 	protected boolean execute() {
 		switch(elevationState){
 			case IDLE:
@@ -166,6 +186,7 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 * This lifts the tote enough that another tote fits under it
 	 */
+	
 	public void liftTote(){
 		if (homeSwitch.get()){
 			resetEncoder();
@@ -184,6 +205,7 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 * This lowers the totes
 	 */
+	
 	public void lowerTote(){
 		if (!homeSwitch.get()){
 			leftElevation.set(DOWN_SPEED);
@@ -194,6 +216,7 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 * resets the encoder
 	 */
+	
 	private void resetEncoder() {
 		elevationEncoder.reset();
 		elevationEncoderData.reset();	
@@ -202,6 +225,7 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 *Makes the states for elevation
 	 */
+	
 	public enum State{
 		IDLE,
 		LIFTING,
@@ -211,6 +235,7 @@ public class Elevation extends GenericSubsystem{
 		 * Gets the name of the state
 		 * @return the correct state 
 		 */
+		
 		public String toString(){
 			switch(this){
 			case IDLE:

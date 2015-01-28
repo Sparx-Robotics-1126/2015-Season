@@ -111,8 +111,6 @@ public class Autonomous extends GenericSubsystem{
 	private final double SELECTION_6 = 1.60;
 	private final double SELECTION_7 = 1.07;
 	private final double SELECTION_8 = 0.54;
-	private final double SELECTION_9 = 0.00;
-
 	/*********************************************************************************************************************************
 	 **********************************************AUTO COMMANDS**********************************************************************
 	 *********************************************************************************************************************************/
@@ -494,13 +492,31 @@ public class Autonomous extends GenericSubsystem{
 			currentAuto = NO_AUTO;
 			break;
 		case 2:
-			currentAutoName = DRIVES_TO_AUTOZONE_FROM_EDGE_NAME;
-			currentAuto = DRIVES_TO_AUTOZONE_FROM_EDGE;
-			break;
-		case 3:
 			currentAutoName = DRIVES_TO_AUTOZONE_FROM_STAGING_NAME;
 			currentAuto = DRIVES_TO_AUTOZONE_FROM_STAGING;
 			break;
+		case 3:
+			currentAutoName = DRIVES_TO_AUTOZONE_FROM_EDGE_NAME;
+			currentAuto = DRIVE_TO_AUTOZONE_FROM_EDGE;
+			currentAutoCommands = DRIVES_TO_AUTOZONE_FROM_EDGE_PARAMS;
+			break;
+		case 4:
+			currentAutoName = ONE_YELLOW_TOTE_FROM_STAGING_NAME;
+			currentAuto = ONE_YELLOW_TOTE_FROM_STAGING;
+			currentAutoCommands = ONE_YELLOW_TOTE_FROM_STAGING_PARAMS;
+		case 5:
+			currentAutoName = TWO_YELLOW_TOTES_FROM_STAGING_NAME;
+			currentAuto = TWO_YELLOW_TOTES_FROM_STAGING; 
+			currentAutoCommands = TWO_YELLOW_TOTES_FROM_STAGING_PARAMS;
+		case 6:
+			currentAutoName = THREE_YELLOW_TOTES_FROM_STAGING_NAME;
+			currentAuto = THREE_YELLOW_TOTES_FROM_STAGING;
+			currentAutoCommands = THREE_YELLOW_TOTES_FROM_STAGING_PARAMS;
+		case 7:
+			currentAutoName = TWO_CANS_STEP_NAME;
+			currentAuto = TWO_CANS_STEP;
+			currentAutoCommands = TWO_CANS_STEP_PARAMS; 
+			
 		default:
 			currentAutoName = "ERROR";
 			currentAuto = NO_AUTO;

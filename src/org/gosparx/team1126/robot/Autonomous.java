@@ -62,7 +62,7 @@ public class Autonomous extends GenericSubsystem{
 	/**
 	 * True if we are running auto
 	 */
-	private boolean runAuto;
+	private boolean runAuto = false;
 
 	/**
 	 * The name of the current selected auto
@@ -380,12 +380,12 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private static final String TWO_CANS_STEP_NAME = "Two Cans from Step";
 	private static final int[][] TWO_CANS_STEP= {
-		{AutoCommands.DRIVES_GO_FORWARD.toId(), 54, 25},
+		{AutoCommands.DRIVES_GO_FORWARD.toId(), 54, 1},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.ARMS_DROP.toId()},
 		{AutoCommands.DRIVES_DANCE.toId()},
 		{AutoCommands.ARMS_DONE.toId()},
-		{AutoCommands.DRIVES_GO_REVERSE.toId(), 1126, 1126},//TODO: FIND VALUES
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 54, 1},//TODO: FIND VALUES
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.ARMS_RELEASE.toId()},
 		{AutoCommands.ARMS_RAISE.toId()},
@@ -419,6 +419,7 @@ public class Autonomous extends GenericSubsystem{
 		selectorSwitch = new AnalogInput(IO.SELECTOR_SWITCH_CHANNEL);
 		ds = DriverStation.getInstance();
 		drives = Drives.getInstance();
+		runAuto = false;
 		return false;
 	}
 
@@ -588,7 +589,6 @@ public class Autonomous extends GenericSubsystem{
 				LOG.logError("Unknown autocommand: " + currentAuto[currentStep]);
 			}
 			if(increaseStep){
-				currentStep++;
 				StringBuilder sb = new StringBuilder();
 				sb.append(AutoCommands.getName(AutoCommands.fromId(currentAuto[currentStep][0]))).append("(");
 				String prefix = "";
@@ -599,6 +599,7 @@ public class Autonomous extends GenericSubsystem{
 				}
 				sb.append(")");
 				LOG.logMessage(sb.toString());
+				currentStep++;
 			}
 			if(checkTime && Timer.getFPGATimestamp() - autoStartTime >= criticalTime && currentStep < criticalStep){
 				currentStep = criticalStep;

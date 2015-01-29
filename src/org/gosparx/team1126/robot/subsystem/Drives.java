@@ -557,6 +557,7 @@ public class Drives extends GenericSubsystem{
 		encoderDataRight.reset();
 		encoderDataLeft.reset();
 		autoWantedTurn = 0;
+		maxSpeed = speed;
 	}
 
 	/**
@@ -610,6 +611,8 @@ public class Drives extends GenericSubsystem{
 				return "In auto stand by";
 			case AUTO_LIGHT_LINE_UP:
 				return "In auto light line up";
+			case AUTO_DRIVE:
+				return "In Auto Drive";
 			default:
 				return "Error";
 			}

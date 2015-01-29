@@ -3,7 +3,7 @@ package org.gosparx.team1126.robot.subsystem;
 import org.gosparx.team1126.robot.IO;
 
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
  * A class for manipulating the tote acquisition system. 
@@ -15,51 +15,71 @@ public class ToteAcq extends GenericSubsystem{
 	 * Supports singleton
 	 */
 	private static ToteAcq acq;
-	
+
 	/**
 	 * The solenoid that controls if the rollers are on the ground or at the human player
 	 */
-	private Solenoid rollerRaiser;
-	
+	private Solenoid rollerRaiser1;
+
 	/**
-	 * The victor that controls the left roller motor
+	 * The second solenoid that controls the rollers
 	 */
-	private Victor leftRollers;
-	
+	private Solenoid rollerRaiser2;
+
 	/**
-	 * The victor that controls the right roller motor
+	 * The solenoid that controls the clutch
 	 */
-	private Victor rightRollers;
-	
+	private Solenoid clutch;
+
+	/**
+	 * The solenoid that stops the totes from shooting out the back
+	 */
+	private Solenoid stopper;
+
 	/**
 	 * The current position of the rollers
 	 */
 	private RollerPosition currPos;
-	
+
 	/**
-	 * If the rollers are on or off
+	 * The current state of the clutch
 	 */
-	private RollerState currState;
-	
+	private ClutchState currState;
+
+	/**
+	 * The current state of the stopper
+	 */
+	private StopState currStop;
+
 	/**
 	 * the value of the solenoid if the rollers are up
 	 */
 	private static final boolean ROLLERS_UP = true;
-	
+
 	/**
 	 * the value of the solenoid if the rollers are down
 	 */
-	private static final boolean ROLLERS_DOWN = false;
+	private static final boolean ROLLERS_DOWN = !ROLLERS_UP;
+
+	/**
+	 * The value of the solenoid when the clutch is engaged
+	 */
+	private static final boolean CLUTCH_ENGAGED = true;
+
+	/**
+	 * the value of the solenoid when the clutch is disengaged 
+	 */
+	private static final boolean CLUTCH_DISENGAGED = !CLUTCH_ENGAGED;
 	
 	/**
-	 * The value to send to the roller victors if they are acquiring
+	 * The value of the solenoid when the stopper is engaged
 	 */
-	private static final double ROLLERS_ON = 1.0;
-	
+	private static final boolean STOPPER_ENGAGED = true;
+
 	/**
-	 * the value to send to the roller victors if they are off
+	 * the value of the solenoid when the stopper is disengaged 
 	 */
-	private static final double ROLLERS_OFF = 0.0;
+	private static final boolean STOPPER_DISENGAGED = !STOPPER_ENGAGED;
 
 	/**
 	 * Supports singleton
@@ -70,7 +90,7 @@ public class ToteAcq extends GenericSubsystem{
 			acq = new ToteAcq();
 		return acq;
 	}
-	
+
 	/**
 	 * Creates a new ToteAcq
 	 */
@@ -83,11 +103,13 @@ public class ToteAcq extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		rollerRaiser = new Solenoid(IO.PNU_ACQ_TOTE);
-		leftRollers = new Victor(IO.PWM_ACQ_TOTES_LEFT);
-		rightRollers = new Victor(IO.PWM_ACQ_TOTES_RIGHT);
-		currPos = RollerPosition.POS_UP;
-		currState = RollerState.ON;
+		rollerRaiser1 = new Solenoid(IO.PNU_ACQ_TOTE_1);
+		rollerRaiser2 = new Solenoid(IO.PNU_ACQ_TOTE_2);
+		stopper = new Solenoid(IO.PNU_ACQ_TOTE_STOP);
+		clutch = new Solenoid(IO.PNU_ACQ_CLUTCH);
+		currPos = RollerPosition.TRAVEL;
+		currState = ClutchState.OFF;
+		currStop = StopState.ON;
 		return true;
 	}
 
@@ -96,31 +118,56 @@ public class ToteAcq extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		double wantedRollerSpeed = ROLLERS_OFF;
 		switch (currPos) {
-		case POS_UP:
+		case FLOOR:
+			if(rollerRaiser1.get() != ROLLERS_DOWN){
+				rollerRaiser1.set(ROLLERS_DOWN);
+			}
+			if(rollerRaiser2.get() != ROLLERS_DOWN){
+				rollerRaiser2.set(ROLLERS_DOWN);
+			}
 			break;
-		case POS_DOWN:
+		case HUMAN_PLAYER:
+			if(rollerRaiser1.get() != ROLLERS_UP){
+				rollerRaiser1.set(ROLLERS_UP);
+			}
+			if(rollerRaiser2.get() != ROLLERS_DOWN){
+				rollerRaiser2.set(ROLLERS_DOWN);
+			}
 			break;
-		case GOING_UP:
-			rollerRaiser.set(ROLLERS_UP);
-			currPos = RollerPosition.POS_UP;
-			break;
-		case GOING_DOWN:
-			rollerRaiser.set(ROLLERS_DOWN);
-			currPos = RollerPosition.POS_DOWN;
+		case TRAVEL:
+			if(rollerRaiser1.get() != ROLLERS_UP){
+				rollerRaiser1.set(ROLLERS_UP);
+			}
+			if(rollerRaiser2.get() != ROLLERS_UP){
+				rollerRaiser2.set(ROLLERS_UP);
+			}
 			break;
 		}
-		switch (currState) {
+		switch (currState){
 		case ON:
-			wantedRollerSpeed = ROLLERS_ON;
+			if(clutch.get() == CLUTCH_DISENGAGED){
+				clutch.set(CLUTCH_ENGAGED);
+			}
 			break;
-		case OFF: 
-			wantedRollerSpeed = ROLLERS_OFF;
+		case OFF:
+			if(clutch.get() == CLUTCH_ENGAGED){
+				clutch.set(CLUTCH_DISENGAGED);
+			}
 			break;
 		}
-		leftRollers.set(wantedRollerSpeed);
-		rightRollers.set(wantedRollerSpeed);
+		switch (currStop) {
+		case ON:
+			if(stopper.get() == STOPPER_DISENGAGED){
+				stopper.set(STOPPER_ENGAGED);
+			}
+			break;
+			case OFF:
+				if(stopper.get() == STOPPER_ENGAGED){
+					stopper.set(STOPPER_DISENGAGED);
+				}
+				break;
+		}
 		return false;
 	}
 
@@ -141,67 +188,58 @@ public class ToteAcq extends GenericSubsystem{
 	}
 
 	/**
-	 * Set the rollers on or off
-	 * @param on If the rollers should be on
+	 * Set the Clutch on or off
+	 * @param state the desired clutchState
 	 */
-	public void setRollers(boolean on){
-		if(on){
-			currState = RollerState.ON;
-		}else{
-			currState = RollerState.OFF;
-		}
+	public void setClutch(ClutchState state){
+		currState = state;
+	}
+	
+	/**
+	 * Set the stopper on or off
+	 * @param state the desired StopState
+	 */
+	public void setStopper(StopState state){
+		currStop = state;
 	}
 
 	/**
-	 * Moves the rollers up if they already are not
+	 * Sets the roller position
+	 * @param pos the desired position
 	 */
-	public void raiseRollers(){
-		if(currPos != RollerPosition.POS_UP && currPos != RollerPosition.GOING_UP){
-			currPos = RollerPosition.GOING_UP;
-		}
+	public void setRollerPos(RollerPosition pos){
+		currPos = pos;
 	}
-	
-	/**
-	 * Moves the rollers down if they already are not
-	 */
-	public void lowerRollers(){
-		if(currPos != RollerPosition.POS_DOWN && currPos != RollerPosition.GOING_DOWN){
-			currPos = RollerPosition.GOING_DOWN;
-		}
-	}
-	
+
 	/**
 	 * A enum of all of the posible roller positions 
 	 */
 	public enum RollerPosition{
-		POS_UP,
-		POS_DOWN,
-		GOING_UP,
-		GOING_DOWN;
+		TRAVEL,
+		HUMAN_PLAYER,
+		FLOOR;
 
 		/**
 		 * @return a string name of the enum
 		 */
 		public String getName(){
 			switch (this) {
-			case POS_UP:
-				return "Rollers Up";
-			case POS_DOWN:
-				return "Rollers Down";
-			case GOING_UP:
-				return "Going Up";
-			case GOING_DOWN:
-				return "Going Down";
+			case TRAVEL:
+				return "Travel";
+			case HUMAN_PLAYER:
+				return "Human Player";
+			case FLOOR:
+				return "Floor";
 			default:
 				return "Unknown Roller Position";
 			}
 		}
 	}
-	
+
 	/**
 	 * A enum for if the rollers are on or off
 	 */
-	public enum RollerState{
+	public enum ClutchState{
 		ON,
 		OFF;
 
@@ -220,9 +258,33 @@ public class ToteAcq extends GenericSubsystem{
 		}
 	}
 
+	/**
+	 * The possible states for the stop
+	 */
+	public enum StopState{
+		ON,
+		OFF;
+
+		/**
+		 * @return a string name of the enum
+		 */
+		public String getName(){
+			switch(this){
+			case ON:
+				return "Totes stopped";
+			case OFF:
+				return "Totes not stopped";
+			default:
+				return "Unknown State";
+			}
+		}
+	}
+
 	@Override
 	protected void liveWindow() {
-		// TODO Auto-generated method stub
-		
+		LiveWindow.addActuator("Tote Acq", "Raiser 1", rollerRaiser1);
+		LiveWindow.addActuator("Tote Acq", "Raiser 2", rollerRaiser2);
+		LiveWindow.addActuator("Tote Acq", "Clutch", clutch);
+		LiveWindow.addActuator("Tote Acq", "Stopper", stopper);
 	}
 }

@@ -50,7 +50,10 @@ public final class IO {
 	
 	
 	public static final int PNU_SHIFT																					 = 0;
-	public static final int PNU_ACQ_TOTE																				 = 1;
-	public static final int PNU_ACQ_CAN_LEFT																			 = 2;
-	public static final int PNU_ACQ_CAN_RIGHT																			 = 3;
+	public static final int PNU_ACQ_TOTE_1																				 = 1;
+	public static final int PNU_ACQ_TOTE_2																				 = 2;
+	public static final int PNU_ACQ_CAN_LEFT																			 = 3;
+	public static final int PNU_ACQ_CAN_RIGHT																			 = 4;
+	public static final int PNU_ACQ_CLUTCH																				 = 7;
+	public static final int PNU_ACQ_TOTE_STOP																			 = 6;
 }

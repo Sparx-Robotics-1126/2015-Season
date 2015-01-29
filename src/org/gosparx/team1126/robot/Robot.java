@@ -25,9 +25,10 @@ public class Robot extends SampleRobot{
 	 * Called once every time the robot is powered on
 	 */
 	public Robot() {
+		auto = Autonomous.getInstance();
 		subsystems = new GenericSubsystem[]{	
 			LogWriter.getInstance(),
-			Autonomous.getInstance(),
+			auto,
         	Controls.getInstance(),
         	Drives.getInstance()
 		};

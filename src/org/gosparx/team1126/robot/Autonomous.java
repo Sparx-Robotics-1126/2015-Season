@@ -450,7 +450,8 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		LOG.logError("Current Auto Selected: " + currentAutoName);
+		LOG.logMessage("Current Auto Selected: " + currentAutoName);
+		LOG.logMessage("Current Auto: " + AutoCommands.getName(AutoCommands.fromId(currentAuto[currentStep][0])));
 	}
 
 	/**
@@ -485,7 +486,6 @@ public class Autonomous extends GenericSubsystem{
 			//			wantedAuto = Integer.getInteger(SmartDashboard.getData(SD_AUTO_NAME).toString());
 			wantedAuto = 5;
 		}
-		System.out.println(wantedAuto);
 		//SET AUTO;
 		switch(wantedAuto){
 		case 1:
@@ -520,7 +520,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private void runAuto(){
 		increaseStep = true;
-		if(ds.isAutonomous() && ds.isEnabled()){
+		if(ds.isAutonomous() && ds.isEnabled() && currentStep < currentAuto.length){
 			switch(AutoCommands.fromId(currentAuto[currentStep][0])){
 			case DRIVES_GO_FORWARD:
 				drives.driveStraight(currentAuto[currentStep][1], currentAuto[currentStep][2]);
@@ -535,7 +535,7 @@ public class Autonomous extends GenericSubsystem{
 				drives.autoTurn(-currentAuto[currentStep][1]);
 				break;
 			case DRIVES_STOP:
-				//drives.forceStop();
+				drives.autoForceStop();
 				break;
 			case DRIVES_DONE:
 				increaseStep = drives.isDone();

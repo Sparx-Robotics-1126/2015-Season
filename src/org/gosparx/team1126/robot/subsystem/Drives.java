@@ -27,12 +27,7 @@ public class Drives extends GenericSubsystem{
 	 * Makes a drives object that will be called to use the drives class
 	 */
 	private static Drives drives;
-
-	/**
-	 * Access to the File logger
-	 */
-	private Logger log;
-
+	
 	/**
 	 * Right drive PID loop
 	 */
@@ -300,8 +295,7 @@ public class Drives extends GenericSubsystem{
 		rightPower = 0;
 
 		//OTHER
-		gyro = new Gyro(0);
-		log = new Logger(getName());
+		gyro = new Gyro(0);;
 		shiftingSol = new Solenoid(IO.PNU_SHIFTING);	
 		currentDriveState = State.IN_LOW_GEAR;
 		currentSpeed = 0;
@@ -487,17 +481,17 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		log.logMessage("Current speed: " + currentSpeed);
-		log.logMessage("Current drive state: " + currentDriveState);
-		log.logMessage("Auto State: " + autoFunctions);
-		log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+		LOG.logMessage("Current speed: " + currentSpeed);
+		LOG.logMessage("Current drive state: " + currentDriveState);
+		LOG.logMessage("Auto State: " + autoFunctions);
+		LOG.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
 				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
-		log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
-		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-		log.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
+		LOG.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
+		LOG.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
+		LOG.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
 				" Right Encoder: " +encoderDataRight.getSpeed());
-		log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
-		log.logMessage("Gyro: " + gyro.getAngle());
+		LOG.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
+		LOG.logMessage("Gyro: " + gyro.getAngle());
 	}
 
 	/**

@@ -202,6 +202,7 @@ public class Drives extends GenericSubsystem{
 	 * The distance in inches where drives straight has been achieved +-
 	 */
 	private static final double MAX_TURN_ERROR = 0.5;
+	
 	//*********************************VARIBLES****************************
 	/**
 	 * the wanted speed for the left motors
@@ -484,14 +485,14 @@ public class Drives extends GenericSubsystem{
 		LOG.logMessage("Current speed: " + currentSpeed);
 		LOG.logMessage("Current drive state: " + currentDriveState);
 		LOG.logMessage("Auto State: " + autoFunctions);
-		LOG.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
-				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
-		LOG.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
-		LOG.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-		LOG.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
-				" Right Encoder: " +encoderDataRight.getSpeed());
-		LOG.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
-		LOG.logMessage("Gyro: " + gyro.getAngle());
+//		LOG.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
+//		LOG.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
+//		LOG.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
+//		LOG.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
+//				" Right Encoder: " +encoderDataRight.getSpeed());
+//		LOG.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
+//		LOG.logMessage("Gyro: " + gyro.getAngle());
 	}
 
 	/**
@@ -526,6 +527,7 @@ public class Drives extends GenericSubsystem{
 	 * Force drive to stop moving
 	 */
 	public void autoForceStop(){
+		LOG.logMessage("Received STOP DRIVE");
 		setAutoFunction(State.AUTO_STAND_BY);
 		rightPower = STOP_MOTOR;
 		leftPower = STOP_MOTOR;
@@ -536,6 +538,7 @@ public class Drives extends GenericSubsystem{
 	 * @param degrees - positive(right) || negative(left)
 	 */
 	public void autoTurn(int degrees){
+		LOG.logMessage("Received Auto Turn: " + degrees);
 		setAutoFunction(State.AUTO_TURN);
 		autoWantedTurn = degrees;
 		gyro.reset();
@@ -547,6 +550,7 @@ public class Drives extends GenericSubsystem{
 	 * @param speed - desired speed(0 - 1)
 	 */
 	public void driveStraight(int inchDistance, int speed/*max speed */){
+		LOG.logMessage("Received Auto Straight: " + inchDistance + " inches");
 		setAutoFunction(State.AUTO_DRIVE);
 		autoDistance = inchDistance;
 		gyro.reset();

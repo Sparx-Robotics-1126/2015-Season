@@ -592,7 +592,7 @@ public class Autonomous extends GenericSubsystem{
 				StringBuilder sb = new StringBuilder();
 				sb.append(AutoCommands.getName(AutoCommands.fromId(currentAuto[currentStep][0]))).append("(");
 				String prefix = "";
-				for(int i:currentAuto[currentStep]){
+				for(int i = 1; i < currentAuto[currentStep].length; i++){
 					sb.append(prefix);
 					prefix = ", ";
 					sb.append(currentAuto[currentStep][i]);

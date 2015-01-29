@@ -26,7 +26,7 @@ public class Autonomous extends GenericSubsystem{
 	 * Supports singleton
 	 */
 	private static Autonomous auto;
-	
+
 	private SendableChooser chooser;
 
 	/**
@@ -277,16 +277,16 @@ public class Autonomous extends GenericSubsystem{
 		 * {}
 		 */
 		END(26);
-		
+
 		private int id;
 		private AutoCommands(int id){
 			this.id = id;
 		}
-		
+
 		public int toId(){
 			return id;
 		}
-		
+
 		public static AutoCommands fromId(int id){
 			for(AutoCommands ac : AutoCommands.values())
 				if(ac.id == id)
@@ -450,7 +450,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-
+		LOG.logError("Current Auto Selected: " + currentAutoName);
 	}
 
 	/**
@@ -459,7 +459,7 @@ public class Autonomous extends GenericSubsystem{
 	private void getAutoMode(){
 		double voltage = selectorSwitch.getVoltage();
 		int wantedAuto = -1;
-		if(SmartDashboard.getBoolean(SD_USE_SMART_AUTO)){
+		if(!SmartDashboard.getBoolean(SD_USE_SMART_AUTO)){
 			if (voltage >= SELECTION_0){
 				wantedAuto = 1;
 			}else if(voltage >= SELECTION_1){
@@ -482,9 +482,10 @@ public class Autonomous extends GenericSubsystem{
 				wantedAuto = 10;
 			}
 		}else{
-			wantedAuto = Integer.getInteger(SmartDashboard.getData(SD_AUTO_NAME).toString());
+			//			wantedAuto = Integer.getInteger(SmartDashboard.getData(SD_AUTO_NAME).toString());
+			wantedAuto = 5;
 		}
-
+		System.out.println(wantedAuto);
 		//SET AUTO;
 		switch(wantedAuto){
 		case 1:
@@ -497,30 +498,19 @@ public class Autonomous extends GenericSubsystem{
 			break;
 		case 3:
 			currentAutoName = DRIVES_TO_AUTOZONE_FROM_EDGE_NAME;
-			currentAuto = DRIVE_TO_AUTOZONE_FROM_EDGE;
-			currentAutoCommands = DRIVES_TO_AUTOZONE_FROM_EDGE_PARAMS;
+			currentAuto = DRIVES_TO_AUTOZONE_FROM_EDGE;
 			break;
 		case 4:
 			currentAutoName = ONE_YELLOW_TOTE_FROM_STAGING_NAME;
 			currentAuto = ONE_YELLOW_TOTE_FROM_STAGING;
-			currentAutoCommands = ONE_YELLOW_TOTE_FROM_STAGING_PARAMS;
+			break;
 		case 5:
-			currentAutoName = TWO_YELLOW_TOTES_FROM_STAGING_NAME;
-			currentAuto = TWO_YELLOW_TOTES_FROM_STAGING; 
-			currentAutoCommands = TWO_YELLOW_TOTES_FROM_STAGING_PARAMS;
-		case 6:
-			currentAutoName = THREE_YELLOW_TOTES_FROM_STAGING_NAME;
-			currentAuto = THREE_YELLOW_TOTES_FROM_STAGING;
-			currentAutoCommands = THREE_YELLOW_TOTES_FROM_STAGING_PARAMS;
-		case 7:
 			currentAutoName = TWO_CANS_STEP_NAME;
 			currentAuto = TWO_CANS_STEP;
-			currentAutoCommands = TWO_CANS_STEP_PARAMS; 
-			
+			break;
 		default:
 			currentAutoName = "ERROR";
 			currentAuto = NO_AUTO;
-			break;
 		}
 		SmartDashboard.putString(SD_CURRENT_AUTO_MODE, currentAutoName);
 	}
@@ -627,10 +617,6 @@ public class Autonomous extends GenericSubsystem{
 		chooser.addDefault(NO_AUTO_NAME, new Integer(0));
 		chooser.addObject(DRIVES_TO_AUTOZONE_FROM_EDGE_NAME, new Integer(1));
 		SmartDashboard.putData("H", chooser);//SD_AUTO_NAME, chooser);
-		System.out.println("IT LIVES:");
-		Integer num = Integer.getInteger(SmartDashboard.getData("H").toString());
-		System.out.println("CURRENT VALUE: " + num);
-		
 	}
 
 	public void runAuto(boolean run){

@@ -50,7 +50,7 @@ public abstract class GenericSubsystem extends Thread {
 	 * This is used to create a liveWindow setup
 	 */
 	abstract protected void liveWindow();
-	
+
 	/**
 	 * Once start is called, this method is called until it returns true.
 	 * 
@@ -85,10 +85,18 @@ public abstract class GenericSubsystem extends Thread {
 	public void run(){
 		boolean retVal = false;
 		double lastLogged = 0;
-		LOG.logMessage("***Starting: " + getName());
+		try{
+			LOG.logMessage("***Starting: " + getName());
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		init();
 		liveWindow();
-		LOG.logMessage("***Executing: " + getName());
+		try{
+			LOG.logMessage("***Executing: " + getName());
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		do{
 			try{
 				retVal = execute();

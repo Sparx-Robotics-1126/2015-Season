@@ -4,6 +4,7 @@ import java.security.InvalidParameterException;
 
 import org.gosparx.team1126.robot.util.Logger;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -20,6 +21,11 @@ public abstract class GenericSubsystem extends Thread {
 	 * This is the logger for the specific subsystem.
 	 */
 	protected Logger LOG;
+	
+	/**
+	 * An instance of driverstation
+	 */
+	protected DriverStation ds;
 
 	/**
 	 * This constructs a new subsystem with the given name and priority.
@@ -37,6 +43,7 @@ public abstract class GenericSubsystem extends Thread {
 		if(name != "LogWriter"){
 			LOG = new Logger(name);
 		}
+		ds = DriverStation.getInstance();
 	}
 
 	/**

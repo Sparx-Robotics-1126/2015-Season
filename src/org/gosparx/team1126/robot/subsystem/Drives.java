@@ -27,7 +27,7 @@ public class Drives extends GenericSubsystem{
 	 * Makes a drives object that will be called to use the drives class
 	 */
 	private static Drives drives;
-	
+
 	/**
 	 * Right drive PID loop
 	 */
@@ -148,7 +148,7 @@ public class Drives extends GenericSubsystem{
 	private static final double I_RIGHT = 0.055;
 
 	/**
-	 * The D value
+	 * The D
 	 */
 	private static final double D_RIGHT = 0;
 
@@ -194,6 +194,10 @@ public class Drives extends GenericSubsystem{
 	private static final int STOP_MOTOR = 0;
 
 	/**
+	 * The distance the robot will dance
+	 */
+	private static final int DANCE_DISTANCE = 2;
+	/**
 	 * Use PID Debugger (DRIVES WILL NOT WORK WITH JOYSTICK INPUT)
 	 */
 	private static final boolean USE_PID_DEBUG = false;
@@ -202,8 +206,18 @@ public class Drives extends GenericSubsystem{
 	 * The distance in inches where drives straight has been achieved +-
 	 */
 	private static final double MAX_TURN_ERROR = 0.5;
-	
+
 	//*********************************VARIBLES****************************
+	/**
+	 * Whether it dances left or right
+	 */
+	private boolean danceLeft = true;
+
+	/**
+	 * Whether you are going to dance backwards or forwards
+	 */
+	boolean backwards = true;
+
 	/**
 	 * the wanted speed for the left motors
 	 */
@@ -318,52 +332,53 @@ public class Drives extends GenericSubsystem{
 		encoderDataRight.calculateSpeed();
 		encoderDataLeft.calculateSpeed();
 		currentSpeed = (encoderDataRight.getSpeed() + encoderDataLeft.getSpeed()) / 2;
-		switch(currentDriveState){
-		case IN_LOW_GEAR:
-			if(Math.abs(currentSpeed) >= UPPERSHIFTSPEED){
-				System.out.println("SHIFTING HIGH");
-				shiftingSol.set(!LOW_GEAR);
-				shiftTime = Timer.getFPGATimestamp();
-				currentDriveState = State.SHIFTING_HIGH;
-			}
-			break;
-		case SHIFTING_LOW:
-			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
-				currentDriveState = State.IN_LOW_GEAR;
-			}
-			if(currentSpeed < 0){
-				rightPower = SHIFTINGSPEED * - 1;
-				leftPower = SHIFTINGSPEED * - 1;
-			}else{
-				rightPower = SHIFTINGSPEED;
+		if(!ds.isAutonomous()){
+			switch(currentDriveState){
+			case IN_LOW_GEAR:
+				if(Math.abs(currentSpeed) >= UPPERSHIFTSPEED){
+					System.out.println("SHIFTING HIGH");
+					shiftingSol.set(!LOW_GEAR);
+					shiftTime = Timer.getFPGATimestamp();
+					currentDriveState = State.SHIFTING_HIGH;
+				}
+				break;
+			case SHIFTING_LOW:
+				if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
+					currentDriveState = State.IN_LOW_GEAR;
+				}
+				if(currentSpeed < 0){
+					rightPower = SHIFTINGSPEED * - 1;
+					leftPower = SHIFTINGSPEED * - 1;
+				}else{
+					rightPower = SHIFTINGSPEED;
 
-				leftPower = SHIFTINGSPEED;
+					leftPower = SHIFTINGSPEED;
+				}
+				break;
+			case IN_HIGH_GEAR:
+				if(Math.abs(currentSpeed) <= LOWERSHIFTSPEED){
+					System.out.println("SHIFTING LOW");
+					shiftingSol.set(LOW_GEAR);
+					shiftTime = Timer.getFPGATimestamp();
+					currentDriveState = State.SHIFTING_LOW;
+				}
+				break;
+			case SHIFTING_HIGH:
+				if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
+					currentDriveState = State.IN_HIGH_GEAR;
+				}
+				if(currentSpeed < 0){
+					rightPower = SHIFTINGSPEED * - 1;
+					leftPower = SHIFTINGSPEED * - 1;
+				}else{
+					rightPower = SHIFTINGSPEED;
+					leftPower = SHIFTINGSPEED;
+				}
+				break;
+			default:
+				System.out.println("Error currentDriveState = " + currentDriveState);
 			}
-			break;
-		case IN_HIGH_GEAR:
-			if(Math.abs(currentSpeed) <= LOWERSHIFTSPEED){
-				System.out.println("SHIFTING LOW");
-				shiftingSol.set(LOW_GEAR);
-				shiftTime = Timer.getFPGATimestamp();
-				currentDriveState = State.SHIFTING_LOW;
-			}
-			break;
-		case SHIFTING_HIGH:
-			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
-				currentDriveState = State.IN_HIGH_GEAR;
-			}
-			if(currentSpeed < 0){
-				rightPower = SHIFTINGSPEED * - 1;
-				leftPower = SHIFTINGSPEED * - 1;
-			}else{
-				rightPower = SHIFTINGSPEED;
-				leftPower = SHIFTINGSPEED;
-			}
-			break;
-		default:
-			System.out.println("Error currentDriveState = " + currentDriveState);
 		}
-
 		switch(autoFunctions){
 		case AUTO_STAND_BY:
 			if(currentDriveState == State.IN_HIGH_GEAR || currentDriveState == State.IN_LOW_GEAR){
@@ -447,6 +462,52 @@ public class Drives extends GenericSubsystem{
 				autoFunctions = State.AUTO_STAND_BY;
 			}
 			break;
+		case AUTO_DANCE:
+
+			if(danceLeft){
+				if(backwards){
+					if(encoderDataLeft.getDistance() > -DANCE_DISTANCE){
+						leftPower = -0.4;
+						rightPower = 0.0;
+					}else {
+						backwards = false;
+						leftPower = 0.0;
+						rightPower = 0.0;
+					}
+				} else {
+					if(encoderDataLeft.getDistance() < 0){
+						leftPower = 0.4;
+						rightPower = 0.0;
+					}else {
+						backwards = true;
+						leftPower = 0.0;
+						rightPower = 0.0;
+						danceLeft = false;
+					}
+				}
+			}else {
+				if(backwards){
+					if(encoderDataRight.getDistance() > -DANCE_DISTANCE){
+						leftPower =  0.0;
+						rightPower = -0.4;
+					}else {
+						backwards = false;
+						leftPower = 0.0;
+						rightPower = 0.0;
+					}
+				} else {
+					if(encoderDataRight.getDistance() < 0){
+						leftPower = 0.0;
+						rightPower = 0.4;
+					}else {
+						backwards = true;
+						leftPower = 0.0;
+						rightPower = 0.0;
+						danceLeft = true;
+					}
+				}
+			}
+			break;
 		default: System.out.println("Error autoFunctions = " + autoFunctions);
 		}
 
@@ -482,17 +543,17 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		LOG.logMessage("Current speed: " + currentSpeed);
-		LOG.logMessage("Current drive state: " + currentDriveState);
-		LOG.logMessage("Auto State: " + autoFunctions);
-//		LOG.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
-//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
-//		LOG.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
-//		LOG.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-//		LOG.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
-//				" Right Encoder: " +encoderDataRight.getSpeed());
-//		LOG.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
-//		LOG.logMessage("Gyro: " + gyro.getAngle());
+//		LOG.logMessage("Current speed: " + currentSpeed);
+//		LOG.logMessage("Current drive state: " + currentDriveState);
+//		LOG.logMessage("Auto State: " + autoFunctions);
+//				LOG.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+		//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
+		//		LOG.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
+		//		LOG.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
+		//		LOG.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
+		//				" Right Encoder: " +encoderDataRight.getSpeed());
+		//		LOG.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
+		//		LOG.logMessage("Gyro: " + gyro.getAngle());
 	}
 
 	/**
@@ -523,6 +584,14 @@ public class Drives extends GenericSubsystem{
 		autoFunctions = wantedAutoState;
 	}
 
+	public void autoDance(){
+		LOG.logMessage("Drives Recieved Auto Dance");
+		setAutoFunction(State.AUTO_DANCE);
+		encoderDataLeft.reset();
+		encoderDataRight.reset();
+		gyro.reset();
+	}
+
 	/**
 	 * Force drive to stop moving
 	 */
@@ -549,7 +618,7 @@ public class Drives extends GenericSubsystem{
 	 * @param inchDistance - distance to travel in inches
 	 * @param speed - desired speed(0 - 1)
 	 */
-	public void driveStraight(int inchDistance, int speed/*max speed */){
+	public void driveStraight(int inchDistance, double speed){
 		LOG.logMessage("Received Auto Straight: " + inchDistance + " inches");
 		setAutoFunction(State.AUTO_DRIVE);
 		autoDistance = inchDistance;
@@ -588,6 +657,7 @@ public class Drives extends GenericSubsystem{
 		AUTO_STAND_BY,
 		AUTO_TURN,
 		AUTO_DRIVE,
+		AUTO_DANCE,
 		AUTO_LIGHT_LINE_UP,
 		AUTO_STEP_LINEUP;
 
@@ -613,6 +683,8 @@ public class Drives extends GenericSubsystem{
 				return "In auto light line up";
 			case AUTO_DRIVE:
 				return "In Auto Drive";
+			case AUTO_DANCE:
+				return "In Auto Dance";
 			default:
 				return "Error";
 			}

@@ -50,11 +50,6 @@ public class Autonomous extends GenericSubsystem{
 	private AnalogInput selectorSwitch;
 
 	/**
-	 * An instance of a driver station
-	 */
-	private DriverStation ds;
-
-	/**
 	 * The current autonomous 
 	 */
 	private int[][] currentAuto;
@@ -157,6 +152,11 @@ public class Autonomous extends GenericSubsystem{
 		 * {}
 		 */
 		DRIVES_DONE(6),
+		
+		/**
+		 * Uses touch sensor to detect the step and stop
+		 */
+		DRIVES_STEP_LINUP(1126),
 
 		/**
 		 * Lowers the arms to container level
@@ -302,7 +302,7 @@ public class Autonomous extends GenericSubsystem{
 			case ACQ_ROLLERS_OFF: 	return "ACQ rollers off";
 			case ACQ_ROLLERS_ON: 	return "ACQ on";
 			case ACQ_STOP: 			return "ACQ stop";
-			case ARMS_RELEASE: 	return "ARMS contracted";
+			case ARMS_RELEASE: 		return "ARMS contracted";
 			case ARMS_DONE: 		return "ARMS done";
 			case ARMS_DROP: 		return "ARMS dropped";
 			case ARMS_EXPAND: 		return "ARMS expanded";
@@ -316,6 +316,7 @@ public class Autonomous extends GenericSubsystem{
 			case DRIVES_STOP: 		return "DRIVES has raged quit (STOPPED)";
 			case DRIVES_TURN_LEFT: 	return "DRIVES is turning left";
 			case DRIVES_TURN_RIGHT: return "DRIVES is turning right";
+			case DRIVES_STEP_LINUP: return "Lined up on step";
 			case END: 				return "AUTO has ended";
 			case TOTES_DONE: 		return "TOTES done";
 			case TOTES_EJECT: 		return "TOTES ejected";
@@ -323,7 +324,7 @@ public class Autonomous extends GenericSubsystem{
 			case TOTES_RAISE: 		return "Totes rasied";
 			case TOTES_STOP: 		return "TOTES ragged quit (STOPPED)";
 			case WAIT: 				return "AUTO WAITING....";
-			default:				return "Unknown command";
+			default:				return auto.toId() + "";
 			}
 		}
 
@@ -380,12 +381,17 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private static final String TWO_CANS_STEP_NAME = "Two Cans from Step";
 	private static final int[][] TWO_CANS_STEP= {
-		{AutoCommands.DRIVES_GO_FORWARD.toId(), 54, 1},
+		{AutoCommands.DRIVES_GO_FORWARD.toId(), 80, 100},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_STEP_LINUP.toId()},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.ARMS_DROP.toId()},
+		{AutoCommands.CHECK_TIME.toId(), 5, 8},
 		{AutoCommands.DRIVES_DANCE.toId()},
 		{AutoCommands.ARMS_DONE.toId()},
-		{AutoCommands.DRIVES_GO_REVERSE.toId(), 54, 1},//TODO: FIND VALUES
+		{AutoCommands.DRIVES_STEP_LINUP.toId()},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 160, 100},//TODO: FIND VALUES
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.ARMS_RELEASE.toId()},
 		{AutoCommands.ARMS_RAISE.toId()},
@@ -417,7 +423,6 @@ public class Autonomous extends GenericSubsystem{
 	@Override
 	protected boolean init() {
 		selectorSwitch = new AnalogInput(IO.SELECTOR_SWITCH_CHANNEL);
-		ds = DriverStation.getInstance();
 		drives = Drives.getInstance();
 		runAuto = false;
 		return false;
@@ -428,7 +433,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		if(runAuto){
+		if(runAuto && ds.isEnabled()){
 			runAuto();
 		}else{
 			getAutoMode();
@@ -452,7 +457,6 @@ public class Autonomous extends GenericSubsystem{
 	@Override
 	protected void writeLog() {
 		LOG.logMessage("Current Auto Selected: " + currentAutoName);
-		LOG.logMessage("Current Auto: " + AutoCommands.getName(AutoCommands.fromId(currentAuto[currentStep][0])));
 	}
 
 	/**
@@ -524,10 +528,10 @@ public class Autonomous extends GenericSubsystem{
 		if(ds.isAutonomous() && ds.isEnabled() && currentStep < currentAuto.length){
 			switch(AutoCommands.fromId(currentAuto[currentStep][0])){
 			case DRIVES_GO_FORWARD:
-				drives.driveStraight(currentAuto[currentStep][1], currentAuto[currentStep][2]);
+				drives.driveStraight(currentAuto[currentStep][1], (currentAuto[currentStep][2]/100.0));
 				break;
 			case DRIVES_GO_REVERSE:
-				drives.driveStraight(-currentAuto[currentStep][1], currentAuto[currentStep][2]);
+				drives.driveStraight(-currentAuto[currentStep][1], (currentAuto[currentStep][2]/100.0));
 				break;
 			case DRIVES_TURN_RIGHT:
 				drives.autoTurn(currentAuto[currentStep][1]);
@@ -535,8 +539,14 @@ public class Autonomous extends GenericSubsystem{
 			case DRIVES_TURN_LEFT:
 				drives.autoTurn(-currentAuto[currentStep][1]);
 				break;
+			case DRIVES_STEP_LINUP:
+				drives.setAutoFunction(Drives.State.AUTO_STEP_LINEUP);
+				break;
 			case DRIVES_STOP:
 				drives.autoForceStop();
+				break;
+			case DRIVES_DANCE:
+				drives.autoDance();
 				break;
 			case DRIVES_DONE:
 				increaseStep = drives.isDone();
@@ -552,6 +562,7 @@ public class Autonomous extends GenericSubsystem{
 			case ARMS_STOP:
 				break;
 			case ARMS_DONE:
+				increaseStep = false;
 				break;
 			case ACQ_LOWER:
 				break;
@@ -577,10 +588,16 @@ public class Autonomous extends GenericSubsystem{
 				break;
 			case CHECK_TIME:
 				checkTime = true;
-				criticalStep =  currentAuto[currentStep][0];
+				criticalStep =  currentAuto[currentStep][2];
 				criticalTime = currentAuto[currentStep][1];
 				break;
 			case WAIT:
+				try {
+					Thread.sleep(currentAuto[currentStep][1]);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			case END:
 				break;
@@ -604,6 +621,7 @@ public class Autonomous extends GenericSubsystem{
 			if(checkTime && Timer.getFPGATimestamp() - autoStartTime >= criticalTime && currentStep < criticalStep){
 				currentStep = criticalStep;
 				checkTime = false;
+				LOG.logMessage("TIMEOUT: skipping to: " + AutoCommands.fromId(currentAuto[criticalStep][0]));
 			}
 		}
 	}
@@ -622,6 +640,6 @@ public class Autonomous extends GenericSubsystem{
 
 	public void runAuto(boolean run){
 		runAuto = run;
-		LOG.logMessage("Auto has been switch to: " + run);
+		LOG.logMessage("****************Auto has been switch to: " + run + "********************");
 	}
 }

@@ -24,7 +24,7 @@ public class Robot extends SampleRobot{
 		subsystems = new GenericSubsystem[]{	
         	Controls.getInstance(),
         	LogWriter.getInstance(),
-        	Drives.getInstance()
+        	//Drives.getInstance()
 		};
 		
 		for(GenericSubsystem system: subsystems){

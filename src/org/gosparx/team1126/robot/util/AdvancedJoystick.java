@@ -82,13 +82,14 @@ public class AdvancedJoystick extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
+		for(Multibutton m: multibuttons){
+			m.update();
+		}
 		for(Integer i: buttons){
 			hasChanged(i);
 			prevValues[i] = joy.getRawButton(i);
 		}
-		for(Multibutton m: multibuttons){
-			m.update();
-		}
+		
 		return false;
 	}
 
@@ -113,6 +114,13 @@ public class AdvancedJoystick extends GenericSubsystem{
 	 * @param button - the id of the button
 	 */
 	private void hasChanged(int button){
+		for(Multibutton m: multibuttons){
+			if(m.getButton1() == button || m.getButton2() == button){
+				if(m.getUpdated()){
+					return;
+				}
+			}
+		}
 		if(joy.getRawButton(button) != prevValues[button]){
 			if(listener != null){
 				listener.actionPerformed(new ButtonEvent(button, joy.getRawButton(button)));
@@ -226,6 +234,11 @@ public class AdvancedJoystick extends GenericSubsystem{
 		private boolean last;
 		
 		/**
+		 * Can we check the individual buttons
+		 */
+		private boolean updated;
+		
+		/**
 		 * Creates a new Multibutton
 		 * @param b1 The first button to check
 		 * @param b2 The second button to check
@@ -239,11 +252,41 @@ public class AdvancedJoystick extends GenericSubsystem{
 		 * Checks the multibutton combo and if it has changed creates a new event for it
 		 */
 		public void update(){
+			updated = false;
 			if(last != (joy.getRawButton(button1) && joy.getRawButton(button2))){
 				last = (joy.getRawButton(button1) && joy.getRawButton(button2));
 				listener.actionPerformed(new MultibuttonEvent(button1, button2, last));
 				LOG.logMessage("MultibuttonEvent( " + port + ", " + button1 + ", " + button2 + ", " + last + ")");
+				updated = true;
 			}
+		}
+		
+		/**
+		 * @return if the button is pressed
+		 */
+		public boolean getLast(){
+			return last;
+		}
+		
+		/**
+		 * @return if we can check the individuals
+		 */
+		public boolean getUpdated(){
+			return updated;
+		}
+		
+		/**
+		 * @return The first button in the combo
+		 */
+		public int getButton1(){
+			return button1;
+		}
+		
+		/**
+		 * @return The second button in the combo
+		 */
+		public int getButton2(){
+			return button2;
 		}
 	}
 

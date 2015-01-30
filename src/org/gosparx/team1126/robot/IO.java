@@ -26,8 +26,8 @@ public final class IO {
 	public static final int COLOR_RIGHT_BLUE			= 3;
 	public static final int COLOR_RIGHT_GREEN			= 9;//NOT USED
 	public static final int COLOR_RIGHT_LED				= 5;
-	public static final int COLOR_LEFT_RED				= 0;
-	public static final int COLOR_LEFT_BLUE				= 1;
+	public static final int COLOR_LEFT_RED				= 4;//TODO: CHECK
+	public static final int COLOR_LEFT_BLUE				= 5;//TODO: CHECK
 	public static final int COLOR_LEFT_GREEN			= 8;//NOT USED
 	public static final int COLOR_LEFT_LED				= 4;
 	public static final int SWTICH_RIGHT_DRIVES 		= 6;

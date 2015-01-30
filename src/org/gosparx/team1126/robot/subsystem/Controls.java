@@ -113,6 +113,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	protected boolean execute() {
 		drives.setPower(-driverJoyLeft.getAxis(ATTACK3_Y_AXIS),
 				-driverJoyRight.getAxis(ATTACK3_Y_AXIS));
+			drives.driveStraight(72, 0);
 		return false;
 	}
 

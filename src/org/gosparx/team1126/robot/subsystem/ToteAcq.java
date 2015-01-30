@@ -70,7 +70,7 @@ public class ToteAcq extends GenericSubsystem{
 	 * the value of the solenoid when the clutch is disengaged 
 	 */
 	private static final boolean CLUTCH_DISENGAGED = !CLUTCH_ENGAGED;
-	
+
 	/**
 	 * The value of the solenoid when the stopper is engaged
 	 */
@@ -162,11 +162,11 @@ public class ToteAcq extends GenericSubsystem{
 				stopper.set(STOPPER_ENGAGED);
 			}
 			break;
-			case OFF:
-				if(stopper.get() == STOPPER_ENGAGED){
-					stopper.set(STOPPER_DISENGAGED);
-				}
-				break;
+		case OFF:
+			if(stopper.get() == STOPPER_ENGAGED){
+				stopper.set(STOPPER_DISENGAGED);
+			}
+			break;
 		}
 		return false;
 	}
@@ -194,7 +194,7 @@ public class ToteAcq extends GenericSubsystem{
 	public void setClutch(ClutchState state){
 		currState = state;
 	}
-	
+
 	/**
 	 * Set the stopper on or off
 	 * @param state the desired StopState
@@ -282,9 +282,9 @@ public class ToteAcq extends GenericSubsystem{
 
 	@Override
 	protected void liveWindow() {
-		LiveWindow.addActuator("Tote Acq", "Raiser 1", rollerRaiser1);
-		LiveWindow.addActuator("Tote Acq", "Raiser 2", rollerRaiser2);
-		LiveWindow.addActuator("Tote Acq", "Clutch", clutch);
-		LiveWindow.addActuator("Tote Acq", "Stopper", stopper);
+		LiveWindow.addActuator(getName(), "Raiser 1", rollerRaiser1);
+		LiveWindow.addActuator(getName(), "Raiser 2", rollerRaiser2);
+		LiveWindow.addActuator(getName(), "Clutch", clutch);
+		LiveWindow.addActuator(getName(), "Stopper", stopper);
 	}
 }

@@ -4,6 +4,7 @@ import org.gosparx.team1126.robot.IO;
 import org.gosparx.team1126.robot.util.AdvancedJoystick;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.ButtonEvent;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.JoystickListener;
+import org.gosparx.team1126.robot.util.AdvancedJoystick.MultibuttonEvent;
 
 /**
  * This is how the controller is able to work with drives
@@ -113,7 +114,6 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	protected boolean execute() {
 		drives.setPower(-driverJoyLeft.getAxis(ATTACK3_Y_AXIS),
 				-driverJoyRight.getAxis(ATTACK3_Y_AXIS));
-			drives.driveStraight(72, 0);
 		return false;
 	}
 
@@ -222,5 +222,12 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			break;
 		}
 	}
-
+	/**
+	 * Responds to Multibutton events
+	 * @param e - the buttonevent
+	 */
+	@Override
+	public void actionPerformed(MultibuttonEvent e) {
+		
+	}
 }

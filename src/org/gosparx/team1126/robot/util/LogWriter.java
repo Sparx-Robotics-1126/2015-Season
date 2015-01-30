@@ -83,6 +83,15 @@ public class LogWriter extends GenericSubsystem{
 			e.printStackTrace();
 			try {
 				Process p = Runtime.getRuntime().exec("mount /dev/sda1 /mnt/sda1");
+				p.waitFor();
+				Calendar cal = Calendar.getInstance();
+				logName = "log" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DATE) + "-" + cal.get(Calendar.YEAR) + "(" + cal.get(Calendar.HOUR_OF_DAY) + "-" + cal.get(Calendar.MINUTE) + ").txt";
+				file = new File(FILE_PATH + logName);
+				file.mkdirs();
+				if(file.exists()){
+					file.delete();
+				}
+				file.createNewFile();
 			}catch (Exception e2){
 				e2.printStackTrace();
 			}

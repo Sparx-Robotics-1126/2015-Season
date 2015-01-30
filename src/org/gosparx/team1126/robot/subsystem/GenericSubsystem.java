@@ -21,7 +21,7 @@ public abstract class GenericSubsystem extends Thread {
 	 * This is the logger for the specific subsystem.
 	 */
 	protected Logger LOG;
-	
+
 	/**
 	 * An instance of driverstation
 	 */
@@ -92,18 +92,10 @@ public abstract class GenericSubsystem extends Thread {
 	public void run(){
 		boolean retVal = false;
 		double lastLogged = 0;
-		try{
-			LOG.logMessage("***Starting: " + getName());
-		}catch (Exception e){
-			e.printStackTrace();
-		}
+		LOG.logMessage("***Starting: " + getName());
 		init();
 		liveWindow();
-		try{
-			LOG.logMessage("***Executing: " + getName());
-		}catch (Exception e){
-			e.printStackTrace();
-		}
+		LOG.logMessage("***Executing: " + getName());
 		do{
 			try{
 				retVal = execute();

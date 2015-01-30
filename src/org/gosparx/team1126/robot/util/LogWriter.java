@@ -97,7 +97,7 @@ public class LogWriter extends GenericSubsystem{
 			}
 		}
 		write(toWrite.getBytes());
-		System.out.println(toWrite);
+		System.out.print(toWrite);
 		return false;
 	}
 

@@ -32,7 +32,7 @@ public class Autonomous extends GenericSubsystem{
 	/**
 	 * The String name of 
 	 */
-	private static final String SD_AUTO_NAME = "Auto Mode Selector";
+	private static final String SD_AUTO_NAME = "Auto Mode Selector Switch";
 
 	/**
 	 * The string name for the SmartDashboard button
@@ -152,7 +152,7 @@ public class Autonomous extends GenericSubsystem{
 		 * {}
 		 */
 		DRIVES_DONE(6),
-		
+
 		/**
 		 * Uses touch sensor to detect the step and stop
 		 */
@@ -425,6 +425,16 @@ public class Autonomous extends GenericSubsystem{
 		selectorSwitch = new AnalogInput(IO.SELECTOR_SWITCH_CHANNEL);
 		drives = Drives.getInstance();
 		runAuto = false;
+
+		//Auto current selected
+		SmartDashboard.putBoolean(SD_USE_SMART_AUTO, false);
+		SmartDashboard.putString(SD_CURRENT_AUTO_MODE, "TEST1");
+		//Auto Selector
+		chooser = new SendableChooser();
+		chooser.addDefault(NO_AUTO_NAME, new Integer(1));
+		chooser.addObject(TWO_CANS_STEP_NAME, new Integer(5));
+		SmartDashboard.putData(SD_AUTO_NAME, chooser);
+
 		return false;
 	}
 
@@ -488,8 +498,7 @@ public class Autonomous extends GenericSubsystem{
 				wantedAuto = 10;
 			}
 		}else{
-			//			wantedAuto = Integer.getInteger(SmartDashboard.getData(SD_AUTO_NAME).toString());
-			wantedAuto = 5;
+			wantedAuto = (Integer)chooser.getSelected();
 		}
 		//SET AUTO;
 		switch(wantedAuto){
@@ -628,14 +637,6 @@ public class Autonomous extends GenericSubsystem{
 
 	@Override
 	protected void liveWindow() {
-		//Auto current selected
-		SmartDashboard.putBoolean(SD_USE_SMART_AUTO, false);
-		SmartDashboard.putString(SD_CURRENT_AUTO_MODE, "TEST1");
-		//Auto Selector
-		chooser = new SendableChooser();
-		chooser.addDefault(NO_AUTO_NAME, new Integer(0));
-		chooser.addObject(DRIVES_TO_AUTOZONE_FROM_EDGE_NAME, new Integer(1));
-		SmartDashboard.putData("H", chooser);//SD_AUTO_NAME, chooser);
 	}
 
 	public void runAuto(boolean run){

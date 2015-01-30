@@ -8,8 +8,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
-import sun.security.util.PropertyExpander.ExpandException;
-
 /**
  * Used to log messages to files. This is the singleton LogWriter that writes to the files.
  * @author Alex Mechler {amechler1998@gmail.com}
@@ -83,7 +81,6 @@ public class LogWriter extends GenericSubsystem{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println(System.getProperty("user.home"));
 		return true;
 	}
 

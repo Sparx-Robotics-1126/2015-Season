@@ -19,7 +19,7 @@ public class LogWriter extends GenericSubsystem{
 	/**
 	 * The file path to store the logs in. /mnt/sda1 is the USB port.
 	 */
-	private static final String FILE_PATH = "/mnt/sda1/";
+	private static final String FILE_PATH = "/U/";
 
 	/**
 	 * The name of the log

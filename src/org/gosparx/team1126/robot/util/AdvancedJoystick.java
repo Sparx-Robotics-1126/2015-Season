@@ -23,25 +23,25 @@ public class AdvancedJoystick extends GenericSubsystem{
 	private boolean[] prevValues;
 
 	/**
-	 * The listener that is listening for the rising/falling edges
+	 * The list of listeners that are listening for the rising/falling edges
 	 */
-	private JoystickListener listener;
+	private ArrayList<JoystickListener> listeners;
 
 	/**
 	 * the port the joystick is in
 	 */
 	private int port;
-	
+
 	/**
 	 * The list of button ids to listen for
 	 */
 	private ArrayList<Integer> buttons;
-	
+
 	/**
 	 * The list of multibuttons to track
 	 */
 	private ArrayList<Multibutton> multibuttons;
-	
+
 	/**
 	 * Any axis value under this will be treated as 0
 	 */
@@ -58,6 +58,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 		port = joyPort;
 		buttons = new ArrayList<Integer>();
 		multibuttons = new ArrayList<Multibutton>();
+		listeners = new ArrayList<JoystickListener>();
 		prevValues = new boolean[joy.getButtonCount() + 1];
 	}
 
@@ -89,7 +90,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 			hasChanged(i);
 			prevValues[i] = joy.getRawButton(i);
 		}
-		
+
 		return false;
 	}
 
@@ -109,23 +110,27 @@ public class AdvancedJoystick extends GenericSubsystem{
 
 	}
 
+	private void notifyAllListeners(ButtonEvent e){
+		for(JoystickListener j: listeners){
+			if(j != null){
+				j.actionPerformed(e);
+			}
+		}
+	}
+
 	/**
 	 * checks to see if the button has had a rising/falling edge and will notify the listener if it is
 	 * @param button - the id of the button
 	 */
 	private void hasChanged(int button){
 		for(Multibutton m: multibuttons){
-			if(m.getButton1() == button || m.getButton2() == button){
-				if(m.getUpdated()){
-					return;
-				}
+			if((m.getButton1() == button || m.getButton2() == button) && m.getUpdated()){
+				return;
 			}
 		}
 		if(joy.getRawButton(button) != prevValues[button]){
-			if(listener != null){
-				listener.actionPerformed(new ButtonEvent(button, joy.getRawButton(button)));
-				LOG.logMessage("ButtonEvent( " + port + ", " + button + ", " + joy.getRawButton(button) + ")");
-			}
+			notifyAllListeners(new ButtonEvent(button, joy.getRawButton(button)));
+			LOG.logMessage("ButtonEvent( " + port + ", " + button + ", " + joy.getRawButton(button) + ")");
 		}
 	}
 
@@ -144,7 +149,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 	public void addMultibutton(int b1, int b2){
 		multibuttons.add(new Multibutton(b1, b2));
 	}
-	
+
 	/**
 	 * Get the axis value accounting for the deadband
 	 * @param axis - the int of the axis to get
@@ -159,7 +164,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 	 * @param listener - the listener
 	 */
 	public void addActionListener(JoystickListener listener){
-		this.listener = listener;
+		listeners.add(listener);
 	}
 
 	/**
@@ -172,12 +177,12 @@ public class AdvancedJoystick extends GenericSubsystem{
 		 * True if this is a rising edge, false if its a falling edge
 		 */
 		private boolean risingEdge;
-		
+
 		/**
 		 * The button id that triggered the event
 		 */
 		private int buttonID;
-		
+
 		/**
 		 * Creates a new ButtonEvent
 		 * @param port - the port of the joystick
@@ -211,33 +216,33 @@ public class AdvancedJoystick extends GenericSubsystem{
 			return port;
 		}
 	}
-	
+
 	/**
 	 * A class to represent a combo of buttons/multibutton
 	 * @author Alex Mechler {amechler1998@gmail.com}
 	 */
 	public class Multibutton{
-		
+
 		/**
 		 * The ID of the first button
 		 */
 		private int button1;
-		
+
 		/**
 		 * The ID of the second button
 		 */
 		private int button2;
-		
+
 		/**
 		 * The previous value of the multibutton
 		 */
 		private boolean last;
-		
+
 		/**
 		 * Can we check the individual buttons
 		 */
 		private boolean updated;
-		
+
 		/**
 		 * Creates a new Multibutton
 		 * @param b1 The first button to check
@@ -247,7 +252,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 			button1 = b1;
 			button2 = b2;
 		}
-		
+
 		/**
 		 * Checks the multibutton combo and if it has changed creates a new event for it
 		 */
@@ -255,33 +260,33 @@ public class AdvancedJoystick extends GenericSubsystem{
 			updated = false;
 			if(last != (joy.getRawButton(button1) && joy.getRawButton(button2))){
 				last = (joy.getRawButton(button1) && joy.getRawButton(button2));
-				listener.actionPerformed(new MultibuttonEvent(button1, button2, last));
+				notifyAllListeners(new MultibuttonEvent(button1, button2, last));
 				LOG.logMessage("MultibuttonEvent( " + port + ", " + button1 + ", " + button2 + ", " + last + ")");
 				updated = true;
 			}
 		}
-		
+
 		/**
 		 * @return if the button is pressed
 		 */
 		public boolean getLast(){
 			return last;
 		}
-		
+
 		/**
 		 * @return if we can check the individuals
 		 */
 		public boolean getUpdated(){
 			return updated;
 		}
-		
+
 		/**
 		 * @return The first button in the combo
 		 */
 		public int getButton1(){
 			return button1;
 		}
-		
+
 		/**
 		 * @return The second button in the combo
 		 */
@@ -294,23 +299,13 @@ public class AdvancedJoystick extends GenericSubsystem{
 	 * A class to represent the multibutton events
 	 * @author Alex Mechler {amechler1998@gmail.com}
 	 */
-	public class MultibuttonEvent{
-		
-		/**
-		 * The ID of the first button in the combo 
-		 */
-		private int button1;
-		
+	public class MultibuttonEvent extends ButtonEvent{
+
 		/**
 		 * The ID of the second button in the combo
 		 */
 		private int button2;
-		
-		/**
-		 * If this is a rising or falling edge
-		 */
-		private boolean risingEdge;
-		
+
 		/**
 		 * Creates a new Multibutton Event
 		 * @param button1 The first button in the combo
@@ -318,46 +313,23 @@ public class AdvancedJoystick extends GenericSubsystem{
 		 * @param risingEdge If this is a rising or falling edge
 		 */
 		public MultibuttonEvent(int button1, int button2, boolean risingEdge){
-			this.button1 = button1;
+			super(button1, risingEdge);
 			this.button2 = button2;
-			this.risingEdge = risingEdge;
 		}
-		
-		/**
-		 * @return the first button
-		 */
-		public int getButton1(){
-			return button1;
-		}
-		
+
 		/**
 		 * @return the second button
 		 */
 		public int getButton2(){
 			return button2;
 		}
-		
-		/**
-		 * @return the port of the joystick that created this event
-		 */
-		public int getPort(){
-			return port;
-		}
-		
-		/**
-		 * @return True if rising edge, false if not
-		 */
-		public boolean isRising(){
-			return risingEdge;
-		}
 	}
-	
+
 	/**
 	 * An interface that allows for listening to the advanced joystick.
 	 * @author Alex Mechler {amechler1998@gmail.com}
 	 */
 	public interface JoystickListener{
 		public void actionPerformed(ButtonEvent e);
-		public void actionPerformed(MultibuttonEvent e);
 	}
 }

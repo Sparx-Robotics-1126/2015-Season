@@ -148,6 +148,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	public void actionPerformed(ButtonEvent e) {
+		if(!(e instanceof MultibuttonEvent)){
 		switch (e.getPort()) {
 		case IO.DRIVER_JOYSTICK_LEFT:
 			switch (e.getID()) {
@@ -222,12 +223,5 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			break;
 		}
 	}
-	/**
-	 * Responds to Multibutton events
-	 * @param e - the buttonevent
-	 */
-	@Override
-	public void actionPerformed(MultibuttonEvent e) {
-		
 	}
 }

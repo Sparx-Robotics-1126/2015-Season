@@ -16,6 +16,7 @@ public class CanAcquisition extends GenericSubsystem{
 	/**
 	 * Position for which the arms to drop
 	 */
+	
 	private static final double DROP_RELEASE_POSITION = 1.0; //TODO find out
 
 	/**

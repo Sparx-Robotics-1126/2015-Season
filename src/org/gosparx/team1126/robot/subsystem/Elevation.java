@@ -24,7 +24,7 @@ public class Elevation extends GenericSubsystem{
 	private static Elevation elevation;
 	
 	/**
-	 * When scoring sets the elvator to tote clearence
+	 * When scoring sets the elevator to tote clearance
 	 */
 	public void goToScoring() {
 		moveElevator(TOTE_CLEARANCE_DISTANCE, 0);
@@ -60,7 +60,7 @@ public class Elevation extends GenericSubsystem{
 	private static final double TOTE_DISTANCE_CLEARED = 12;
 	
 	/**
-	 * Threshhold for tote distance 
+	 * Threshold for tote distance 
 	 */
 	private static final double TOTE_THRESHOLD = 0.1; //TODO Test if this is enough clearance
 	
@@ -72,7 +72,7 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 * The holding position shouldn't go above or below .5 inch
 	 */
-	private static final double HOLDING_THRESHHOLD = 0.5;
+	private static final double HOLDING_THRESHOLD = 0.5;
 	
 	/**
 	 * this is the holding current
@@ -198,7 +198,6 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 * Main loop
 	 */
-	
 	protected boolean execute() {
 		switch(elevationState){
 			case IDLE:
@@ -217,8 +216,8 @@ public class Elevation extends GenericSubsystem{
 				}
 				break;
 			case HOLD_POSITION:
-				if ((elevationEncoderData.getDistance() >= holdDistance + HOLDING_THRESHHOLD)||
-					(elevationEncoderData.getDistance() <= holdDistance - HOLDING_THRESHHOLD)){
+				if ((elevationEncoderData.getDistance() >= holdDistance + HOLDING_THRESHOLD)||
+					(elevationEncoderData.getDistance() <= holdDistance - HOLDING_THRESHOLD)){
 					moveElevator(TOTE_DISTANCE_CLEARED, TOTE_THRESHOLD);
 				}
 				break;

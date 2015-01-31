@@ -277,6 +277,11 @@ public class Drives extends GenericSubsystem{
 	private boolean isDriverControlled = true;
 
 	/**
+	 * Weather we are in manual or auto shifting
+	 */
+	private boolean isAutoShifting = true;
+
+	/**
 	 * if drives == null, make a new drives
 	 * @return the new drives
 	 */
@@ -325,7 +330,7 @@ public class Drives extends GenericSubsystem{
 		//OTHER
 		gyro = new Gyro(0);
 		log = new Logger(getName());
-		shiftingSol = new Solenoid(IO.PNU_SHIFT);	
+		shiftingPnu = new Solenoid(IO.PNU_SHIFT);	
 		neutralPnu = new Solenoid(000);//TODO: FIND CHANNEL
 		currentDriveState = State.IN_LOW_GEAR;
 		currentSpeed = 0;
@@ -349,7 +354,7 @@ public class Drives extends GenericSubsystem{
 		currentSpeed = (encoderDataRight.getSpeed() + encoderDataLeft.getSpeed()) / 2;
 		switch(currentDriveState){
 		case IN_LOW_GEAR:
-			if(Math.abs(currentSpeed) >= UPPERSHIFTSPEED){
+			if(Math.abs(currentSpeed) >= UPPERSHIFTSPEED &&  isAutoShifting){
 				System.out.println("SHIFTING HIGH");
 				shiftTime = Timer.getFPGATimestamp();
 				currentDriveState = State.SHIFTING_HIGH;
@@ -373,7 +378,7 @@ public class Drives extends GenericSubsystem{
 			}
 			break;
 		case IN_HIGH_GEAR:
-			if(Math.abs(currentSpeed) <= LOWERSHIFTSPEED){
+			if(Math.abs(currentSpeed) <= LOWERSHIFTSPEED && isAutoShifting){
 				System.out.println("SHIFTING LOW");
 				shiftTime = Timer.getFPGATimestamp();
 				currentDriveState = State.SHIFTING_LOW;
@@ -436,317 +441,335 @@ public class Drives extends GenericSubsystem{
 				currentDriveState = State.SHIFTING_LOW;
 				finalDriveState = State.IN_LOW_GEAR;
 			}
-		break;
-	default:
-		System.out.println("Error currentDriveState = " + currentDriveState);
+			break;
+		default:
+			System.out.println("Error currentDriveState = " + currentDriveState);
+		}
+
+		switch(autoFunctions){
+		case AUTO_STAND_BY:
+			if(currentDriveState == State.IN_HIGH_GEAR || currentDriveState == State.IN_LOW_GEAR){
+				rightPower = wantedRightPower;
+				leftPower = wantedLeftPower;
+			}
+			break;
+		case AUTO_LIGHT_LINE_UP:
+			boolean rightWhite = colorSensorRight.isColor(Color.WHITE);
+			boolean leftWhite = colorSensorLeft.isColor(Color.WHITE);
+			if(leftWhite){
+				leftPower = -0.5;
+			}else{
+				leftPower = 0.4;
+			}
+			if(rightWhite){
+				rightPower = -0.5;
+			}else{
+				rightPower = 0.4;
+			}
+			if(rightWhite && leftWhite){
+				autoFunctions = State.AUTO_STAND_BY;
+				leftPower = 0;
+				rightPower = 0;
+			}
+			break;
+		case AUTO_STEP_LINEUP:
+			boolean right = rightTouch.get();
+			boolean left = leftTouch.get();
+			if(right){
+				rightPower = -LINEUP_SPEED;
+			}else{
+				rightPower = LINEUP_SPEED;
+			}
+			if(left){
+				leftPower = -LINEUP_SPEED;
+			}else{
+				leftPower = LINEUP_SPEED;
+			}
+			if(left && right){
+				autoFunctions = State.AUTO_STAND_BY;
+				rightPower = 0;
+				leftPower = 0;
+			}
+			break;
+		case AUTO_TURN:
+			double currentAngle = gyro.getAngle();
+			double angleDiff = Math.abs(autoWantedTurn - currentAngle);
+			double speed = (1.0/16)*Math.sqrt(angleDiff);
+			if(speed > 0){
+				speed = speed < Math.PI/8 ? Math.PI/8 : speed;
+			}
+			if(currentAngle < autoWantedTurn){
+				rightPower = -speed;
+				leftPower = speed;
+			}else{
+				rightPower = speed;
+				leftPower = -speed;
+			}
+			if(currentAngle > (autoWantedTurn - MAX_TURN_ERROR) && currentAngle < (autoWantedTurn +MAX_TURN_ERROR)){
+				rightPower = 0;
+				leftPower = 0;
+				autoFunctions = State.AUTO_STAND_BY;
+			}
+			break;
+		case AUTO_DRIVE:
+			double currentDistance = (encoderDataRight.getDistance() + encoderDataLeft.getDistance())/2;
+			double driveSpeed = (1.0/10)*(Math.sqrt(Math.abs(autoDistance - currentDistance)));
+			driveSpeed = driveSpeed < Math.PI/16 ? Math.PI/16: driveSpeed;
+			driveSpeed = driveSpeed > maxSpeed ? maxSpeed : driveSpeed;
+			if(currentDistance < autoDistance){
+				rightPower = driveSpeed + gyroOffset();
+				leftPower = driveSpeed - gyroOffset();
+			}else{
+				rightPower = -driveSpeed + gyroOffset();
+				leftPower = -driveSpeed - gyroOffset();
+			}
+			if(autoDistance - currentDistance < 0.5 && autoDistance - currentDistance > -0.5){
+				rightPower = 0;
+				leftPower = 0;
+				autoFunctions = State.AUTO_STAND_BY;
+			}
+			break;
+		default: System.out.println("Error autoFunctions = " + autoFunctions);
+		}
+
+		//PID DEBUG
+		if(USE_PID_DEBUG){
+			updatePIDEncoder();
+			rightPID.setGains(getP(true), getI(true), getD(true));
+			leftPID.setGains(getP(false), getI(false), getD(false));
+			rightPID.setGoal(getGoal(true));
+			leftPID.setGoal(getGoal(false));
+			rightPower = rightPID.update(encoderDataRight.getSpeed());
+			leftPower = leftPID.update(encoderDataLeft.getSpeed());
+		}
+
+		leftFront.set(leftPower);
+		leftBack.set(-leftPower);
+		rightFront.set(rightPower);
+		rightBack.set(-rightPower);
+		return false;
 	}
-
-	switch(autoFunctions){
-	case AUTO_STAND_BY:
-		if(currentDriveState == State.IN_HIGH_GEAR || currentDriveState == State.IN_LOW_GEAR){
-			rightPower = wantedRightPower;
-			leftPower = wantedLeftPower;
-		}
-		break;
-	case AUTO_LIGHT_LINE_UP:
-		boolean rightWhite = colorSensorRight.isColor(Color.WHITE);
-		boolean leftWhite = colorSensorLeft.isColor(Color.WHITE);
-		if(leftWhite){
-			leftPower = -0.5;
-		}else{
-			leftPower = 0.4;
-		}
-		if(rightWhite){
-			rightPower = -0.5;
-		}else{
-			rightPower = 0.4;
-		}
-		if(rightWhite && leftWhite){
-			autoFunctions = State.AUTO_STAND_BY;
-			leftPower = 0;
-			rightPower = 0;
-		}
-		break;
-	case AUTO_STEP_LINEUP:
-		boolean right = rightTouch.get();
-		boolean left = leftTouch.get();
-		if(right){
-			rightPower = -LINEUP_SPEED;
-		}else{
-			rightPower = LINEUP_SPEED;
-		}
-		if(left){
-			leftPower = -LINEUP_SPEED;
-		}else{
-			leftPower = LINEUP_SPEED;
-		}
-		if(left && right){
-			autoFunctions = State.AUTO_STAND_BY;
-			rightPower = 0;
-			leftPower = 0;
-		}
-		break;
-	case AUTO_TURN:
-		double currentAngle = gyro.getAngle();
-		double angleDiff = Math.abs(autoWantedTurn - currentAngle);
-		double speed = (1.0/16)*Math.sqrt(angleDiff);
-		if(speed > 0){
-			speed = speed < Math.PI/8 ? Math.PI/8 : speed;
-		}
-		if(currentAngle < autoWantedTurn){
-			rightPower = -speed;
-			leftPower = speed;
-		}else{
-			rightPower = speed;
-			leftPower = -speed;
-		}
-		if(currentAngle > (autoWantedTurn - MAX_TURN_ERROR) && currentAngle < (autoWantedTurn +MAX_TURN_ERROR)){
-			rightPower = 0;
-			leftPower = 0;
-			autoFunctions = State.AUTO_STAND_BY;
-		}
-		break;
-	case AUTO_DRIVE:
-		double currentDistance = (encoderDataRight.getDistance() + encoderDataLeft.getDistance())/2;
-		double driveSpeed = (1.0/10)*(Math.sqrt(Math.abs(autoDistance - currentDistance)));
-		driveSpeed = driveSpeed < Math.PI/16 ? Math.PI/16: driveSpeed;
-		driveSpeed = driveSpeed > maxSpeed ? maxSpeed : driveSpeed;
-		if(currentDistance < autoDistance){
-			rightPower = driveSpeed + gyroOffset();
-			leftPower = driveSpeed - gyroOffset();
-		}else{
-			rightPower = -driveSpeed + gyroOffset();
-			leftPower = -driveSpeed - gyroOffset();
-		}
-		if(autoDistance - currentDistance < 0.5 && autoDistance - currentDistance > -0.5){
-			rightPower = 0;
-			leftPower = 0;
-			autoFunctions = State.AUTO_STAND_BY;
-		}
-		break;
-	default: System.out.println("Error autoFunctions = " + autoFunctions);
-	}
-
-	//PID DEBUG
-	if(USE_PID_DEBUG){
-		updatePIDEncoder();
-		rightPID.setGains(getP(true), getI(true), getD(true));
-		leftPID.setGains(getP(false), getI(false), getD(false));
-		rightPID.setGoal(getGoal(true));
-		leftPID.setGoal(getGoal(false));
-		rightPower = rightPID.update(encoderDataRight.getSpeed());
-		leftPower = leftPID.update(encoderDataLeft.getSpeed());
-	}
-
-	leftFront.set(leftPower);
-	leftBack.set(-leftPower);
-	rightFront.set(rightPower);
-	rightBack.set(-rightPower);
-	return false;
-}
-
-/**
- * The amount of time you want to sleep for after a cycle.
- * @return the number of milliseconds you want to sleep after a cycle.
- */
-@Override
-protected long sleepTime() {
-	return 10;
-}
-
-/**
- * Where all the logged info goes
- */
-@Override
-protected void writeLog() {
-	log.logMessage("Current speed: " + currentSpeed);
-	log.logMessage("Current drive state: " + currentDriveState);
-	log.logMessage("Auto State: " + autoFunctions);
-	log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
-			"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
-	log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
-	log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-	log.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
-			" Right Encoder: " +encoderDataRight.getSpeed());
-	log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
-	log.logMessage("Gyro: " + gyro.getAngle());
-}
-
-/**
- * sets the wanted left and right speed to the speed sent in inches
- * @param left left motor speed
- * @param right right motor speed
- * @param driverControl - true if the driver is controlling, false if the operator is controlling 
- */
-public void setPower(double left, double right, boolean driverControl) {
-	if(driverControl){
-		if(left > 0){
-			wantedLeftPower = (5/4)*Math.sqrt(left);
-		}else{
-			wantedLeftPower = -(5/4)*Math.sqrt(-left);
-		}
-		if(right > 0){
-			wantedRightPower = (5/4)*Math.sqrt(right);
-		}else{
-			wantedRightPower = -(5/4)*Math.sqrt(-right);
-		}
-		//		rightPID.setGoal(right*100);
-		//		leftPID.setGoal(left*100);
-	}else{
-		if(driverControl != isDriverControlled){//FIRST TIME
-			currentDriveState = State.NEUTRAL_SETUP;
-		}
-		wantedLeftPower = left;
-		wantedRightPower = right;
-	}
-	isDriverControlled = driverControl;
-}
-
-/**
- * Set auto function
- * @param wantedAutoState - State from drives
- */
-public void setAutoFunction(State wantedAutoState){
-	autoFunctions = wantedAutoState;
-}
-
-/**
- * Force drive to stop moving
- */
-public void autoForceStop(){
-	setAutoFunction(State.AUTO_STAND_BY);
-	rightPower = STOP_MOTOR;
-	leftPower = STOP_MOTOR;
-}
-
-/**
- * Turns to robot
- * @param degrees - positive(right) || negative(left)
- */
-public void autoTurn(int degrees){
-	setAutoFunction(State.AUTO_TURN);
-	autoWantedTurn = degrees;
-	gyro.reset();
-}
-
-/**
- * Drives robot forward set distance
- * @param inchDistance - distance to travel in inches
- * @param speed - desired speed(0 - 1)
- */
-public void driveStraight(int inchDistance, int speed/*max speed */){
-	setAutoFunction(State.AUTO_DRIVE);
-	autoDistance = inchDistance;
-	gyro.reset();
-	encoderDataRight.reset();
-	encoderDataLeft.reset();
-	autoWantedTurn = 0;
-}
-
-/**
- * @return is drives is done with last auto command
- */
-public boolean isDone(){
-	return (autoFunctions == State.AUTO_STAND_BY);
-}
-
-/**
- * 
- * @return (-1 - 1)
- */
-private double gyroOffset(){
-	double currentAngle = gyro.getAngle();
-	double position = autoWantedTurn - currentAngle;
-	return position > 0 ? -(1.0/16)*(Math.sqrt(position)) : (1.0/16)*(Math.sqrt(-position));
-}
-
-/**
- *Makes the states for drives
- */
-public enum State{
-	IN_LOW_GEAR,
-	SHIFTING_LOW,
-	IN_HIGH_GEAR,
-	SHIFTING_HIGH,
-	NEUTRAL_SETUP,
-	IN_NEUTRAL_GEAR,
-	SHIFTING_NEUTRAL,
-	AUTO_STAND_BY,
-	AUTO_TURN,
-	AUTO_DRIVE,
-	AUTO_LIGHT_LINE_UP,
-	AUTO_STEP_LINEUP;
-
 
 	/**
-	 * Gets the name of the state
-	 * @return the correct state 
+	 * The amount of time you want to sleep for after a cycle.
+	 * @return the number of milliseconds you want to sleep after a cycle.
 	 */
 	@Override
-	public String toString(){
-		switch(this){
-		case IN_LOW_GEAR:
-			return "In low gear";
-		case SHIFTING_LOW:
-			return "Shifting Low";
-		case IN_HIGH_GEAR:
-			return "In high gear";
-		case SHIFTING_HIGH:
-			return "Shifting high";
-		case AUTO_STAND_BY:
-			return "In auto stand by";
-		case AUTO_LIGHT_LINE_UP:
-			return "In auto light line up";
-		default:
-			return "Error";
+	protected long sleepTime() {
+		return 10;
+	}
+
+	/**
+	 * Where all the logged info goes
+	 */
+	@Override
+	protected void writeLog() {
+		log.logMessage("Current speed: " + currentSpeed);
+		log.logMessage("Current drive state: " + currentDriveState);
+		log.logMessage("Auto State: " + autoFunctions);
+		log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
+		log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
+		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
+		log.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
+				" Right Encoder: " +encoderDataRight.getSpeed());
+		log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
+		log.logMessage("Gyro: " + gyro.getAngle());
+	}
+
+	/**
+	 * sets the wanted left and right speed to the speed sent in inches
+	 * @param left left motor speed
+	 * @param right right motor speed
+	 * @param driverControl - true if the driver is controlling, false if the operator is controlling 
+	 */
+	public void setPower(double left, double right, boolean driverControl) {
+		if(driverControl){
+			if(left > 0){
+				wantedLeftPower = (5/4)*Math.sqrt(left);
+			}else{
+				wantedLeftPower = -(5/4)*Math.sqrt(-left);
+			}
+			if(right > 0){
+				wantedRightPower = (5/4)*Math.sqrt(right);
+			}else{
+				wantedRightPower = -(5/4)*Math.sqrt(-right);
+			}
+			//		rightPID.setGoal(right*100);
+			//		leftPID.setGoal(left*100);
+		}else{
+			if(driverControl != isDriverControlled){//FIRST TIME
+				currentDriveState = State.NEUTRAL_SETUP;
+			}
+			wantedLeftPower = left;
+			wantedRightPower = right;
+		}
+		isDriverControlled = driverControl;
+	}
+
+	/**
+	 * Sets the shifting mode
+	 * @param isAutoShift - true if auto shifting, false if manual shifting
+	 */
+	public void setManualShifting(boolean isAutoShift){
+		isAutoShifting = isAutoShift;
+	}
+
+	public void setManaulShifting(boolean highGear){
+		if(!isAutoShifting){
+			shiftTime = Timer.getFPGATimestamp();
+			currentDriveState = (highGear) ? State.SHIFTING_HIGH : State.SHIFTING_LOW; 
+			finalDriveState = (highGear) ? State.IN_HIGH_GEAR : State.SHIFTING_LOW;
+		}else{
+			LOG.logMessage("Can't manual shift in auto shifting mode");
 		}
 	}
-}
 
-@Override
-protected void liveWindow() {
-	String subsytemName = "Drives";
-	LiveWindow.addActuator(subsytemName, "Shifting", shiftingPnu);
-	LiveWindow.addActuator(subsytemName, "Right Encoder", encoderRight);
-	LiveWindow.addActuator(subsytemName, "Right Front Motor", rightFront);
-	LiveWindow.addActuator(subsytemName, "Right Rear Motor", rightBack);
-	LiveWindow.addActuator(subsytemName, "Left Front Motor", leftFront);
-	LiveWindow.addActuator(subsytemName, "Left Front Motor", leftBack);
-	LiveWindow.addActuator(subsytemName, "Left Encoder", encoderLeft);	
-}
+	/**
+	 * Set auto function
+	 * @param wantedAutoState - State from drives
+	 */
+	public void setAutoFunction(State wantedAutoState){
+		autoFunctions = wantedAutoState;
+	}
 
-//PID
-private void debugPID(){
-	SmartDashboard.putNumber("Left Goal", 0);
-	SmartDashboard.putNumber("Left P", 0);
-	SmartDashboard.putNumber("Left I", 0);
-	SmartDashboard.putNumber("Left D", 0);
+	/**
+	 * Force drive to stop moving
+	 */
+	public void autoForceStop(){
+		setAutoFunction(State.AUTO_STAND_BY);
+		rightPower = STOP_MOTOR;
+		leftPower = STOP_MOTOR;
+	}
 
-	SmartDashboard.putNumber("Right Goal", 0);
-	SmartDashboard.putNumber("Right P", 0);
-	SmartDashboard.putNumber("Right I", 0);
-	SmartDashboard.putNumber("Right D", 0);
-}
+	/**
+	 * Turns to robot
+	 * @param degrees - positive(right) || negative(left)
+	 */
+	public void autoTurn(int degrees){
+		setAutoFunction(State.AUTO_TURN);
+		autoWantedTurn = degrees;
+		gyro.reset();
+	}
 
-private void updatePIDEncoder(){
-	SmartDashboard.putNumber("Right Encoder", encoderDataRight.getSpeed());
-	SmartDashboard.putNumber("Left Encoder", encoderDataLeft.getSpeed());
-}
+	/**
+	 * Drives robot forward set distance
+	 * @param inchDistance - distance to travel in inches
+	 * @param speed - desired speed(0 - 1)
+	 */
+	public void driveStraight(int inchDistance, int speed/*max speed */){
+		setAutoFunction(State.AUTO_DRIVE);
+		autoDistance = inchDistance;
+		gyro.reset();
+		encoderDataRight.reset();
+		encoderDataLeft.reset();
+		autoWantedTurn = 0;
+	}
 
-private double getGoal(boolean right){
-	return right ? SmartDashboard.getNumber("Right Goal") : SmartDashboard.getNumber("Left Goal");
-}
+	/**
+	 * @return is drives is done with last auto command
+	 */
+	public boolean isDone(){
+		return (autoFunctions == State.AUTO_STAND_BY);
+	}
 
-private double getP(boolean right){
-	return right ? SmartDashboard.getNumber("Right P") : SmartDashboard.getNumber("Left P");
-}
+	/**
+	 * 
+	 * @return (-1 - 1)
+	 */
+	private double gyroOffset(){
+		double currentAngle = gyro.getAngle();
+		double position = autoWantedTurn - currentAngle;
+		return position > 0 ? -(1.0/16)*(Math.sqrt(position)) : (1.0/16)*(Math.sqrt(-position));
+	}
 
-private double getI(boolean right){
-	return right ? SmartDashboard.getNumber("Right I") : SmartDashboard.getNumber("Left I");
-}
+	/**
+	 *Makes the states for drives
+	 */
+	public enum State{
+		IN_LOW_GEAR,
+		SHIFTING_LOW,
+		IN_HIGH_GEAR,
+		SHIFTING_HIGH,
+		NEUTRAL_SETUP,
+		IN_NEUTRAL_GEAR,
+		SHIFTING_NEUTRAL,
+		AUTO_STAND_BY,
+		AUTO_TURN,
+		AUTO_DRIVE,
+		AUTO_LIGHT_LINE_UP,
+		AUTO_STEP_LINEUP;
 
-private double getD(boolean right){
-	return right ? SmartDashboard.getNumber("Right D") : SmartDashboard.getNumber("Left D");
-}
+
+		/**
+		 * Gets the name of the state
+		 * @return the correct state 
+		 */
+		@Override
+		public String toString(){
+			switch(this){
+			case IN_LOW_GEAR:
+				return "In low gear";
+			case SHIFTING_LOW:
+				return "Shifting Low";
+			case IN_HIGH_GEAR:
+				return "In high gear";
+			case SHIFTING_HIGH:
+				return "Shifting high";
+			case AUTO_STAND_BY:
+				return "In auto stand by";
+			case AUTO_LIGHT_LINE_UP:
+				return "In auto light line up";
+			default:
+				return "Error";
+			}
+		}
+	}
+
+	@Override
+	protected void liveWindow() {
+		String subsytemName = "Drives";
+		LiveWindow.addActuator(subsytemName, "Shifting", shiftingPnu);
+		LiveWindow.addActuator(subsytemName, "Right Encoder", encoderRight);
+		LiveWindow.addActuator(subsytemName, "Right Front Motor", rightFront);
+		LiveWindow.addActuator(subsytemName, "Right Rear Motor", rightBack);
+		LiveWindow.addActuator(subsytemName, "Left Front Motor", leftFront);
+		LiveWindow.addActuator(subsytemName, "Left Front Motor", leftBack);
+		LiveWindow.addActuator(subsytemName, "Left Encoder", encoderLeft);	
+	}
+
+	//PID
+	private void debugPID(){
+		SmartDashboard.putNumber("Left Goal", 0);
+		SmartDashboard.putNumber("Left P", 0);
+		SmartDashboard.putNumber("Left I", 0);
+		SmartDashboard.putNumber("Left D", 0);
+
+		SmartDashboard.putNumber("Right Goal", 0);
+		SmartDashboard.putNumber("Right P", 0);
+		SmartDashboard.putNumber("Right I", 0);
+		SmartDashboard.putNumber("Right D", 0);
+	}
+
+	private void updatePIDEncoder(){
+		SmartDashboard.putNumber("Right Encoder", encoderDataRight.getSpeed());
+		SmartDashboard.putNumber("Left Encoder", encoderDataLeft.getSpeed());
+	}
+
+	private double getGoal(boolean right){
+		return right ? SmartDashboard.getNumber("Right Goal") : SmartDashboard.getNumber("Left Goal");
+	}
+
+	private double getP(boolean right){
+		return right ? SmartDashboard.getNumber("Right P") : SmartDashboard.getNumber("Left P");
+	}
+
+	private double getI(boolean right){
+		return right ? SmartDashboard.getNumber("Right I") : SmartDashboard.getNumber("Left I");
+	}
+
+	private double getD(boolean right){
+		return right ? SmartDashboard.getNumber("Right D") : SmartDashboard.getNumber("Left D");
+	}
 
 }

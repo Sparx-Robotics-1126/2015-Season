@@ -36,6 +36,12 @@ public class IO {
 	private static final int DIG_DRIVES_ELE_ENC_B																		 = 5;
 	private static final int DIG_COLOR_LEFT																				 = 6;
 	private static final int DIG_COLOR_RIGHT																			 = 7;
+	private static final int DIG_RIGHT_IN_CAN                                                                            = 8;
+	private static final int DIG_LEFT_IN_CAN                                                                             = 9;
+	private static final int DIG_RELEASE_ARMS_SERVO                                                                      = 10;
+	private static final int DIG_RAISING_ARMS_SERVO                                                                      = 11;
+	private static final int DIG_RIGHT_ARM_SOLO                                                                          = 12;
+	private static final int DIG_LEFT_ARM_SOLO                                                                           = 13;
 	
 	/**
 	 * PNU

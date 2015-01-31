@@ -7,7 +7,8 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
- * @author Reizwan, Raza
+ * @author Reizwan Chowdhur
+ * @author Raza Ahmed
  * Stores the state of the can acquisition and controls the arm and claw
  * version 1.0 Season 2015
  */
@@ -203,7 +204,7 @@ public class CanAcquisition extends GenericSubsystem{
 
 	@Override
 	protected void writeLog() {
-		log.logMessage("Current state: " + State.getName(currentState));
+		LOG.logMessage("Current state: " + State.getName(currentState));
 	}
 
 	public enum State{

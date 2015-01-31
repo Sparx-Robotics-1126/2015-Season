@@ -22,7 +22,12 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 * declares a Joystick object named driverJoyRight
 	 */
 	private AdvancedJoystick driverJoyRight;
-
+	
+	/**
+	 * The Advanced joystick for the operator
+	 */
+	private AdvancedJoystick operatorJoy;
+	
 	/**
 	 * declares a Controls object named controls
 	 */
@@ -102,6 +107,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT);
 		driverJoyRight.addActionListener(this);
 		driverJoyRight.start();
+		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK);
 		drives = Drives.getInstance(); 
 		return true;
 	}
@@ -149,79 +155,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	@Override
 	public void actionPerformed(ButtonEvent e) {
 		if(!(e instanceof MultibuttonEvent)){
-		switch (e.getPort()) {
-		case IO.DRIVER_JOYSTICK_LEFT:
-			switch (e.getID()) {
-			case ATTACK3_TOP_BUTTON:
-
-				break;
-			case ATTACK3_TRIGGER:
-
-				break;
-			default:
-				LOG.logError("Unknown button: " +  e.getID());
-				break;
-			}
-			break;
-		case IO.DRIVER_JOYSTICK_RIGHT:
-			switch(e.getID()){
-			case ATTACK3_TOP_BUTTON:
-				if(e.isRising()){
-					drives.setAutoFunction(Drives.State.AUTO_STEP_LINEUP);
-				}
-				break;
-			case ATTACK3_TRIGGER:
-
-				break;
-			default: 
-				LOG.logError("Unknown button: " +  e.getID());
-				break;
-			}
-		case IO.OPERATOR_JOYSTICK:
-			switch (e.getID()) {
-			case LOGI_A:
-
-				break;
-			case LOGI_B:
-
-				break;
-			case LOGI_X:
-
-				break;
-			case LOGI_Y:
-
-				break;
-			case LOGI_START:
-
-				break;
-			case LOGI_BACK:
-
-				break;
-			case LOGI_L1:
-				
-				break;
-			case LOGI_L2:
-				
-				break;
-			case LOGI_L3:
-				
-				break;
-			case LOGI_R1:
-				
-				break;
-			case LOGI_R2:
-				
-				break;
-			case LOGI_R3:
-				
-				break;
-			default:
-				LOG.logError("Unknown button: " +  e.getID());
-				break;
-			}
-		default:
-			break;
+			
 		}
-	}
 	}
 }

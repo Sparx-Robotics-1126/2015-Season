@@ -103,11 +103,21 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	protected boolean init() {
 		driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT);
 		driverJoyLeft.addActionListener(this);
+		driverJoyLeft.addButton(ATTACK3_TOP_BUTTON);
+		driverJoyLeft.addButton(ATTACK3_TRIGGER);
+		driverJoyLeft.addMultibutton(ATTACK3_TRIGGER, ATTACK3_TOP_BUTTON);
 		driverJoyLeft.start();
 		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT);
 		driverJoyRight.addActionListener(this);
+		driverJoyRight.addButton(ATTACK3_TOP_BUTTON);
+		driverJoyRight.addButton(ATTACK3_TRIGGER);
 		driverJoyRight.start();
 		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK);
+		operatorJoy.addActionListener(this);
+		operatorJoy.addButton(LOGI_A);
+		operatorJoy.addButton(LOGI_B);
+		operatorJoy.addButton(LOGI_Y);
+		operatorJoy.start();
 		drives = Drives.getInstance(); 
 		return true;
 	}
@@ -155,7 +165,51 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	@Override
 	public void actionPerformed(ButtonEvent e) {
 		if(!(e instanceof MultibuttonEvent)){
-			
+			switch(e.getPort()){
+			case IO.DRIVER_JOYSTICK_LEFT:
+				switch(e.getID()){
+				case ATTACK3_TOP_BUTTON:
+					//TODO: Up Shift
+					break;
+				case ATTACK3_TRIGGER:
+					//TODO: Down Shift
+					break;
+				}
+				break;
+			case IO.DRIVER_JOYSTICK_RIGHT:
+				switch(e.getID()){
+				case ATTACK3_TOP_BUTTON:
+					//TODO: auto line up 
+					break;
+				case ATTACK3_TRIGGER:
+					//TODO: force low gear
+					break;
+				}
+				break;
+				
+			case IO.OPERATOR_JOYSTICK:
+				switch(e.getID()){
+				case LOGI_A:
+					//TODO: Floor Mode
+					break;
+				case LOGI_B:
+					//TODO: HP Mode
+					break;
+				case LOGI_Y:
+					//TODO: Safe Mode
+					break;
+				}
+				break;
+			}
+		}
+		else{
+			switch (e.getPort()) {
+			case IO.DRIVER_JOYSTICK_LEFT:
+				if(e.isRising()){
+					//TODO trigger manual
+				}
+				break;
+			}
 		}
 	}
 }

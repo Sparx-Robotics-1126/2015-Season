@@ -23,6 +23,13 @@ public class Elevation extends GenericSubsystem{
 	 */
 	private static Elevation elevation;
 	
+	/**
+	 * When scoring sets the elvator to tote clearence
+	 */
+	public void goToScoring() {
+		moveElevator(TOTE_CLEARANCE_DISTANCE, 0);
+	}
+	
 	//***************************Constants***************************
 	
 	/**

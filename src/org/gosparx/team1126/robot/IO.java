@@ -51,8 +51,8 @@ public final class IO {
 	public static final int DIO_ELEVATIONS_ORIGIN		= 21;
 	public static final int DIO_TOTE_HOME_RIGHT			= 22;
 	public static final int DIO_TOTE_HOME_lEFT 			= 23;
-	public static final int DIO_COLOR_LED_LEFT				= 24;
-	public static final int DIO_COLOR_LED_RIGHT				= 25;
+	public static final int DIO_COLOR_LED_LEFT			= 24;
+	public static final int DIO_COLOR_LED_RIGHT			= 25;
 	
 	//PNU
 	public static final int PNU_SHIFT					= 0;

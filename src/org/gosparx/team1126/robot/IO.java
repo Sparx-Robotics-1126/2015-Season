@@ -1,6 +1,11 @@
 package org.gosparx.team1126.robot;
 
-public class IO {
+public final class IO {
+	//Motor
+	public static final int PWM_LEFT_FRONT_DRIVES 		= 0;
+	public static final int PWM_LEFT_BACK_DRIVES		= 1;
+	public static final int PWM_RIGHT_FRONT_DRIVES		= 3;
+	public static final int PWM_RIGHT_BACK_DRIVES		= 2;
 	
 	//PWM
 	public static final int PWM_DRIVES_LEFT_FRONT		= 0;
@@ -13,6 +18,18 @@ public class IO {
 	public static final int PWM_CAN_HOOK				= 7;
 	public static final int PWM_ARM_DOWN				= 8;
 	public static final int PWM_ARM_UP					= 9;
+	
+	//Sensors 
+	public static final int COLOR_RIGHT_RED				= 2;
+	public static final int COLOR_RIGHT_BLUE			= 3;
+	public static final int COLOR_RIGHT_GREEN			= 9;//NOT USED
+	public static final int COLOR_RIGHT_LED				= 5;
+	public static final int COLOR_LEFT_RED				= 4;//TODO: CHECK
+	public static final int COLOR_LEFT_BLUE				= 5;//TODO: CHECK
+	public static final int COLOR_LEFT_GREEN			= 8;//NOT USED
+	public static final int COLOR_LEFT_LED				= 4;
+	public static final int SWTICH_RIGHT_DRIVES 		= 6;
+	public static final int SWITCH_LEFT_DRIVES 			= 7;
 	
 	//Analog
 	public static final int ANA_GYRO					= 0;

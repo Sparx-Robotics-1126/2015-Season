@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 /**
  * A class to control Autonomous
- * @author Alex y Andrew
+ * @author Alex y Andrew y Raza
  */
 public class Autonomous extends GenericSubsystem{
 	
@@ -137,16 +137,15 @@ public class Autonomous extends GenericSubsystem{
 		{DRIVE_TILL_STEP},
 		{DRIVES_DONE},
 		{ARMS_DROP},
-		{WAIT, 500}, // TODO find the actual time it takes the arms to drop and touch the can.
+		{WAIT, 500}, //TODO Find actual time
 		{DRIVES_DANCE},
 		{CHECK_TIME, 7, 5},
-		{ARMS_IN_CAN},
+		{ARMS_DONE},
 		{DRIVES_STOP},
-		{ARMS_EXPAND},
-		{DRIVES_GO_REVERSE, 45}, // TODO find out the distance to drive backwards
+		{DRIVES_GO_REVERSE, 45, 1}, // TODO find out the distance to drive backwards
 		{DRIVES_DONE},
 		{ARMS_CONTRACT},
-	    {WAIT, 63}, //TODO find out how long to wait
+		{ARMS_DONE},
 	    {ARMS_RAISE},
 	    {END}
 	};
@@ -249,50 +248,48 @@ public class Autonomous extends GenericSubsystem{
 		if(ds.isAutonomous() && ds.isEnabled()){
 			switch(currentAuto[currentStep][0]){  //add automodes later when we have them
 			case DRIVES_GO_FORWARD:
+				//drives.driveStraight(currentAuto[currentStep][1], currentAuto[currentStep][2]);
 				break;
 			case DRIVES_GO_REVERSE:
-				//TODO make it go back backwards ? distance
+				//drives.driveStraight(currentAuto[currentStep][1], currentAuto[currentStep][2]);
 				break;
 			case DRIVES_TURN_RIGHT:
 				break;
 			case DRIVES_TURN_LEFT:
 				break;
 			case DRIVES_STOP:
+				//drives.autoForceStop();
 				break;
 			case DRIVE_TILL_STEP:
 				// TODO implement drive till step in drives
-				// drives.driveTillStep();
+				// drives.setAutoFunction(Drives.STATE.AUTO_STEP_LINEUP);
 				break;
 			case DRIVES_DANCE:
 				// TODO Implement drives dance
-				// drives.dance();
+				// drives.autoDance();
 				break;
 			case DRIVES_DONE:
 				// TODO Implement drive last command Done
 				// TODO Implement run next statement
-				// runNextStatement(drives.isLastCommandDone());
+				// runNextStatement(drives.isDone());
 				break;
 			case ARMS_DROP:
-				canAcq.armsDrop();
+				canAcq.setAutoFunction(CanAcquisition.State.DROP_ARMS);
 				break;
 			case ARMS_RAISE:
-				canAcq.armsRaise();
+				canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
 				break;
 			case ARMS_EXPAND:
-				canAcq.openArms();
 				break;
 			case ARMS_CONTRACT:
+				canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
 				break;
 			case ARMS_STOP:
 				break;
 			case ARMS_IN_CAN:
-				// Keep looping into this case until both hands are in can
-				if (!canAcq.rightHandInCan() || !canAcq.leftHandInCan())
-				{
-					increaseStep = false;
-				}
 				break;
 			case ARMS_DONE:
+				//runNextStatement(canAcq.isDone());
 				break;
 			case ACQ_LOWER:
 				break;

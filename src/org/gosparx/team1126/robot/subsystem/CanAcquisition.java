@@ -7,8 +7,9 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
- * @author Reizwan Chowdhury
  * @author Raza Ahmed
+ * @author Reizwan Chowdhury
+ * @author Andrew Thompson
  * Stores the state of the can acquisition and controls the arm and claw
  * version 1.0 Season 2015
  */
@@ -109,16 +110,29 @@ public class CanAcquisition extends GenericSubsystem{
 	}
 
 	/**
+	 * Set auto function
+	 */
+	public void setAutoFunction(State wantedAutoState) {
+		currentState = wantedAutoState;
+	}
+	
+	/**
+	 * @return is Acquisition done last auto command
+	 */
+	public boolean isDone() {
+		return (currentState == State.STANDBY);
+	}
+	/**
 	 * Drops both arms
 	 */
-	public void armsDrop() {
+	private void armsDrop() {
 		releasingArmsServo.set(DROP_RELEASE_POSITION);
 	}
 
 	/**
 	 * Raises both arms
 	 */
-	public void armsRaise(){
+	private void armsRaise(){
 		raisingArmsServo.set(RAISE_RELEASE_POSITION);
 	}
 	
@@ -233,24 +247,6 @@ public class CanAcquisition extends GenericSubsystem{
 			default: 				return "Unknown State: " + state;
 			}
 		}
-	}
-
-	public void openArms() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public boolean rightHandInCan() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean leftHandInCan() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-		// TODO Auto-generated method stub
-		
-	}
+	}		
+}
 

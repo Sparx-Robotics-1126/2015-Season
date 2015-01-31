@@ -110,14 +110,14 @@ public class CanAcquisition extends GenericSubsystem{
 	/**
 	 * Drops both arms
 	 */
-	private void armsDrop() {
+	public void armsDrop() {
 		releasingArmsServo.set(DROP_RELEASE_POSITION);
 	}
 
 	/**
 	 * Raises both arms
 	 */
-	private void armsRaise(){
+	public void armsRaise(){
 		raisingArmsServo.set(RAISE_RELEASE_POSITION);
 	}
 	

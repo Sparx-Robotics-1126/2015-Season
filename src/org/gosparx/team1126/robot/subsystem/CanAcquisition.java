@@ -162,8 +162,8 @@ public class CanAcquisition extends GenericSubsystem{
 		LiveWindow.addActuator(getName(), "Raise Arms", raisingArmsServo);
 		LiveWindow.addActuator(getName(), "Right Arm", rightArm);
 		LiveWindow.addActuator(getName(), "Left Arm", leftArm);
-		LiveWindow.addSensor(getName(), "Right Arm", rightArmInCan);
-		LiveWindow.addSensor(getName(), "Left Arm", leftArmInCan);
+		LiveWindow.addSensor(getName(), "Right Arm Touch", rightArmInCan);
+		LiveWindow.addSensor(getName(), "Left Arm Touch", leftArmInCan);
 
 	}
 

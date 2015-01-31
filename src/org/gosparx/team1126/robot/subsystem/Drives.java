@@ -331,7 +331,7 @@ public class Drives extends GenericSubsystem{
 		gyro = new Gyro(0);
 		log = new Logger(getName());
 		shiftingPnu = new Solenoid(IO.PNU_SHIFT);	
-		neutralPnu = new Solenoid(000);//TODO: FIND CHANNEL
+		neutralPnu = new Solenoid(IO.PNU_DISENGAGE_DRIVES);//TODO: FIND CHANNEL
 		currentDriveState = State.IN_LOW_GEAR;
 		currentSpeed = 0;
 		shiftTime = 0;

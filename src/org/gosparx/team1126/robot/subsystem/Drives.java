@@ -160,12 +160,12 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * the speed required to shift down, not accurate yet
 	 */
-	private static final double LOWERSHIFTSPEED = 60;
+	private static final double LOWERSHIFTSPEED = 0;
 
 	/**
 	 * the speed required to shift up, not accurate yet
 	 */
-	private static final double UPPERSHIFTSPEED = 80;
+	private static final double UPPERSHIFTSPEED = 40;
 
 	/**
 	 * the time required to shift, not accurate yet, in seconds
@@ -181,12 +181,12 @@ public class Drives extends GenericSubsystem{
 	 * Alex said I didn't need comments (=
 	 * The max speed at which the light sensors can line up on
 	 */
-	private static final double LINEUP_SPEED = 0.45;
+	private static final double	LINEUP_SPEED = 0.4;
 
 	/**
 	 * determines if it's in high or low gear
 	 */
-	private static final boolean LOW_GEAR = false;
+	private static final boolean LOW_GEAR = true;
 
 	/**
 	 * stops the motors for auto
@@ -390,14 +390,14 @@ public class Drives extends GenericSubsystem{
 			boolean rightWhite = colorSensorRight.isColor(Color.WHITE);
 			boolean leftWhite = colorSensorLeft.isColor(Color.WHITE);
 			if(leftWhite){
-				leftPower = -0.5;
+				leftPower = -0.4;
 			}else{
-				leftPower = 0.4;
+				leftPower = 0.3;
 			}
 			if(rightWhite){
-				rightPower = -0.5;
+				rightPower = -0.4;
 			}else{
-				rightPower = 0.4;
+				rightPower = 0.3;
 			}
 			if(rightWhite && leftWhite){
 				autoFunctions = State.AUTO_STAND_BY;
@@ -409,12 +409,14 @@ public class Drives extends GenericSubsystem{
 			boolean right = rightTouch.get();
 			boolean left = leftTouch.get();
 			if(right){
-				rightPower = -LINEUP_SPEED;
+				//				rightPower = -LINEUP_SPEED;
+				rightPower = 0;
 			}else{
 				rightPower = LINEUP_SPEED;
 			}
 			if(left){
-				leftPower = -LINEUP_SPEED;
+				//				leftPower = -LINEUP_SPEED;
+				leftPower = 0;
 			}else{
 				leftPower = LINEUP_SPEED;
 			}
@@ -543,16 +545,16 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-//		LOG.logMessage("Current speed: " + currentSpeed);
-//		LOG.logMessage("Current drive state: " + currentDriveState);
-//		LOG.logMessage("Auto State: " + autoFunctions);
-//				LOG.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+		//		LOG.logMessage("Current speed: " + currentSpeed);
+		//		LOG.logMessage("Current drive state: " + currentDriveState);
+		//		LOG.logMessage("Auto State: " + autoFunctions);
+		//				LOG.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
 		//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
 		//		LOG.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
 		//		LOG.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
 		//		LOG.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
 		//				" Right Encoder: " +encoderDataRight.getSpeed());
-		//		LOG.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
+		LOG.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
 		//		LOG.logMessage("Gyro: " + gyro.getAngle());
 	}
 

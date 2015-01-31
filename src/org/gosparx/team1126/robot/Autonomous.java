@@ -347,18 +347,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private static final String DRIVES_TO_AUTOZONE_FROM_STAGING_NAME = "Into Autozone from wall";
 	private int[][] DRIVES_TO_AUTOZONE_FROM_STAGING = {
-			{AutoCommands.DRIVES_GO_REVERSE.toId(), 163, 24},
-			{AutoCommands.DRIVES_DONE.toId()},
-			{AutoCommands.END.toId()}
-	};
-
-
-	/**
-	 * Drives from edge of Autozone into Autozone
-	 */
-	private static final String DRIVES_TO_AUTOZONE_FROM_EDGE_NAME = "Into Autozone from edge of Autozone";
-	private int[][] DRIVES_TO_AUTOZONE_FROM_EDGE = {
-			{AutoCommands.DRIVES_GO_FORWARD.toId(), 48, 24},
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 145, 50},
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.END.toId()}
 	};
@@ -369,8 +358,9 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private static final String ONE_YELLOW_TOTE_FROM_STAGING_NAME = "One yellow tote into Autozone";
 	private int[][] ONE_YELLOW_TOTE_FROM_STAGING = {
-			{AutoCommands.DRIVES_GO_FORWARD.toId(), 175, 24},
-			{AutoCommands.DRIVES_GO_REVERSE.toId(), 6, 24}, 
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 140, 75},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 6, 100}, 
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.END.toId()}
 	};
@@ -381,7 +371,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private static final String TWO_CANS_STEP_NAME = "Two Cans from Step";
 	private static final int[][] TWO_CANS_STEP= {
-		{AutoCommands.DRIVES_GO_FORWARD.toId(), 80, 100},
+		{AutoCommands.DRIVES_GO_FORWARD.toId(), 55, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.DRIVES_STEP_LINUP.toId()},
 		{AutoCommands.DRIVES_DONE.toId()},
@@ -390,8 +380,9 @@ public class Autonomous extends GenericSubsystem{
 		{AutoCommands.DRIVES_DANCE.toId()},
 		{AutoCommands.ARMS_DONE.toId()},
 		{AutoCommands.DRIVES_STEP_LINUP.toId()},
+		{AutoCommands.CHECK_TIME.toId(), 1, 11},
 		{AutoCommands.DRIVES_DONE.toId()},
-		{AutoCommands.DRIVES_GO_REVERSE.toId(), 160, 100},//TODO: FIND VALUES
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 140, 75},//TODO: FIND VALUES
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.ARMS_RELEASE.toId()},
 		{AutoCommands.ARMS_RAISE.toId()},
@@ -432,7 +423,9 @@ public class Autonomous extends GenericSubsystem{
 		//Auto Selector
 		chooser = new SendableChooser();
 		chooser.addDefault(NO_AUTO_NAME, new Integer(1));
-		chooser.addObject(TWO_CANS_STEP_NAME, new Integer(5));
+		chooser.addObject(DRIVES_TO_AUTOZONE_FROM_STAGING_NAME, new Integer(2));
+		chooser.addObject(ONE_YELLOW_TOTE_FROM_STAGING_NAME, new Integer(3));
+		chooser.addObject(TWO_CANS_STEP_NAME, new Integer(4));
 		SmartDashboard.putData(SD_AUTO_NAME, chooser);
 
 		return false;
@@ -511,14 +504,10 @@ public class Autonomous extends GenericSubsystem{
 			currentAuto = DRIVES_TO_AUTOZONE_FROM_STAGING;
 			break;
 		case 3:
-			currentAutoName = DRIVES_TO_AUTOZONE_FROM_EDGE_NAME;
-			currentAuto = DRIVES_TO_AUTOZONE_FROM_EDGE;
-			break;
-		case 4:
 			currentAutoName = ONE_YELLOW_TOTE_FROM_STAGING_NAME;
 			currentAuto = ONE_YELLOW_TOTE_FROM_STAGING;
 			break;
-		case 5:
+		case 4:
 			currentAutoName = TWO_CANS_STEP_NAME;
 			currentAuto = TWO_CANS_STEP;
 			break;

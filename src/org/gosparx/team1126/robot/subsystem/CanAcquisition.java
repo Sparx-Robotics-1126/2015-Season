@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
- * @author Reizwan Chowdhur
+ * @author Reizwan Chowdhury
  * @author Raza Ahmed
  * Stores the state of the can acquisition and controls the arm and claw
  * version 1.0 Season 2015

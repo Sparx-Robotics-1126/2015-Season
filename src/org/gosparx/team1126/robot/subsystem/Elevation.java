@@ -41,6 +41,13 @@ public class Elevation extends GenericSubsystem{
 	private static final double DIST_PER_TICK = 0.125/256;
 	
 	/**
+	 * Checks to see if idle or holding position
+	 */
+	public boolean isDone () {
+		return (elevationState == State.IDLE || elevationState == State.HOLD_POSITION);
+	}
+	
+	/**
 	 * the tote is 12 inches in height
 	 */
 	private static final double TOTE_DISTANCE_CLEARED = 12;

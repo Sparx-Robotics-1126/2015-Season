@@ -369,8 +369,8 @@ public class Autonomous extends GenericSubsystem{
 	/**
 	 * Acquires 2 cans from the step and brings them to the auto zone
 	 */
-	private static final String TWO_CANS_STEP_NAME = "Two Cans from Step";
-	private static final int[][] TWO_CANS_STEP= {
+	private static final String TWO_CANS_LEFT_STEP_NAME = "Two Cans from Step to left";
+	private static final int[][] TWO_CANS_LEFT_STEP= {
 		{AutoCommands.DRIVES_GO_FORWARD.toId(), 55, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.DRIVES_STEP_LINUP.toId()},
@@ -380,12 +380,50 @@ public class Autonomous extends GenericSubsystem{
 		{AutoCommands.DRIVES_DANCE.toId()},
 		{AutoCommands.ARMS_DONE.toId()},
 		{AutoCommands.DRIVES_STEP_LINUP.toId()},
-		{AutoCommands.CHECK_TIME.toId(), 1, 11},
 		{AutoCommands.DRIVES_DONE.toId()},
-		{AutoCommands.DRIVES_GO_REVERSE.toId(), 140, 75},//TODO: FIND VALUES
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 36, 100},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_TURN_RIGHT.toId(), 35},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 120, 50},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_TURN_LEFT.toId(), 35},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.ARMS_RELEASE.toId()},
 		{AutoCommands.ARMS_RAISE.toId()},
+		{AutoCommands.END.toId()}
+	};
+
+	
+	/**
+	 * Acquires 2 cans from the step and brings them to the auto zone
+	 */
+	private static final String TWO_CANS_RIGHT_STEP_NAME = "Two Cans from Step to right";
+	private static final int[][] TWO_CANS_RIGHT_STEP= {
+		{AutoCommands.DRIVES_GO_FORWARD.toId(), 55, 100},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_STEP_LINUP.toId()},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.ARMS_DROP.toId()},
+		{AutoCommands.CHECK_TIME.toId(), 5, 8},
+		{AutoCommands.DRIVES_DANCE.toId()},
+		{AutoCommands.ARMS_DONE.toId()},
+		{AutoCommands.DRIVES_STEP_LINUP.toId()},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 36, 100},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_TURN_LEFT.toId(), 35},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 120, 50},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_TURN_RIGHT.toId(), 35},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.ARMS_RELEASE.toId()},
+		{AutoCommands.ARMS_RAISE.toId()},
+		{AutoCommands.END.toId()}
+	};
+
+	private static final int[][] TEST_AUTO = {
 		{AutoCommands.END.toId()}
 	};
 
@@ -425,7 +463,8 @@ public class Autonomous extends GenericSubsystem{
 		chooser.addDefault(NO_AUTO_NAME, new Integer(1));
 		chooser.addObject(DRIVES_TO_AUTOZONE_FROM_STAGING_NAME, new Integer(2));
 		chooser.addObject(ONE_YELLOW_TOTE_FROM_STAGING_NAME, new Integer(3));
-		chooser.addObject(TWO_CANS_STEP_NAME, new Integer(4));
+		chooser.addObject(TWO_CANS_LEFT_STEP_NAME, new Integer(4));
+		chooser.addObject(TWO_CANS_RIGHT_STEP_NAME, new Integer(5));
 		SmartDashboard.putData(SD_AUTO_NAME, chooser);
 
 		return false;
@@ -508,12 +547,16 @@ public class Autonomous extends GenericSubsystem{
 			currentAuto = ONE_YELLOW_TOTE_FROM_STAGING;
 			break;
 		case 4:
-			currentAutoName = TWO_CANS_STEP_NAME;
-			currentAuto = TWO_CANS_STEP;
+			currentAutoName = TWO_CANS_LEFT_STEP_NAME;
+			currentAuto = TWO_CANS_LEFT_STEP;
+			break;
+		case 5:
+			currentAutoName = TWO_CANS_RIGHT_STEP_NAME;
+			currentAuto = TWO_CANS_RIGHT_STEP;
 			break;
 		default:
-			currentAutoName = "ERROR";
-			currentAuto = NO_AUTO;
+			currentAutoName = "Test";
+			currentAuto = TEST_AUTO;
 		}
 		SmartDashboard.putString(SD_CURRENT_AUTO_MODE, currentAutoName);
 	}

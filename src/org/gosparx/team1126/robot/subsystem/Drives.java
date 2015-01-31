@@ -160,7 +160,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * the speed required to shift down, not accurate yet
 	 */
-	private static final double LOWERSHIFTSPEED = 0;
+	private static final double LOWERSHIFTSPEED = 20;
 
 	/**
 	 * the speed required to shift up, not accurate yet
@@ -168,7 +168,8 @@ public class Drives extends GenericSubsystem{
 	private static final double UPPERSHIFTSPEED = 40;
 
 	/**
-	 * the time required to shift, not accurate yet, in seconds
+	 * the time requi
+	 * red to shift, not accurate yet, in seconds
 	 */
 	private static final double SHIFTING_TIME = 0.15;
 

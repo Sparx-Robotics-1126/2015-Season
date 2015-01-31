@@ -12,11 +12,12 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  * Stores the state of the can acquisition and controls the arm and claw
  * version 1.0 Season 2015
  */
+
 public class CanAcquisition extends GenericSubsystem{
+	
 	/**
 	 * Position for which the arms to drop
 	 */
-	
 	private static final double DROP_RELEASE_POSITION = 1.0; //TODO find out
 
 	/**
@@ -120,6 +121,9 @@ public class CanAcquisition extends GenericSubsystem{
 		raisingArmsServo.set(RAISE_RELEASE_POSITION);
 	}
 	
+	/**
+	 * Resets the servo
+	 */
 	private void resetServo(){
 		releasingArmsServo.set(DROP_DEFAULT_POSITION);
 		raisingArmsServo.set(RAISE_DEFAULT_POSITION);

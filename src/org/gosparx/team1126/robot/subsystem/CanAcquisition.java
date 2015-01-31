@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  */
 
 public class CanAcquisition extends GenericSubsystem{
+
 	
 	/**
 	 * Position for which the arms to drop
@@ -110,14 +111,14 @@ public class CanAcquisition extends GenericSubsystem{
 	/**
 	 * Drops both arms
 	 */
-	private void armsDrop() {
+	public void armsDrop() {
 		releasingArmsServo.set(DROP_RELEASE_POSITION);
 	}
 
 	/**
 	 * Raises both arms
 	 */
-	private void armsRaise(){
+	public void armsRaise(){
 		raisingArmsServo.set(RAISE_RELEASE_POSITION);
 	}
 	
@@ -233,4 +234,23 @@ public class CanAcquisition extends GenericSubsystem{
 			}
 		}
 	}
-}
+
+	public void openArms() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean rightHandInCan() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean leftHandInCan() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+		// TODO Auto-generated method stub
+		
+	}
+

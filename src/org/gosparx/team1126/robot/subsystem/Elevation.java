@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
+ * Version 1.0 Season 2015
  * @author Andrew Thompson {andrewt015@gmail.com}
  * @author Reizwan Chowdhury
  * @author Raza Ahmed
- * Version 1.0 Season 2015
  */
 
 public class Elevation extends GenericSubsystem{
@@ -38,26 +38,16 @@ public class Elevation extends GenericSubsystem{
 	private static final double UP_SPEED = 0.5; //TODO find best speed
 	
 	/**
-	 * the holding speed
-	 */
-	private static final double HOLDING_SPEED = 0.2; //TODO validate this speed with 5 totes
-	
-	/**
 	 * One revolution travels .125 inches. There is total of 256 ticks per revolution.
 	 */
 	private static final double DIST_PER_TICK = 0.125/256;
 	
 	/**
-	 * Checks to see if idle or holding position
+	 * Checks to see if standby or holding position
 	 */
 	public boolean isDone () {
-		return (elevationState == State.IDLE || elevationState == State.HOLD_POSITION);
+		return (elevationState == State.STANDBY || elevationState == State.HOLD_POSITION);
 	}
-	
-	/**
-	 * the tote is 12 inches in height
-	 */
-	private static final double TOTE_DISTANCE_CLEARED = 12;
 	
 	/**
 	 * Threshold for tote distance 
@@ -122,12 +112,12 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 * This is the encoder data to translate the encoder into distance.
 	 */
-	private EncoderData elevationEncoderData;
+	private EncoderData elevationEncoderData; 
 	
 	/**
 	 * This represents the current state of Elevation
 	 */
-	private State elevationState;
+	private State elevationState; 
 	
 	/**
 	 * sensor for detecting the staring position for acquiring a tote
@@ -139,12 +129,12 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 * This is the distance we are going to lift or drop
 	 */
-	private double holdDistance;
+	private double targetDistance; 
 	
 	/**
 	 * threshold for encoder
 	 */
-	private double encoderThreshold;
+	private double encoderThreshold; 
 	
 	/**
 	 * this is the constructor of the Elevation
@@ -172,8 +162,8 @@ public class Elevation extends GenericSubsystem{
 		rightElevation = new Victor(IO.PWM_RIGHT_ELEVATION);
 		elevationEncoder = new Encoder(IO.ENCODER_ELEVATION_A, IO.ENCODER_ELEVATION_B);
 		elevationEncoderData = new EncoderData(elevationEncoder, DIST_PER_TICK);
-		elevationState = State.IDLE;
-		holdDistance = 0;
+		elevationState = State.STANDBY;
+		targetDistance = 0;
 		encoderThreshold = 0;
 		homeSwitch = new DigitalInput(IO.SWITCH_ELEVATIONS_RIGHT);
 		if (homeSwitch.get()) {
@@ -198,12 +188,14 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 * Main loop
 	 */
-	protected boolean execute() {
+	protected boolean execute() {     
 		switch(elevationState){
-			case IDLE:
+			case STANDBY:
+				leftElevation.set(0);
+				rightElevation.set(0);
 				break;
-			case MOVING:
-				if (elevationEncoderData.getDistance() >= holdDistance + encoderThreshold) {
+			case LIFTING:  
+				if (elevationEncoderData.getDistance() >= targetDistance + encoderThreshold) {
 					leftElevation.set(0);
 					rightElevation.set(0);
 					if (liftingTote) { 
@@ -215,10 +207,17 @@ public class Elevation extends GenericSubsystem{
 					}
 				}
 				break;
+			case LOWERING:
+				if (elevationEncoderData.getDistance() <= targetDistance + encoderThreshold) {
+					leftElevation.set(0);
+					rightElevation.set(0);
+					elevationState = State.STANDBY;
+				}
+				break;
 			case HOLD_POSITION:
-				if ((elevationEncoderData.getDistance() >= holdDistance + HOLDING_THRESHOLD)||
-					(elevationEncoderData.getDistance() <= holdDistance - HOLDING_THRESHOLD)){
-					moveElevator(TOTE_DISTANCE_CLEARED, TOTE_THRESHOLD);
+				if ((elevationEncoderData.getDistance() >= targetDistance + HOLDING_THRESHOLD)||
+					(elevationEncoderData.getDistance() <= targetDistance - HOLDING_THRESHOLD)){
+					moveElevator(targetDistance, TOTE_THRESHOLD);
 				}
 				break;
 			case RETURNING_HOME:
@@ -229,6 +228,7 @@ public class Elevation extends GenericSubsystem{
 				}
 				break;
 			default:
+				LOG.logError("Elevation Error");
 				break;
 		}
 		return true;
@@ -240,9 +240,11 @@ public class Elevation extends GenericSubsystem{
 	}
 	
 	@Override
-	protected void writeLog() {
-		// TODO Auto-generated method stub
-		
+	protected void writeLog() {   
+		LOG.logMessage("Elevation State:" + elevationState);
+		LOG.logMessage("Lift Distance" + elevationEncoderData);
+		LOG.logMessage("Hold Distance" + targetDistance);
+		LOG.logMessage("Elevation Starting Position" + homeSwitch);
 	}
 	
 	/**
@@ -265,18 +267,19 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 * Sends the elevation mechanism up or down to the holding distance
 	 */
-	private void moveElevator(double targetDistance, double threshold) {
+	private void moveElevator(double distance, double threshold) {
 		if (elevationEncoderData.getDistance() <= targetDistance) {
 			leftElevation.set(UP_SPEED);
 			rightElevation.set(UP_SPEED);
+			elevationState = State.LIFTING;
 		}
 		else {
 			leftElevation.set(DOWN_SPEED);
 			rightElevation.set(DOWN_SPEED);
+			elevationState = State.LOWERING;
 		}
-	
-		elevationState = State.MOVING;
-		holdDistance = targetDistance;
+
+		targetDistance = distance;
 		encoderThreshold = threshold;
 	}
 	
@@ -292,19 +295,12 @@ public class Elevation extends GenericSubsystem{
 	}
 	
 	/**
-	 * resets the encoder
-	 */
-	private void resetEncoder() {
-		elevationEncoder.reset();
-		elevationEncoderData.reset();	
-	}
-	
-	/**
 	 *Makes the states for elevation
 	 */
 	public enum State{
-		IDLE,
-		MOVING,
+		STANDBY,
+		LIFTING,
+		LOWERING,
 		HOLD_POSITION,
 		RETURNING_HOME;
 		
@@ -314,10 +310,12 @@ public class Elevation extends GenericSubsystem{
 		 */
 		public String toString(){
 			switch(this){
-			case IDLE:
-				return "In idle";
-			case MOVING:
-				return "Lifting";
+			case STANDBY:
+				return "In standby";
+			case LIFTING:
+				return "Lifting"; 
+			case LOWERING:
+				return "Lowering";
 			case HOLD_POSITION:
 				return "Holding Position";
 			case RETURNING_HOME:

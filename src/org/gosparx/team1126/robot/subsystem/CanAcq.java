@@ -112,13 +112,18 @@ public class CanAcq extends GenericSubsystem{
 
 		return true;
 	}
-
+	/**
+	 * Displays stuff to make alex cool
+	 */
 	@Override
 	protected void liveWindow() {
 		// TODO Auto-generated method stub
 
 	}
-
+	/**
+	 * determines if the can arms are being used
+	 * @return if false, keep looping, true end loop
+	 */
 	@Override
 	protected boolean execute() {
 		switch(canAcqState){

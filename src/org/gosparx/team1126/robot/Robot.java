@@ -58,6 +58,5 @@ public class Robot extends SampleRobot{
 	 *  Called one time when the robot enters test
 	 */
 	public void test() {
-		LiveWindow.setEnabled(true);
 	}
 }

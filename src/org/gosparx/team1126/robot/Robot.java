@@ -8,6 +8,7 @@ import org.gosparx.team1126.robot.util.LogWriter;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
  * The entry point for the robot. The constructor is called once the robot is turned on.
@@ -57,6 +58,6 @@ public class Robot extends SampleRobot{
 	 *  Called one time when the robot enters test
 	 */
 	public void test() {
-		
+		LiveWindow.setEnabled(true);
 	}
 }

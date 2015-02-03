@@ -6,6 +6,7 @@ import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -669,6 +670,7 @@ public class Autonomous extends GenericSubsystem{
 
 	@Override
 	protected void liveWindow() {
+		LiveWindow.addSensor(getName(), "Auto Switch", selectorSwitch);
 	}
 
 	public void runAuto(boolean run){

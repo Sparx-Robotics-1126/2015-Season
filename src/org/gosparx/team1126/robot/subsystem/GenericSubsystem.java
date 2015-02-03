@@ -99,21 +99,25 @@ public abstract class GenericSubsystem extends Thread {
 		if(LOG != null)
 			LOG.logMessage("***Executing: " + getName());
 		do{
-			try{
-				retVal = execute();
-			}catch(Exception e){
-				if(LOG != null)
-					LOG.logError("Uncaught Exception! " + e.getMessage());
-				e.printStackTrace(System.err);
-			}
-			if(Timer.getFPGATimestamp() >= lastLogged + logTime()){
-				writeLog();
-				lastLogged = Timer.getFPGATimestamp();
-			}
-			try {
-				Thread.sleep(sleepTime());
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			if(!ds.isTest()){
+				try{
+					retVal = execute();
+				}catch(Exception e){
+					if(LOG != null)
+						LOG.logError("Uncaught Exception! " + e.getMessage());
+					e.printStackTrace(System.err);
+				}
+				if(Timer.getFPGATimestamp() >= lastLogged + logTime()){
+					writeLog();
+					lastLogged = Timer.getFPGATimestamp();
+				}
+				try {
+					Thread.sleep(sleepTime());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}else{
+				retVal = false;
 			}
 		}while(!retVal);
 		if(LOG != null)

@@ -7,11 +7,11 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
+ * Stores the state of the can acquisition and controls the arm and claw
+ * version 1.0 Season 2015
  * @author Raza Ahmed
  * @author Reizwan Chowdhury
  * @author Andrew Thompson
- * Stores the state of the can acquisition and controls the arm and claw
- * version 1.0 Season 2015
  */
 
 public class CanAcquisition extends GenericSubsystem{
@@ -153,7 +153,7 @@ public class CanAcquisition extends GenericSubsystem{
 		raisingArmsServo = new Servo(0);
 		rightArm = new Solenoid(0);
 		leftArm = new Solenoid(0);
-		return false;
+		return true;
 	}
 
 	@Override
@@ -211,21 +211,28 @@ public class CanAcquisition extends GenericSubsystem{
 			resetServo();
 			break;
 		default:
-//			log.logMessage("INVALID STATE: " + currentState);
+//			LOG.logMessage("INVALID STATE: " + currentState);
 		}
 		return false;
 	}
 
-	@Override
+	/**
+	 * The amount of time we are sleeping for
+	 */
 	protected long sleepTime() {
 		return 10;
 	}
 
-	@Override
+	/**
+	 * Logs the current state
+	 */
 	protected void writeLog() {
 		LOG.logMessage("Current state: " + State.getName(currentState));
 	}
 
+	/**
+	 * Enum that represents the current sate for CanAuto CanAcquisition 
+	 */
 	public enum State{
 		STANDBY,
 		DROP_ARMS,

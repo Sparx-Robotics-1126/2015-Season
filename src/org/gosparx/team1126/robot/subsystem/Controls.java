@@ -1,7 +1,9 @@
 package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.team1126.robot.IO;
+
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 /**
  * This is how the controller is able to work with drives
  * @author Mike the camel
@@ -27,6 +29,8 @@ public class Controls extends GenericSubsystem{
 	 * declares a Drives object named drives
 	 */
 	private Drives drives;
+	
+	private CanAcquisition canAcq;
 	
 	/*/********************************************
 	 *****************Logitech 1.0*****************
@@ -66,7 +70,8 @@ public class Controls extends GenericSubsystem{
 	protected boolean init() {
 		driverJoyLeft = new Joystick(IO.DRIVER_JOYSTICK_LEFT);
 		driverJoyRight = new Joystick(IO.DRIVER_JOYSTICK_RIGHT);
-		drives = Drives.getInstance(); 
+		drives = Drives.getInstance();
+		canAcq = CanAcquisition.getInstance();
 		return true;
 	}
 	
@@ -76,10 +81,10 @@ public class Controls extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		drives.setPower(-driverJoyLeft.getRawAxis(LOGITECH_1_Y_AXIS),
-						-driverJoyRight.getRawAxis(LOGITECH_1_Y_AXIS));
-		if(driverJoyRight.getRawButton(LOGITECH_1_BUTTON_1)){
-			drives.setAutoFunction(Drives.State.AUTO_STEP_LINEUP);
+		if(driverJoyRight.getRawButton(1)){
+			canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
+		}else if(driverJoyRight.getRawButton(2)){
+			canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
 		}
 		return false;
 	}
@@ -102,7 +107,6 @@ public class Controls extends GenericSubsystem{
 	
 	@Override
 	protected void liveWindow() {
-		// TODO Auto-generated method stub
 		
 	}
 

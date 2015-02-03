@@ -50,7 +50,7 @@ public final class IO {
 	
 	public static final int DIO_ELEVATIONS_ORIGIN		= 21;
 	public static final int DIO_CAN_HOOK_HOME			= 22;
-	public static final int DIO_CAN_ROTATE_HOME 			= 23;
+	public static final int DIO_CAN_ROTATE_HOME 		= 23;
 	public static final int DIO_COLOR_LED_LEFT			= 24;
 	public static final int DIO_COLOR_LED_RIGHT			= 25;
 	

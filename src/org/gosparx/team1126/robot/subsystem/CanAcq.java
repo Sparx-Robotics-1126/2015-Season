@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Victor;
 
 /**
- * @author Mike the camel
  * The class for controlling the aqusition
+ * @author Mike the camel
  */
 public class CanAcq extends GenericSubsystem{
 
@@ -15,6 +15,7 @@ public class CanAcq extends GenericSubsystem{
 	 * The victor used to rotate the arms
 	 */
 	private Victor rotateVic;
+	
 	/**
 	 * the victor used to control the hook
 	 */
@@ -41,17 +42,17 @@ public class CanAcq extends GenericSubsystem{
 	private EncoderData acqRotateED;
 
 	/**
-	 * The distance the hook will travel per tick
+	 * The distance the hook will travel per tick NOT FOR SURE
 	 */
 	private static final double DISTANCE_PER_TICK_HOOK = 0.0;
 
 	/**
-	 * The distance the arms will rotate per tick
+	 * The distance the arms will rotate per tick NOT FOR SURE
 	 */
 	private static final double DISTANCE_PER_TICK_ROTATE = 0.0;
 
 	/**
-	 * The rate the arms will lower and raise
+	 * The rate the arms will lower and raise NOT FOR SURE
 	 */
 	private static final double MOTOR_SPEED = 0.3;
 

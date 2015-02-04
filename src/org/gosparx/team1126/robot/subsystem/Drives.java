@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
@@ -138,6 +139,11 @@ public class Drives extends GenericSubsystem{
 	 */
 	private Gyro gyro;
 
+	/**
+	 * Power Distribution Board  
+	 */
+	private PowerDistributionPanel pdp;
+
 	//********************************CONSTANTS****************************
 	/**
 	 * The P value in the drives left/right PID loop
@@ -203,7 +209,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * determines if it's in high or low gear
 	 */
-	private static final boolean LOW_GEAR = false;
+	private static final boolean LOW_GEAR = true;
 
 	/**
 	 * stops the motors for auto
@@ -281,6 +287,7 @@ public class Drives extends GenericSubsystem{
 	 */
 	private boolean isAutoShifting = true;
 
+	private double maxAmps = 0;
 	/**
 	 * if drives == null, make a new drives
 	 * @return the new drives
@@ -336,6 +343,8 @@ public class Drives extends GenericSubsystem{
 		currentSpeed = 0;
 		shiftTime = 0;
 		autoFunctions = State.AUTO_STAND_BY;
+		
+		pdp = new PowerDistributionPanel();
 
 		if(USE_PID_DEBUG){
 			debugPID();
@@ -473,15 +482,16 @@ public class Drives extends GenericSubsystem{
 			}
 			break;
 		case AUTO_STEP_LINEUP:
-			boolean right = rightTouch.get();
-			boolean left = leftTouch.get();
+			boolean right = (pdp.getCurrent(0) + pdp.getCurrent(1))/2 > 10 ? true : false;
+			boolean left = (pdp.getCurrent(15) + pdp.getCurrent(14))/2 > 10 ? true : false;
+			System.out.println("LEfT: " + (pdp.getCurrent(0) + pdp.getCurrent(1))/2 + " RIGHT: " + (pdp.getCurrent(15) + pdp.getCurrent(14))/2);
 			if(right){
-				rightPower = -LINEUP_SPEED;
+				rightPower = 0;
 			}else{
 				rightPower = LINEUP_SPEED;
 			}
 			if(left){
-				leftPower = -LINEUP_SPEED;
+				leftPower = 0;
 			}else{
 				leftPower = LINEUP_SPEED;
 			}

@@ -80,8 +80,8 @@ public class Controls extends GenericSubsystem{
 		drives.setPower(-driverJoyLeft.getRawAxis(LOGITECH_1_Y_AXIS),
 						-driverJoyRight.getRawAxis(LOGITECH_1_Y_AXIS), true);
 		if(driverJoyRight.getRawButton(LOGITECH_1_BUTTON_1)){
-//			drives.setAutoFunction(Drives.State.AUTO_STEP_LINEUP);
-			drives.driveStraight(72, 0);
+			drives.setAutoFunction(Drives.State.AUTO_STEP_LINEUP);
+//			drives.driveStraight(72, 0);
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {

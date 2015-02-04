@@ -134,13 +134,14 @@ public class CanAcq extends GenericSubsystem{
 		case LOWERING_ARMS:
 			rotateVic.set(MOTOR_SPEED);
 			rotateDistTravel = acqRotateED.getDistance();
+			canAcqState = State.LOWERING_HOOK;
 			break;
 		case RAISING_ARMS:
-			if(rotateDistLeft <= rotateDistTravel){
+			if(rotateDistLeft < rotateDistTravel){
 				rotateVic.set(-MOTOR_SPEED);
+				rotateDistTravel = acqRotateED.getDistance();
 			}else{
 				rotateVic.set(STOP_MOTOR);
-				canAcqState = State.RAISING_ARMS;
 			}
 			break;
 		case LOWERING_HOOK:
@@ -149,9 +150,10 @@ public class CanAcq extends GenericSubsystem{
 			break;
 		case RAISING_HOOK:
 			if(hookDistLeft <= hookDistTravel ){
-				hookVic.set(MOTOR_SPEED);
+				hookVic.set(-MOTOR_SPEED);
 			}else {
 				rotateVic.set(STOP_MOTOR);
+				canAcqState = State.RAISING_ARMS;
 			}
 		case STANDBY:
 			LOG.logMessage("In Standby");

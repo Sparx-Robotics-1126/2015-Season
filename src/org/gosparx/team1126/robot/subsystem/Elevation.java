@@ -23,13 +23,6 @@ public class Elevation extends GenericSubsystem{
 	 */
 	private static Elevation elevation;
 	
-	/**
-	 * When scoring sets the elevator to tote clearance
-	 */
-	public void goToScoring() {
-		moveElevator(TOTE_CLEARANCE_DISTANCE, 0);
-	}
-	
 	//***************************Constants***************************
 	
 	/**
@@ -87,7 +80,7 @@ public class Elevation extends GenericSubsystem{
 	/**
 	 * Little bit of extra distance to clear the tote
 	 */
-	private static final double TOTE_CLEARANCE_THRESHOLD = 0;
+	private static final double TOTE_CLEARANCE_THRESHOLD = .5; //TODO find out for adjustment
 	
 	//***************************Victors***************************
 	
@@ -107,6 +100,9 @@ public class Elevation extends GenericSubsystem{
 	
 	//***************************Sensors***************************
 	
+	/**
+	 * Encoder for the elevation mechanism
+	 */
 	private Encoder elevationEncoder;
 	
 	/**
@@ -141,6 +137,13 @@ public class Elevation extends GenericSubsystem{
 	 */
 	private Elevation() {
 		super("Elevation", Thread.NORM_PRIORITY);
+	}
+	
+	/**
+	 * When scoring sets the elevator to tote clearance
+	 */
+	public void goToScoring() {
+		moveElevator(TOTE_CLEARANCE_DISTANCE, 0);
 	}
 	
 	/**

@@ -100,6 +100,7 @@ public class CanAcq extends GenericSubsystem{
 		return canAcq;
 	}
 
+	
 	public CanAcq() {
 		super("CanAcq", Thread.NORM_PRIORITY);
 	}
@@ -116,7 +117,7 @@ public class CanAcq extends GenericSubsystem{
 		return true;
 	}
 	/**
-	 * Displays stuff to make alex cool
+	 *Overrides in genericSubsytems, does things
 	 */
 	@Override
 	protected void liveWindow() {

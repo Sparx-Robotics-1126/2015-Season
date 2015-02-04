@@ -618,7 +618,7 @@ public class Drives extends GenericSubsystem{
 		}
 	}
 	/**
-	 * Overrides in genericSubsytems, does things (nate is cool)
+	 * Overrides in genericSubsytems, does things
 	 */
 	@Override
 	protected void liveWindow() {

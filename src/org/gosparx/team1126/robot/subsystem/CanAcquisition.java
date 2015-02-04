@@ -147,8 +147,8 @@ public class CanAcquisition extends GenericSubsystem{
 	@Override
 	protected boolean init() {
 		// TODO get all IO from IO class
-		rightArmInCan = new DigitalInput(0);
-		leftArmInCan = new DigitalInput(0);
+		rightArmInCan = new DigitalInput(6);
+		leftArmInCan = new DigitalInput(7);
 		releasingArmsServo = new Servo(0);
 		raisingArmsServo = new Servo(0);
 		rightArm = new Solenoid(0);

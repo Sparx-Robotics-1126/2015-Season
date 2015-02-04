@@ -4,6 +4,7 @@ public final class IO {
 	//JOYSTICKS
 	public static final int DRIVER_JOYSTICK_LEFT		= 0;
 	public static final int DRIVER_JOYSTICK_RIGHT		= 1;
+	public static final int OPERATOR_JOYSTICK 			= 2;
 	
 	//Motor
 	public static final int PWM_LEFT_FRONT_DRIVES 		= 0;
@@ -27,6 +28,7 @@ public final class IO {
 	public static final int ANA_GYRO					= 0;
 	public static final int ANA_AUTOSWITCH				= 1;
 	public static final int ANA_COLOR_LEFT_RED			= 4;
+
 	public static final int ANA_COLOR_LEFT_BLUE			= 5;
 	public static final int ANA_COLOR_RIGHT_RED			= 6;
 	public static final int ANA_COLOR_RIGHT_BLUE		= 7;

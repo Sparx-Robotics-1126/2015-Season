@@ -78,7 +78,6 @@ public class Logger{
 		}
 		String timeFormatted = formatter.format(Timer.getFPGATimestamp());
 		String toLog = (error ? ("ERROR") : ("DEBUG"))+ "[" + status + "]{" + subsystemName + "}(" + timeFormatted + "):" + message+ "\n";
-		System.out.print(toLog);
 		writer.logString(toLog);//TODO:UNCOMMENT TO LOG
 	}
 }

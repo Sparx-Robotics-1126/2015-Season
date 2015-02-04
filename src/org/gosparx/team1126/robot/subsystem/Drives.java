@@ -546,9 +546,9 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		//		LOG.logMessage("Current speed: " + currentSpeed);
-		//		LOG.logMessage("Current drive state: " + currentDriveState);
-		//		LOG.logMessage("Auto State: " + autoFunctions);
+				LOG.logMessage("Current speed: " + currentSpeed);
+				LOG.logMessage("Current drive state: " + currentDriveState);
+				LOG.logMessage("Auto State: " + autoFunctions);
 		//				LOG.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
 		//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
 		//		LOG.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());

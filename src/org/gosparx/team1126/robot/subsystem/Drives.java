@@ -526,8 +526,8 @@ public class Drives extends GenericSubsystem{
 		}
 
 		leftFront.set(leftPower);
-		leftBack.set(-leftPower);
-		rightFront.set(rightPower);
+		leftBack.set(leftPower);
+		rightFront.set(-rightPower);
 		rightBack.set(-rightPower);
 		return false;
 	}

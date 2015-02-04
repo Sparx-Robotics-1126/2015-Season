@@ -22,22 +22,22 @@ public class CanAcquisition extends GenericSubsystem{
 	/**
 	 * Position for which the arms to drop
 	 */
-	private static final double DROP_RELEASE_POSITION = 1.0; //TODO find out
+	private static final int DROP_RELEASE_POSITION = 0; //TODO find out
 
 	/**
 	 * Position for which the arms start
 	 */
-	private static final double DROP_DEFAULT_POSITION = 0.0; //TODO find value 
+	private static final int DROP_DEFAULT_POSITION = 170; //TODO find value 
 	
 	/**
 	 * Position for which the arms raise
 	 */
-	private static final double RAISE_RELEASE_POSITION = 1.0; //TODO find out
+	private static final int RAISE_RELEASE_POSITION = 0; //TODO find out
 
 	/**
 	 * Position for which the arms start
 	 */
-	private static final double RAISE_DEFAULT_POSITION = 0.0;
+	private static final int RAISE_DEFAULT_POSITION = 170;
 	
 	/**
 	 * The "grab" position of the pnu
@@ -128,22 +128,22 @@ public class CanAcquisition extends GenericSubsystem{
 	 * Drops both arms
 	 */
 	private void armsDrop() {
-		releasingArmsServo.set(DROP_RELEASE_POSITION);
+		releasingArmsServo.setAngle(DROP_RELEASE_POSITION);
 	}
 
 	/**
 	 * Raises both arms
 	 */
 	private void armsRaise(){
-		raisingArmsServo.set(RAISE_RELEASE_POSITION);
+		raisingArmsServo.setAngle(RAISE_RELEASE_POSITION);
 	}
 	
 	/**
 	 * Resets the servo
 	 */
 	private void resetServo(){
-		releasingArmsServo.set(DROP_DEFAULT_POSITION);
-		raisingArmsServo.set(RAISE_DEFAULT_POSITION);
+		releasingArmsServo.setAngle(DROP_DEFAULT_POSITION);
+		raisingArmsServo.setAngle(RAISE_DEFAULT_POSITION);
 	}
 
 	@Override
@@ -153,6 +153,7 @@ public class CanAcquisition extends GenericSubsystem{
 		leftArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_LEFT_GRAB);
 		releasingArmsServo = new Servo(IO.PWM_ARM_DOWN);
 		raisingArmsServo = new Servo(IO.PWM_ARM_UP);
+		
 		rightArm = new Solenoid(IO.PNU_ACQ_CAN_RIGHT);
 		leftArm = new Solenoid(IO.PNU_ACQ_CAN_LEFT);
 		return true;

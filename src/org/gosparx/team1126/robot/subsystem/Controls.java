@@ -138,11 +138,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	@Override
 	protected boolean execute() {
 		if(testJoy.getRawButton(1)){
-			canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
-			System.out.println("ATTEMPTING TO GRAB");
+			canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
+			System.out.println("DISABLE");
 		}else if(testJoy.getRawButton(2)){
-			canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
-			System.out.println("RELEASING");
+			canAcq.setAutoFunction(CanAcquisition.State.RESET_SERVO);
+			System.out.println("RESETING");
 		}
 		return false;
 	}

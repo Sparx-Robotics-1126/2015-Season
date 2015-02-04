@@ -2,6 +2,7 @@ package org.gosparx.team1126.robot.sensors;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /* This returns the color 
  * Version 1.0 Season 2015
@@ -64,13 +65,14 @@ public class ColorSensor {
 	 * @param blueChannel - blue analog channel
 	 * @param ledChannel - DIO LED channel
 	 */
-	public ColorSensor(int redChannel, int greenChannel, int blueChannel, int ledChannel){
+	public ColorSensor(int redChannel, int greenChannel, int blueChannel, int ledChannel, String liveSubsystem, String liveName){
 		redAnalogInput = new AnalogInput(redChannel);
 		greenAnalogInput = new AnalogInput(greenChannel);
 		blueAnalogInput = new AnalogInput(blueChannel);
 		lightLED = new DigitalOutput(ledChannel);
 		lightLED.set(true);
 		useGreen = true;
+		liveWindow(true, liveSubsystem, liveName);
 	}
 	
 	/**
@@ -79,12 +81,13 @@ public class ColorSensor {
 	 * @param blueChannel - blue analog channel
 	 * @param ledChannel - DIO LED channel
 	 */
-	public ColorSensor(int redChannel, int blueChannel, int ledChannel){
+	public ColorSensor(int redChannel, int blueChannel, int ledChannel, String liveSubsystem, String liveName){
 		redAnalogInput = new AnalogInput(redChannel);
 		blueAnalogInput = new AnalogInput(blueChannel);
 		lightLED = new DigitalOutput(ledChannel);
 		lightLED.set(true);
 		useGreen = false;
+		liveWindow(false, liveSubsystem, liveName);
 	}
 
 	/**
@@ -178,5 +181,13 @@ public class ColorSensor {
 	 */
 	public boolean isColor(Color color) {
 		return(getColor() == color);
+	}
+	
+	private void liveWindow(boolean hasGreen, String subsystem, String name){
+		if(hasGreen){
+			LiveWindow.addSensor(subsystem, name + " Green Color", greenAnalogInput);
+		}
+		LiveWindow.addSensor(subsystem, name + "Red Color", redAnalogInput);
+		LiveWindow.addSensor(subsystem, name + " Blue Color", blueAnalogInput);
 	}
 }

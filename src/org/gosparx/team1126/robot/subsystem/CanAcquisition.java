@@ -1,5 +1,7 @@
 package org.gosparx.team1126.robot.subsystem;
 
+import org.gosparx.team1126.robot.IO;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
@@ -40,7 +42,7 @@ public class CanAcquisition extends GenericSubsystem{
 	/**
 	 * The "grab" position of the pnu
 	 */
-	private static final boolean GRAB = false;
+	private static final boolean GRAB = true;
 	
 	/**
 	 * This is the sensors that tells us the right claw is inside can
@@ -147,12 +149,12 @@ public class CanAcquisition extends GenericSubsystem{
 	@Override
 	protected boolean init() {
 		// TODO get all IO from IO class
-		rightArmInCan = new DigitalInput(6);
-		leftArmInCan = new DigitalInput(7);
-		releasingArmsServo = new Servo(0);
-		raisingArmsServo = new Servo(0);
-		rightArm = new Solenoid(0);
-		leftArm = new Solenoid(0);
+		rightArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_RIGHT_GRAB);
+		leftArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_LEFT_GRAB);
+		releasingArmsServo = new Servo(IO.PWM_ARM_DOWN);
+		raisingArmsServo = new Servo(IO.PWM_ARM_UP);
+		rightArm = new Solenoid(IO.PNU_ACQ_CAN_RIGHT);
+		leftArm = new Solenoid(IO.PNU_ACQ_CAN_LEFT);
 		return true;
 	}
 
@@ -170,10 +172,12 @@ public class CanAcquisition extends GenericSubsystem{
 	protected boolean execute() {
 		if(DriverStation.getInstance().isOperatorControl() && 
 				DriverStation.getInstance().isEnabled()){
-			currentState = State.RESET_SERVO;
+//			currentState = State.RESET_SERVO;
 		}
 		switch(currentState){
 		case STANDBY:
+			hasLeft = false;
+			hasRight = false;
 			break;
 		case DROP_ARMS:
 			armsDrop();
@@ -181,13 +185,13 @@ public class CanAcquisition extends GenericSubsystem{
 			break;
 		case ATTEMPT_TO_GRAB:
 			//RIGHT
-			if(rightArmInCan.get()){
+			if(!rightArmInCan.get()){
 				rightArm.set(GRAB);
 				hasRight = true;
 			}
 			
 			//LEFT
-			if(leftArmInCan.get()){
+			if(!leftArmInCan.get()){
 				leftArm.set(GRAB);
 				hasLeft = true;
 			}
@@ -228,6 +232,7 @@ public class CanAcquisition extends GenericSubsystem{
 	 */
 	protected void writeLog() {
 		LOG.logMessage("Current state: " + State.getName(currentState));
+		LOG.logMessage("LEFT: "  + leftArmInCan.get() + " RIGHT: " + rightArmInCan.get());
 	}
 
 	/**

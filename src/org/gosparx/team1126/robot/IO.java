@@ -47,9 +47,8 @@ public final class IO {
 	
 	public static final int DIO_LEFT_STEP				= 14;
 	public static final int DIO_RIGHT_STEP 				= 15;
-	public static final int DIO_CAN_AUTO_RIGHT_GRAB		= 16;
-	public static final int DIO_CAN_AUTO_LEFT_GRAB		= 17;
-	public static final int ANA_COLOR_RIGHT_BLUE		= 7;
+	public static final int DIO_CAN_AUTO_RIGHT_GRAB		= 17;
+	public static final int DIO_CAN_AUTO_LEFT_GRAB		= 16;
 	public static final int SELECTOR_SWITCH_CHANNEL     = 1;
 	
 	public static final int DIO_ELEVATIONS_ORIGIN		= 21;

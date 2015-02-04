@@ -171,10 +171,6 @@ public class CanAcquisition extends GenericSubsystem{
 
 	@Override
 	protected boolean execute() {
-		if(DriverStation.getInstance().isOperatorControl() && 
-				DriverStation.getInstance().isEnabled()){
-//			currentState = State.RESET_SERVO;
-		}
 		switch(currentState){
 		case STANDBY:
 			hasLeft = false;
@@ -198,7 +194,8 @@ public class CanAcquisition extends GenericSubsystem{
 			}
 			
 			if(hasRight && hasLeft){
-				currentState = State.STANDBY;
+				currentState = State.GRABBED;
+				LOG.logMessage("Cans have been grabbed");
 			}
 			break;
 		case GRABBED:
@@ -211,9 +208,6 @@ public class CanAcquisition extends GenericSubsystem{
 		case DISABLE:
 			armsRaise();
 			currentState = State.STANDBY;
-			break;
-		case RESET_SERVO:
-			resetServo();
 			break;
 		default:
 //			LOG.logMessage("INVALID STATE: " + currentState);
@@ -241,12 +235,11 @@ public class CanAcquisition extends GenericSubsystem{
 	 */
 	public enum State{
 		STANDBY,
-		DROP_ARMS,
+		DROP_ARMS,	
 		ATTEMPT_TO_GRAB,
 		GRABBED,
 		RELEASE,
-		DISABLE,
-		RESET_SERVO;
+		DISABLE;
 
 		public static String getName(State state){
 			switch(state){
@@ -261,4 +254,3 @@ public class CanAcquisition extends GenericSubsystem{
 		}
 	}		
 }
-

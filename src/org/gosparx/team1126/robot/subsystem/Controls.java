@@ -100,15 +100,13 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private Controls() {
 		super("controls", Thread.NORM_PRIORITY);
 	}
-
-	private Joystick testJoy;
+	
 	/**
 	 * instantiates a Joystick and Drives
 	 * @return false ~ keeps looping true ~ stops loop
 	 */
 	@Override
 	protected boolean init() {
-		testJoy = new Joystick(0);
 //		driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT);
 //		driverJoyLeft.addActionListener(this);
 //		driverJoyLeft.addButton(ATTACK3_TOP_BUTTON);
@@ -137,13 +135,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean execute() {
-		if(testJoy.getRawButton(1)){
-			canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
-			System.out.println("DISABLE");
-		}else if(testJoy.getRawButton(2)){
-			canAcq.setAutoFunction(CanAcquisition.State.RESET_SERVO);
-			System.out.println("RESETING");
-		}
+		
 		return false;
 	}
 

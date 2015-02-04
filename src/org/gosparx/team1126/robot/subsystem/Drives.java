@@ -183,12 +183,12 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * the speed required to shift down, not accurate yet
 	 */
-	private static final double LOWERSHIFTSPEED = 60;
+	private static final double LOWERSHIFTSPEED = 20;
 
 	/**
 	 * the speed required to shift up, not accurate yet
 	 */
-	private static final double UPPERSHIFTSPEED = 80;
+	private static final double UPPERSHIFTSPEED = 40;
 
 	/**
 	 * the time required to shift, not accurate yet, in seconds
@@ -230,8 +230,23 @@ public class Drives extends GenericSubsystem{
 	 * The position of the pnu solenoid to enable the neutral gear
 	 */
 	private static final boolean ENABLE_NEUTRAL_SELECT = true;
+	
+	/**
+	 * The distance the robot will dance
+	 */
+	private static final int DANCE_DISTANCE = 2;
 
 	//*********************************VARIBLES****************************
+	/**
+	 * Whether it dances left or right
+	 */
+	private boolean danceLeft = true;
+
+	/**
+	 * Whether you are going to dance backwards or forwards
+	 */
+	boolean backwards = true;
+	
 	/**
 	 * the wanted speed for the left motors
 	 */
@@ -320,7 +335,7 @@ public class Drives extends GenericSubsystem{
 		encoderLeft = new Encoder(IO.DIO_DRIVES_LEFT_ENC_A, IO.DIO_DRIVES_LEFT_ENC_B);
 		encoderDataLeft = new EncoderData(encoderLeft, DISTANCE_PER_TICK);
 		leftPID = new PID(P_LEFT, I_LEFT, 1, D_LEFT, true, false);
-		colorSensorLeft = new ColorSensor(IO.ANA_COLOR_LEFT_RED, IO.ANA_COLOR_LEFT_BLUE, IO.DIO_COLOR_LED_LEFT);
+		colorSensorLeft = new ColorSensor(IO.ANA_COLOR_LEFT_RED, IO.ANA_COLOR_LEFT_BLUE, IO.DIO_COLOR_LED_LEFT, getName(), "Left");
 		leftTouch = new DigitalInput(IO.DIO_LEFT_STEP);
 		leftPower = 0;
 
@@ -330,7 +345,7 @@ public class Drives extends GenericSubsystem{
 		encoderRight = new Encoder(IO.DIO_DRIVES_RIGHT_ENC_A, IO.DIO_DRIVES_RIGHT_ENC_B);
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		rightPID = new PID(P_RIGHT, I_RIGHT, 1, D_RIGHT, true, false);
-		colorSensorRight = new ColorSensor(IO.ANA_COLOR_RIGHT_RED, IO.ANA_COLOR_RIGHT_BLUE, IO.DIO_COLOR_LED_RIGHT);
+		colorSensorRight = new ColorSensor(IO.ANA_COLOR_RIGHT_RED, IO.ANA_COLOR_RIGHT_BLUE, IO.DIO_COLOR_LED_RIGHT, getName(), "Right");
 		rightTouch = new DigitalInput(IO.DIO_RIGHT_STEP);
 		rightPower = 0;
 
@@ -539,6 +554,52 @@ public class Drives extends GenericSubsystem{
 				autoFunctions = State.AUTO_STAND_BY;
 			}
 			break;
+		case AUTO_DANCE:
+
+			if(danceLeft){
+				if(backwards){
+					if(encoderDataLeft.getDistance() > -DANCE_DISTANCE){
+						leftPower = -0.4;
+						rightPower = 0.0;
+					}else {
+						backwards = false;
+						leftPower = 0.0;
+						rightPower = 0.0;
+					}
+				} else {
+					if(encoderDataLeft.getDistance() < 0){
+						leftPower = 0.4;
+						rightPower = 0.0;
+					}else {
+						backwards = true;
+						leftPower = 0.0;
+						rightPower = 0.0;
+						danceLeft = false;
+					}
+				}
+			}else {
+				if(backwards){
+					if(encoderDataRight.getDistance() > -DANCE_DISTANCE){
+						leftPower =  0.0;
+						rightPower = -0.4;
+					}else {
+						backwards = false;
+						leftPower = 0.0;
+						rightPower = 0.0;
+					}
+				} else {
+					if(encoderDataRight.getDistance() < 0){
+						leftPower = 0.0;
+						rightPower = 0.4;
+					}else {
+						backwards = true;
+						leftPower = 0.0;
+						rightPower = 0.0;
+						danceLeft = true;
+					}
+				}
+			}
+			break;
 		default: System.out.println("Error autoFunctions = " + autoFunctions);
 		}
 
@@ -554,8 +615,8 @@ public class Drives extends GenericSubsystem{
 		}
 
 		leftFront.set(leftPower);
-		leftBack.set(-leftPower);
-		rightFront.set(rightPower);
+		leftBack.set(leftPower);
+		rightFront.set(-rightPower);
 		rightBack.set(-rightPower);
 		return false;
 	}
@@ -642,11 +703,20 @@ public class Drives extends GenericSubsystem{
 	public void setAutoFunction(State wantedAutoState){
 		autoFunctions = wantedAutoState;
 	}
+	
+	public void autoDance(){
+		LOG.logMessage("Drives Recieved Auto Dance");
+		setAutoFunction(State.AUTO_DANCE);
+		encoderDataLeft.reset();
+		encoderDataRight.reset();
+		gyro.reset();
+	}
 
 	/**
 	 * Force drive to stop moving
 	 */
 	public void autoForceStop(){
+		LOG.logMessage("Received STOP DRIVE");
 		setAutoFunction(State.AUTO_STAND_BY);
 		rightPower = STOP_MOTOR;
 		leftPower = STOP_MOTOR;
@@ -657,6 +727,7 @@ public class Drives extends GenericSubsystem{
 	 * @param degrees - positive(right) || negative(left)
 	 */
 	public void autoTurn(int degrees){
+		LOG.logMessage("Received Auto Turn: " + degrees);
 		setAutoFunction(State.AUTO_TURN);
 		autoWantedTurn = degrees;
 		gyro.reset();
@@ -668,6 +739,7 @@ public class Drives extends GenericSubsystem{
 	 * @param speed - desired speed(0 - 1)
 	 */
 	public void driveStraight(int inchDistance, int speed/*max speed */){
+		LOG.logMessage("Received Auto Straight: " + inchDistance + " inches");
 		setAutoFunction(State.AUTO_DRIVE);
 		autoDistance = inchDistance;
 		gyro.reset();
@@ -707,6 +779,7 @@ public class Drives extends GenericSubsystem{
 		AUTO_STAND_BY,
 		AUTO_TURN,
 		AUTO_DRIVE,
+		AUTO_DANCE,
 		AUTO_LIGHT_LINE_UP,
 		AUTO_STEP_LINEUP;
 
@@ -730,6 +803,8 @@ public class Drives extends GenericSubsystem{
 				return "In auto stand by";
 			case AUTO_LIGHT_LINE_UP:
 				return "In auto light line up";
+			case AUTO_DANCE:
+				return "Dancing";
 			default:
 				return "Error";
 			}

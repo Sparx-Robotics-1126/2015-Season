@@ -2,8 +2,10 @@ package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.team1126.robot.IO;
 import org.gosparx.team1126.robot.sensors.EncoderData;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
  * The class for controlling the aqusition
@@ -118,8 +120,9 @@ public class CanAcq extends GenericSubsystem{
 	 */
 	@Override
 	protected void liveWindow() {
-		// TODO Auto-generated method stub
-
+		String subsystem = "CanAcq";
+		LiveWindow.addActuator(subsystem, "Rotating Victor", rotateVic);
+		LiveWindow.addActuator(subsystem, "Hooking Victor", hookVic);
 	}
 	/**
 	 * determines if the can arms are being used

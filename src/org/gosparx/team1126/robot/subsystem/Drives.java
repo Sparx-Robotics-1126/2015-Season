@@ -689,8 +689,8 @@ public class Drives extends GenericSubsystem{
 	 * Sets the shifting mode
 	 * @param isAutoShift - true if auto shifting, false if manual shifting
 	 */
-	public void isManualShifting(boolean isAutoShift){
-		isAutoShifting = isAutoShift;
+	public void isManualShifting(boolean isManualShift){
+		isAutoShifting = !isManualShift;
 	}
 
 	public void setManualShifting(boolean highGear){

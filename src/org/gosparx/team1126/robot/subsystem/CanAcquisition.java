@@ -22,17 +22,17 @@ public class CanAcquisition extends GenericSubsystem{
 	/**
 	 * Position for which the arms to drop
 	 */
-	private static final int DROP_RELEASE_POSITION = 0; //TODO find out
+	private static final int DROP_RELEASE_POSITION = 0;
 
 	/**
 	 * Position for which the arms start
 	 */
-	private static final int DROP_DEFAULT_POSITION = 170; //TODO find value 
+	private static final int DROP_DEFAULT_POSITION = 170; 
 	
 	/**
 	 * Position for which the arms raise
 	 */
-	private static final int RAISE_RELEASE_POSITION = 0; //TODO find out
+	private static final int RAISE_RELEASE_POSITION = 0;
 
 	/**
 	 * Position for which the arms start

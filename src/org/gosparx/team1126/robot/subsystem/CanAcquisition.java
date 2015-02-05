@@ -192,15 +192,17 @@ public class CanAcquisition extends GenericSubsystem{
 			break;
 		case ATTEMPT_TO_GRAB:
 			//RIGHT
-			if(!rightArmInCan.get()){
+			if(!rightArmInCan.get() && !hasRight){
 				rightArm.set(GRAB);
 				hasRight = true;
+				LOG.logMessage("Right grabbed");
 			}
 			
 			//LEFT
-			if(!leftArmInCan.get()){
+			if(!leftArmInCan.get() && !hasLeft){
 				leftArm.set(GRAB);
 				hasLeft = true;
+				LOG.logMessage("Left grabbed");
 			}
 			
 			if(hasRight && hasLeft){

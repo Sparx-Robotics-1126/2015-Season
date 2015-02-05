@@ -638,14 +638,14 @@ public class Drives extends GenericSubsystem{
 		log.logMessage("Current speed: " + currentSpeed);
 		log.logMessage("Current drive state: " + currentDriveState);
 		log.logMessage("Auto State: " + autoFunctions);
-		log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
-				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
-		log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
-		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
+//		log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
+//		log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
+//		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
 		log.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
 				" Right Encoder: " +encoderDataRight.getSpeed());
-		log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
-		log.logMessage("Gyro: " + gyro.getAngle());
+//		log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
+//		log.logMessage("Gyro: " + gyro.getAngle());
 	}
 
 	/**
@@ -655,6 +655,13 @@ public class Drives extends GenericSubsystem{
 	 * @param driverControl - true if the driver is controlling, false if the operator is controlling 
 	 */
 	public void setPower(double left, double right, boolean driverControl) {
+		if(Math.abs(left) < 0.05){
+			left = 0;
+		}
+		if(Math.abs(right) < 0.05){
+			right = 0;
+		}
+		
 		if(driverControl){
 			if(left > 0){
 				wantedLeftPower = (5/4)*Math.sqrt(left);

@@ -222,7 +222,7 @@ public class CanAcquisition extends GenericSubsystem{
 			currentState = State.STANDBY;
 			break;
 		default:
-//			LOG.logMessage("INVALID STATE: " + currentState);
+			LOG.logMessage("INVALID STATE: " + currentState);
 		}
 		return false;
 	}

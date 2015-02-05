@@ -124,6 +124,7 @@ public class CanAcquisition extends GenericSubsystem{
 	public boolean isDone() {
 		return (currentState == State.STANDBY);
 	}
+	
 	/**
 	 * Drops both arms
 	 */
@@ -146,6 +147,9 @@ public class CanAcquisition extends GenericSubsystem{
 		raisingArmsServo.setAngle(RAISE_DEFAULT_POSITION);
 	}
 
+	/**
+	 * Initializes the magic
+	 */
 	@Override
 	protected boolean init() {
 		// TODO get all IO from IO class
@@ -159,6 +163,9 @@ public class CanAcquisition extends GenericSubsystem{
 		return true;
 	}
 
+	/**
+	 * Sends controllers/sensors to livewindow
+	 */
 	@Override
 	protected void liveWindow() {
 		LiveWindow.addActuator(getName(), "Release Arm", releasingArmsServo);
@@ -169,6 +176,9 @@ public class CanAcquisition extends GenericSubsystem{
 		LiveWindow.addSensor(getName(), "Left Arm Touch", leftArmInCan);
 	}
 
+	/**
+	 * Makes the magic work
+	 */
 	@Override
 	protected boolean execute() {
 		switch(currentState){

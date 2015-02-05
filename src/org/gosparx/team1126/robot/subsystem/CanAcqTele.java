@@ -110,7 +110,11 @@ public class CanAcqTele extends GenericSubsystem{
 	public CanAcqTele() {
 		super("CanAcq", Thread.NORM_PRIORITY);
 	}
-
+	
+	/**
+	 * instantiates all the objects
+	 * @return if false, keep looping, true loop ends
+	 */
 	@Override
 	protected boolean init() {
 		rotateTal = new Talon(IO.PWM_CAN_ROTATE);

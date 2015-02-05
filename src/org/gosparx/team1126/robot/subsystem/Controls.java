@@ -37,6 +37,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 * declares a Drives object named drives
 	 */
 	private Drives drives;
+	
+	/**
+	 * Stores if we are currently in manual shifting
+	 */
+	private boolean manualShifting;
 
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
@@ -119,6 +124,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_Y);
 		operatorJoy.start();
 		drives = Drives.getInstance(); 
+		manualShifting = false;
 		return true;
 	}
 
@@ -169,17 +175,17 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			case IO.DRIVER_JOYSTICK_LEFT:
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
-					//TODO: Up Shift
+					drives.setManualShifting(true);
 					break;
 				case ATTACK3_TRIGGER:
-					//TODO: Down Shift
+					drives.setManualShifting(false);
 					break;
 				}
 				break;
 			case IO.DRIVER_JOYSTICK_RIGHT:
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
-					//TODO: auto line up 
+					drives.setAutoFunction(Drives.State.AUTO_LIGHT_LINE_UP);
 					break;
 				case ATTACK3_TRIGGER:
 					//TODO: force low gear
@@ -206,7 +212,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			switch (e.getPort()) {
 			case IO.DRIVER_JOYSTICK_LEFT:
 				if(e.isRising()){
-					//TODO trigger manual
+					manualShifting = !manualShifting;
+					drives.isManualShifting(manualShifting);
 				}
 				break;
 			}

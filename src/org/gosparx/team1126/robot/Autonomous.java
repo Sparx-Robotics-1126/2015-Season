@@ -425,6 +425,8 @@ public class Autonomous extends GenericSubsystem{
 	};
 
 	private static final int[][] TEST_AUTO = {
+		{AutoCommands.DRIVES_GO_FORWARD.toId(), 55, 50},
+		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.END.toId()}
 	};
 

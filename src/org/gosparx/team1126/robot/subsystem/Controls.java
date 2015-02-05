@@ -213,7 +213,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			case IO.DRIVER_JOYSTICK_LEFT:
 				if(e.isRising()){
 					manualShifting = !manualShifting;
-					drives.isManualShifting(!manualShifting);
+					drives.isManualShifting(manualShifting);
 				}
 				break;
 			}

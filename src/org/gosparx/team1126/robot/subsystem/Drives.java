@@ -689,11 +689,11 @@ public class Drives extends GenericSubsystem{
 	 * Sets the shifting mode
 	 * @param isAutoShift - true if auto shifting, false if manual shifting
 	 */
-	public void setManualShifting(boolean isAutoShift){
+	public void isManualShifting(boolean isAutoShift){
 		isAutoShifting = isAutoShift;
 	}
 
-	public void setManaulShifting(boolean highGear){
+	public void setManualShifting(boolean highGear){
 		if(!isAutoShifting){
 			shiftTime = Timer.getFPGATimestamp();
 			currentDriveState = (highGear) ? State.SHIFTING_HIGH : State.SHIFTING_LOW; 

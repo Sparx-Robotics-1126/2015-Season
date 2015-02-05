@@ -123,7 +123,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
-		operatorJoy.start();
+//		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
 		return true;
@@ -176,9 +176,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
 					//TODO: Up Shift
+					canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
 					break;
 				case ATTACK3_TRIGGER:
 					//TODO: Down Shift
+					canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
 					break;
 				}
 				break;

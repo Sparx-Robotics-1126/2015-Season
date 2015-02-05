@@ -617,9 +617,7 @@ public class Drives extends GenericSubsystem{
 			}
 		}
 	}
-	/**
-	 * Overrides in genericSubsytems, does things
-	 */
+
 	@Override
 	protected void liveWindow() {
 		String subsytemName = "Drives";

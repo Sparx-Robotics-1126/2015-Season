@@ -97,7 +97,7 @@ public class CanAcquisition extends GenericSubsystem{
 	/**
 	 * Returns an instance of the can acquisition
 	 */
-	public static CanAcquisition getInstance(){
+	public static synchronized CanAcquisition getInstance(){
 		if(acq == null){
 			acq = new CanAcquisition();
 		}

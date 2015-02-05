@@ -5,9 +5,6 @@ import org.gosparx.team1126.robot.util.AdvancedJoystick;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.ButtonEvent;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.JoystickListener;
 
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-
 import org.gosparx.team1126.robot.util.AdvancedJoystick.MultibuttonEvent;
 
 /**
@@ -42,6 +39,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	private Drives drives;
 
+	/**
+	 * instance for CanAcquisition
+	 */
 	private CanAcquisition canAcq;
 	
 	//**************************************************************************
@@ -107,23 +107,23 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean init() {
-//		driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT);
-//		driverJoyLeft.addActionListener(this);
-//		driverJoyLeft.addButton(ATTACK3_TOP_BUTTON);
-//		driverJoyLeft.addButton(ATTACK3_TRIGGER);
-//		driverJoyLeft.addMultibutton(ATTACK3_TRIGGER, ATTACK3_TOP_BUTTON);
-//		driverJoyLeft.start();
-//		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT);
-//		driverJoyRight.addActionListener(this);
-//		driverJoyRight.addButton(ATTACK3_TOP_BUTTON);
-//		driverJoyRight.addButton(ATTACK3_TRIGGER);
-//		driverJoyRight.start();
-//		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK);
-//		operatorJoy.addActionListener(this);
-//		operatorJoy.addButton(LOGI_A);
-//		operatorJoy.addButton(LOGI_B);
-//		operatorJoy.addButton(LOGI_Y);
-//		operatorJoy.start();
+		driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT);
+		driverJoyLeft.addActionListener(this);
+		driverJoyLeft.addButton(ATTACK3_TOP_BUTTON);
+		driverJoyLeft.addButton(ATTACK3_TRIGGER);
+		driverJoyLeft.addMultibutton(ATTACK3_TRIGGER, ATTACK3_TOP_BUTTON);
+		driverJoyLeft.start();
+		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT);
+		driverJoyRight.addActionListener(this);
+		driverJoyRight.addButton(ATTACK3_TOP_BUTTON);
+		driverJoyRight.addButton(ATTACK3_TRIGGER);
+		driverJoyRight.start();
+		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK);
+		operatorJoy.addActionListener(this);
+		operatorJoy.addButton(LOGI_A);
+		operatorJoy.addButton(LOGI_B);
+		operatorJoy.addButton(LOGI_Y);
+		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
 		return true;

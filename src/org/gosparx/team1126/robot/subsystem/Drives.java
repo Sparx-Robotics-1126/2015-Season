@@ -7,7 +7,6 @@ import org.gosparx.team1126.robot.sensors.ColorSensor.Color;
 import org.gosparx.team1126.robot.sensors.PID;
 import org.gosparx.team1126.robot.util.Logger;
 
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
@@ -91,6 +90,9 @@ public class Drives extends GenericSubsystem{
 	 */
 	private Solenoid shiftingPnu;
 
+	/**
+	 * Neutral shifting
+	 */
 	private Solenoid neutralPnu;
 
 	//****************************SENSORS**********************
@@ -183,7 +185,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * the speed required to shift down, not accurate yet
 	 */
-	private static final double LOWERSHIFTSPEED = 20;
+	private static final double LOWERSHIFTSPEED = 10;
 
 	/**
 	 * the speed required to shift up, not accurate yet
@@ -379,7 +381,7 @@ public class Drives extends GenericSubsystem{
 		switch(currentDriveState){
 		case IN_LOW_GEAR:
 			if(Math.abs(currentSpeed) >= UPPERSHIFTSPEED &&  isAutoShifting){
-				System.out.println("SHIFTING HIGH");
+				LOG.logMessage("SHIFTING HIGH");
 				shiftTime = Timer.getFPGATimestamp();
 				currentDriveState = State.SHIFTING_HIGH;
 				finalDriveState = State.IN_HIGH_GEAR;
@@ -403,7 +405,7 @@ public class Drives extends GenericSubsystem{
 			break;
 		case IN_HIGH_GEAR:
 			if(Math.abs(currentSpeed) <= LOWERSHIFTSPEED && isAutoShifting){
-				System.out.println("SHIFTING LOW");
+				LOG.logMessage("SHIFTING LOW");
 				shiftTime = Timer.getFPGATimestamp();
 				currentDriveState = State.SHIFTING_LOW;
 				finalDriveState = State.IN_LOW_GEAR;
@@ -454,7 +456,7 @@ public class Drives extends GenericSubsystem{
 					currentDriveState = State.SHIFTING_HIGH;
 					finalDriveState = State.NEUTRAL_SETUP;
 				}else if(lastShiftState == State.SHIFTING_HIGH){
-					System.out.println("NEUTRAL SETUP TO NEUTRAL");
+					LOG.logMessage("NEUTRAL SETUP TO NEUTRAL");
 					currentDriveState = State.SHIFTING_NEUTRAL;
 					finalDriveState = State.IN_NEUTRAL_GEAR;
 				}else{
@@ -467,7 +469,7 @@ public class Drives extends GenericSubsystem{
 			}
 			break;
 		default:
-			System.out.println("Error currentDriveState = " + currentDriveState);
+			LOG.logMessage("Error currentDriveState = " + currentDriveState);
 		}
 
 		switch(autoFunctions){
@@ -600,7 +602,7 @@ public class Drives extends GenericSubsystem{
 				}
 			}
 			break;
-		default: System.out.println("Error autoFunctions = " + autoFunctions);
+		default: LOG.logMessage("Error autoFunctions = " + autoFunctions);
 		}
 
 		//PID DEBUG
@@ -699,6 +701,7 @@ public class Drives extends GenericSubsystem{
 	 * @param highGear
 	 */
 	public void setManualShifting(boolean highGear){
+		LOG.logMessage("Shifting to High?: "+ highGear);
 		if(!isAutoShifting){
 			shiftTime = Timer.getFPGATimestamp();
 			currentDriveState = (highGear) ? State.SHIFTING_HIGH : State.SHIFTING_LOW; 

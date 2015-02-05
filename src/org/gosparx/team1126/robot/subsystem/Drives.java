@@ -690,6 +690,7 @@ public class Drives extends GenericSubsystem{
 	 * @param isAutoShift - true if auto shifting, false if manual shifting
 	 */
 	public void isManualShifting(boolean isManualShift){
+		LOG.logMessage("Auto Shift has been set to: " + !isManualShift);
 		isAutoShifting = !isManualShift;
 	}
 

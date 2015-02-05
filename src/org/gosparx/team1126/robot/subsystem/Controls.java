@@ -74,9 +74,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	//********************************************************************
 	//*******************Driver Controller Mapping**********************
 	//********************************************************************
-	private static final int ATTACK3_Y_AXIS = 2;
-	private static final int ATTACK3_X_AXIS = 2;
-	private static final int ATTACK3_Z_AXIS = 3;
+	private static final int ATTACK3_Y_AXIS = 1;
+	private static final int ATTACK3_X_AXIS = 0;
+	private static final int ATTACK3_Z_AXIS = 2;
 	private static final int ATTACK3_TRIGGER = 1;
 	private static final int ATTACK3_TOP_BUTTON = 2;
 
@@ -122,7 +122,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
-		operatorJoy.start();
+//		operatorJoy.start();
 		drives = Drives.getInstance(); 
 		manualShifting = false;
 		return true;

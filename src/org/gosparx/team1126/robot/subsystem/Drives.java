@@ -694,11 +694,15 @@ public class Drives extends GenericSubsystem{
 		isAutoShifting = !isManualShift;
 	}
 
+	/**
+	 * Sets the current high low gear of shifting
+	 * @param highGear
+	 */
 	public void setManualShifting(boolean highGear){
 		if(!isAutoShifting){
 			shiftTime = Timer.getFPGATimestamp();
 			currentDriveState = (highGear) ? State.SHIFTING_HIGH : State.SHIFTING_LOW; 
-			finalDriveState = (highGear) ? State.IN_HIGH_GEAR : State.SHIFTING_LOW;
+			finalDriveState = (highGear) ? State.IN_HIGH_GEAR : State.IN_LOW_GEAR;
 		}else{
 			LOG.logMessage("Can't manual shift in auto shifting mode");
 		}

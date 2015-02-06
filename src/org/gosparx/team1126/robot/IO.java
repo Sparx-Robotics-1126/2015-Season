@@ -9,8 +9,8 @@ public final class IO {
 	//Motor
 	public static final int PWM_LEFT_FRONT_DRIVES 		= 0;
 	public static final int PWM_LEFT_BACK_DRIVES		= 1;
-	public static final int PWM_RIGHT_FRONT_DRIVES		= 3;
-	public static final int PWM_RIGHT_BACK_DRIVES		= 2;
+	public static final int PWM_RIGHT_FRONT_DRIVES		= 2;
+	public static final int PWM_RIGHT_BACK_DRIVES		= 3;
 	
 	//PWM
 	public static final int PWM_DRIVES_LEFT_FRONT		= 0;
@@ -36,8 +36,8 @@ public final class IO {
 	//DIO
 	public static final int DIO_DRIVES_LEFT_ENC_A		= 0;
 	public static final int DIO_DRIVES_LEFT_ENC_B		= 1;
-	public static final int DIO_DRIVES_RIGHT_ENC_A		= 2;
-	public static final int DIO_DRIVES_RIGHT_ENC_B		= 3;
+	public static final int DIO_DRIVES_RIGHT_ENC_A		= 3;
+	public static final int DIO_DRIVES_RIGHT_ENC_B		= 2;
 	public static final int DIO_ELEVATIONS_A			= 4;
 	public static final int DIO_ELEVATIONS_B			= 5;
 	public static final int DIO_CAN_HOOK_A				= 6;

@@ -414,7 +414,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private static final String TWO_CANS_RIGHT_STEP_NAME = "Two Cans from Step to right";
 	private static final int[][] TWO_CANS_RIGHT_STEP= {
-		{AutoCommands.DRIVES_GO_FORWARD.toId(), 55, 100},
+		{AutoCommands.DRIVES_GO_FORWARD.toId(), 55, 50},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.DRIVES_STEP_LINUP.toId()},
 		{AutoCommands.DRIVES_DONE.toId()},
@@ -424,7 +424,7 @@ public class Autonomous extends GenericSubsystem{
 		{AutoCommands.ARMS_DONE.toId()},
 		{AutoCommands.DRIVES_STEP_LINUP.toId()},
 		{AutoCommands.DRIVES_DONE.toId()},
-		{AutoCommands.DRIVES_GO_REVERSE.toId(), 36, 100},
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 36, 50},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.DRIVES_TURN_LEFT.toId(), 35},
 		{AutoCommands.DRIVES_DONE.toId()},
@@ -439,6 +439,8 @@ public class Autonomous extends GenericSubsystem{
 
 	private static final int[][] TEST_AUTO = {
 		{AutoCommands.DRIVES_GO_FORWARD.toId(), 55, 50},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_STEP_LINUP.toId()},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.END.toId()}
 	};
@@ -625,7 +627,7 @@ public class Autonomous extends GenericSubsystem{
 				canAcq.setAutoFunction(CanAcquisition.State.STANDBY);
 				break;
 			case ARMS_DONE:
-				canAcq.isDone();
+				increaseStep = canAcq.isDone();
 				break;
 			case ACQ_LOWER:
 				break;

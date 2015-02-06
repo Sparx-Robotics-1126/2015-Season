@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
@@ -120,6 +121,8 @@ public class Drives extends GenericSubsystem{
 	 * Allow for current heading of the robot
 	 */
 	private Gyro gyro;
+	
+	private PowerDistributionPanel pdp;
 
 	//********************************CONSTANTS****************************
 	/**
@@ -317,6 +320,8 @@ public class Drives extends GenericSubsystem{
 		currentSpeed = 0;
 		shiftTime = 0;
 		autoFunctions = State.AUTO_STAND_BY;
+		
+		pdp = new PowerDistributionPanel();
 
 		if(USE_PID_DEBUG){
 			debugPID();
@@ -407,17 +412,18 @@ public class Drives extends GenericSubsystem{
 			}
 			break;
 		case AUTO_STEP_LINEUP:
-			boolean right = rightTouch.get();
-			boolean left = leftTouch.get();
+			boolean right = (pdp.getCurrent(14) + pdp.getCurrent(15))/2 > 9 ? true : false; //rightTouch.get();
+			boolean left = (pdp.getCurrent(12) + pdp.getCurrent(13))/2 > 9 ? true : false;//leftTouch.get();
+			System.out.println("Right: " + pdp.getCurrent(14) + " LEFt: " + pdp.getCurrent(12));
 			if(right){
-				//				rightPower = -LINEUP_SPEED;
-				rightPower = 0;
+				//rightPower = -LINEUP_SPEED;
+//				rightPower = 0;
 			}else{
 				rightPower = LINEUP_SPEED;
 			}
 			if(left){
 				//				leftPower = -LINEUP_SPEED;
-				leftPower = 0;
+//				leftPower = 0;
 			}else{
 				leftPower = LINEUP_SPEED;
 			}
@@ -553,9 +559,9 @@ public class Drives extends GenericSubsystem{
 		//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
 		//		LOG.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
 		//		LOG.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-		//		LOG.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
-		//				" Right Encoder: " +encoderDataRight.getSpeed());
-		LOG.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
+				LOG.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
+						" Right Encoder: " +encoderDataRight.getSpeed());
+//		LOG.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
 		//		LOG.logMessage("Gyro: " + gyro.getAngle());
 	}
 

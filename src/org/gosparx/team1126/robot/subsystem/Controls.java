@@ -35,7 +35,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private static Controls controls;
 
 	/**
-	 * declares a Drives object named drivess
+	 * declares a Drives object named drives
 	 */
 	private Drives drives;
 
@@ -75,9 +75,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	//********************************************************************
 	//*******************Driver Controller Mapping**********************
 	//********************************************************************
-	private static final int ATTACK3_Y_AXIS = 2;
-	private static final int ATTACK3_X_AXIS = 2;
-	private static final int ATTACK3_Z_AXIS = 3;
+	private static final int ATTACK3_Y_AXIS = 1;
+	private static final int ATTACK3_X_AXIS = 0;
+	private static final int ATTACK3_Z_AXIS = 2;
 	private static final int ATTACK3_TRIGGER = 1;
 	private static final int ATTACK3_TOP_BUTTON = 2;
 
@@ -135,8 +135,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean execute() {
-		
-			drives.autoDance();
+		drives.setPower(-driverJoyLeft.getAxis(ATTACK3_Y_AXIS), -driverJoyRight.getAxis(ATTACK3_Y_AXIS));
 		return false;
 	}
 
@@ -185,10 +184,12 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				}
 				break;
+				
 			case IO.DRIVER_JOYSTICK_RIGHT:
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
 					//TODO: auto line up 
+					canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
 					break;
 				case ATTACK3_TRIGGER:
 					//TODO: force low gear

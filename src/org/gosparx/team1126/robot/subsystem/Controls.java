@@ -4,6 +4,7 @@ import org.gosparx.team1126.robot.IO;
 import org.gosparx.team1126.robot.util.AdvancedJoystick;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.ButtonEvent;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.JoystickListener;
+
 import org.gosparx.team1126.robot.util.AdvancedJoystick.MultibuttonEvent;
 
 /**
@@ -38,6 +39,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	private Drives drives;
 
+	/**
+	 * instance for CanAcquisition
+	 */
+	private CanAcquisition canAcq;
+	
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
 	//**************************************************************************
@@ -94,7 +100,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private Controls() {
 		super("controls", Thread.NORM_PRIORITY);
 	}
-
+	
 	/**
 	 * instantiates a Joystick and Drives
 	 * @return false ~ keeps looping true ~ stops loop
@@ -117,8 +123,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
-		operatorJoy.start();
-		drives = Drives.getInstance(); 
+//		operatorJoy.start();
+		drives = Drives.getInstance();
+		canAcq = CanAcquisition.getInstance();
 		return true;
 	}
 
@@ -128,8 +135,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean execute() {
-		drives.setPower(-driverJoyLeft.getAxis(ATTACK3_Y_AXIS),
-				-driverJoyRight.getAxis(ATTACK3_Y_AXIS));
+		
 		return false;
 	}
 
@@ -170,9 +176,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
 					//TODO: Up Shift
+					canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
 					break;
 				case ATTACK3_TRIGGER:
 					//TODO: Down Shift
+					canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
 					break;
 				}
 				break;

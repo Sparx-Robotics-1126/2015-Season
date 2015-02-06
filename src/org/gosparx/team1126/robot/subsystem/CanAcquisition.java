@@ -3,7 +3,6 @@ package org.gosparx.team1126.robot.subsystem;
 import org.gosparx.team1126.robot.IO;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -23,21 +22,11 @@ public class CanAcquisition extends GenericSubsystem{
 	 * Position for which the arms to drop
 	 */
 	private static final int DROP_RELEASE_POSITION = 0;
-
-	/**
-	 * Position for which the arms start
-	 */
-	private static final int DROP_DEFAULT_POSITION = 170; 
 	
 	/**
 	 * Position for which the arms raise
 	 */
 	private static final int RAISE_RELEASE_POSITION = 0;
-
-	/**
-	 * Position for which the arms start
-	 */
-	private static final int RAISE_DEFAULT_POSITION = 170;
 	
 	/**
 	 * The "grab" position of the pnu
@@ -124,28 +113,6 @@ public class CanAcquisition extends GenericSubsystem{
 	public boolean isDone() {
 		return (currentState == State.STANDBY);
 	}
-	
-	/**
-	 * Drops both arms
-	 */
-	private void armsDrop() {
-		releasingArmsServo.setAngle(DROP_RELEASE_POSITION);
-	}
-
-	/**
-	 * Raises both arms
-	 */
-	private void armsRaise(){
-		raisingArmsServo.setAngle(RAISE_RELEASE_POSITION);
-	}
-	
-	/**
-	 * Resets the servo
-	 */
-	private void resetServo(){
-		releasingArmsServo.setAngle(DROP_DEFAULT_POSITION);
-		raisingArmsServo.setAngle(RAISE_DEFAULT_POSITION);
-	}
 
 	/**
 	 * Initializes the magic
@@ -187,7 +154,7 @@ public class CanAcquisition extends GenericSubsystem{
 			hasRight = false;
 			break;
 		case DROP_ARMS:
-			armsDrop();
+			releasingArmsServo.setAngle(DROP_RELEASE_POSITION);
 			currentState = State.ATTEMPT_TO_GRAB;
 			break;
 		case ATTEMPT_TO_GRAB:
@@ -216,7 +183,7 @@ public class CanAcquisition extends GenericSubsystem{
 			currentState = State.STANDBY;
 			break;
 		case DISABLE:
-			armsRaise();
+			raisingArmsServo.setAngle(RAISE_RELEASE_POSITION);
 			currentState = State.STANDBY;
 			break;
 		default:

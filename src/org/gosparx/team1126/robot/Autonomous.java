@@ -1,5 +1,6 @@
 package org.gosparx.team1126.robot;
 
+import org.gosparx.team1126.robot.subsystem.CanAcquisition;
 import org.gosparx.team1126.robot.subsystem.Drives;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
@@ -21,13 +22,20 @@ public class Autonomous extends GenericSubsystem{
 	 * An Instance of Drives
 	 */
 	private Drives drives;
-
+	
+	/**
+	 * An instance of CanAcq
+	 */
+	private CanAcquisition canAcq;
 
 	/**
 	 * Supports singleton
 	 */
 	private static Autonomous auto;
 
+	/**
+	 * Used for selecting the smartdashboard
+	 */
 	private SendableChooser chooser;
 
 	/**
@@ -94,6 +102,11 @@ public class Autonomous extends GenericSubsystem{
 	 * Time auto starts
 	 */
 	private double autoStartTime;
+	
+	/**
+	 * The actual time wanted to wait
+	 */
+	private double waitTime;
 
 	/**
 	 * The voltages of the different choices on the selection switch
@@ -175,7 +188,7 @@ public class Autonomous extends GenericSubsystem{
 		 * Expands the claws that grab the container
 		 * {}
 		 */
-		ARMS_EXPAND(9),
+		ARMS_GRAB(9),
 
 		/**
 		 * Contracts the claws that grab the container
@@ -306,7 +319,7 @@ public class Autonomous extends GenericSubsystem{
 			case ARMS_RELEASE: 		return "ARMS contracted";
 			case ARMS_DONE: 		return "ARMS done";
 			case ARMS_DROP: 		return "ARMS dropped";
-			case ARMS_EXPAND: 		return "ARMS expanded";
+			case ARMS_GRAB: 		return "ARMS expanded";
 			case ARMS_RAISE: 		return "ARMS raised";
 			case ARMS_STOP: 		return "AMRS stop";
 			case CHECK_TIME: 		return "AUTO Checking time";
@@ -454,8 +467,9 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		selectorSwitch = new AnalogInput(IO.SELECTOR_SWITCH_CHANNEL);
+		selectorSwitch = new AnalogInput(IO.ANA_AUTOSWITCH);
 		drives = Drives.getInstance();
+		canAcq = CanAcquisition.getInstance();
 		runAuto = false;
 
 		//Auto current selected
@@ -596,17 +610,22 @@ public class Autonomous extends GenericSubsystem{
 				increaseStep = drives.isDone();
 				break;
 			case ARMS_DROP:
+				canAcq.setAutoFunction(CanAcquisition.State.DROP_ARMS);
 				break;
 			case ARMS_RAISE:
+				canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
 				break;
-			case ARMS_EXPAND:
+			case ARMS_GRAB:
+				canAcq.setAutoFunction(CanAcquisition.State.DROP_ARMS);
 				break;
 			case ARMS_RELEASE:
+				canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
 				break;
 			case ARMS_STOP:
+				canAcq.setAutoFunction(CanAcquisition.State.STANDBY);
 				break;
 			case ARMS_DONE:
-				increaseStep = false;
+				canAcq.isDone();
 				break;
 			case ACQ_LOWER:
 				break;
@@ -636,19 +655,18 @@ public class Autonomous extends GenericSubsystem{
 				criticalTime = currentAuto[currentStep][1];
 				break;
 			case WAIT:
-				try {
-					Thread.sleep(currentAuto[currentStep][1]);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+				waitTime = Timer.getFPGATimestamp() + currentAuto[currentStep][1];
 			case END:
 				break;
 			default:
 				runAuto = false;
 				LOG.logError("Unknown autocommand: " + currentAuto[currentStep]);
 			}
+			//WAIT
+			if(waitTime > Timer.getFPGATimestamp()){
+				increaseStep = false;
+			}
+			
 			if(increaseStep){
 				StringBuilder sb = new StringBuilder();
 				sb.append(AutoCommands.getName(AutoCommands.fromId(currentAuto[currentStep][0]))).append("(");

@@ -49,14 +49,12 @@ public final class IO {
 	public static final int DIO_RIGHT_STEP 				= 15;
 	public static final int DIO_CAN_AUTO_RIGHT_GRAB		= 17;
 	public static final int DIO_CAN_AUTO_LEFT_GRAB		= 16;
-	public static final int SELECTOR_SWITCH_CHANNEL     = 1;
-	public static final int DIG_DRIVES_ELE_ENC_B		= 5;
 	public static final int DIO_ELEVATIONS_ORIGIN		= 21;
 	public static final int DIO_TOTE_HOME_RIGHT			= 22;
 	public static final int DIO_TOTE_HOME_lEFT 			= 23;
 	public static final int DIO_COLOR_LED_LEFT			= 24;
 	public static final int DIO_COLOR_LED_RIGHT			= 25;
-	public static final int DIG_DRIVES_ELE_ENC_B		= 5;
+	
 	//PNU
 	public static final int PNU_SHIFT					= 0;
 	public static final int PNU_ACQ_TOTE				= 1;

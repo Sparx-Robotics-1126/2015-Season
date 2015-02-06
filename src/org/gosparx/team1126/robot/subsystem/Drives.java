@@ -296,7 +296,7 @@ public class Drives extends GenericSubsystem{
 		encoderLeft = new Encoder(IO.DIO_DRIVES_LEFT_ENC_A, IO.DIO_DRIVES_LEFT_ENC_B);
 		encoderDataLeft = new EncoderData(encoderLeft, DISTANCE_PER_TICK);
 		leftPID = new PID(P_LEFT, I_LEFT, 1, D_LEFT, true, false);
-		colorSensorLeft = new ColorSensor(IO.ANA_COLOR_LEFT_RED, IO.ANA_COLOR_LEFT_BLUE, IO.DIO_COLOR_LED_LEFT);
+		colorSensorLeft = new ColorSensor(IO.ANA_COLOR_LEFT_RED, IO.ANA_COLOR_LEFT_BLUE, IO.DIO_COLOR_LED_LEFT, getName(), "Left");
 		leftTouch = new DigitalInput(IO.DIO_LEFT_STEP);
 		leftPower = 0;
 
@@ -306,7 +306,7 @@ public class Drives extends GenericSubsystem{
 		encoderRight = new Encoder(IO.DIO_DRIVES_RIGHT_ENC_A, IO.DIO_DRIVES_RIGHT_ENC_B);
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		rightPID = new PID(P_RIGHT, I_RIGHT, 1, D_RIGHT, true, false);
-		colorSensorRight = new ColorSensor(IO.ANA_COLOR_RIGHT_RED, IO.ANA_COLOR_RIGHT_BLUE, IO.DIO_COLOR_LED_RIGHT);
+		colorSensorRight = new ColorSensor(IO.ANA_COLOR_RIGHT_RED, IO.ANA_COLOR_RIGHT_BLUE, IO.DIO_COLOR_LED_RIGHT, getName(), "Right");
 		rightTouch = new DigitalInput(IO.DIO_RIGHT_STEP);
 		rightPower = 0;
 

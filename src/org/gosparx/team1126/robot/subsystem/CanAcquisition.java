@@ -206,11 +206,9 @@ public class CanAcquisition extends GenericSubsystem{
 			}
 			
 			if(hasRight && hasLeft){
-				currentState = State.GRABBED;
+				currentState = State.STANDBY;
 				LOG.logMessage("Cans have been grabbed");
 			}
-			break;
-		case GRABBED:
 			break;
 		case RELEASE:
 			rightArm.set(!GRAB);
@@ -249,7 +247,6 @@ public class CanAcquisition extends GenericSubsystem{
 		STANDBY,
 		DROP_ARMS,	
 		ATTEMPT_TO_GRAB,
-		GRABBED,
 		RELEASE,
 		DISABLE;
 
@@ -258,7 +255,6 @@ public class CanAcquisition extends GenericSubsystem{
 			case STANDBY: 			return "Standby";
 			case DROP_ARMS: 		return "Drop Arms";
 			case ATTEMPT_TO_GRAB: 	return "Attempting to grab";
-			case GRABBED: 			return "Both can's aquired";
 			case RELEASE: 			return "Releasing cans";
 			case DISABLE: 			return "Disabled";
 			default: 				return "Unknown State: " + state;

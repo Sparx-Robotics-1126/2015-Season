@@ -247,7 +247,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * Whether you are going to dance backwards or forwards
 	 */
-	boolean backwards = true;
+	private boolean backwards = true;
 	
 	/**
 	 * the wanted speed for the left motors
@@ -557,13 +557,12 @@ public class Drives extends GenericSubsystem{
 			}
 			break;
 		case AUTO_DANCE:
-
 			if(danceLeft){
 				if(backwards){
-					if(encoderDataLeft.getDistance() > -DANCE_DISTANCE){
+					if(encoderDataLeft.getDistance() > -1){
 						leftPower = -0.4;
 						rightPower = 0.0;
-					}else {
+					}else{
 						backwards = false;
 						leftPower = 0.0;
 						rightPower = 0.0;
@@ -573,6 +572,7 @@ public class Drives extends GenericSubsystem{
 						leftPower = 0.4;
 						rightPower = 0.0;
 					}else {
+//						danceCycles++;
 						backwards = true;
 						leftPower = 0.0;
 						rightPower = 0.0;
@@ -581,7 +581,7 @@ public class Drives extends GenericSubsystem{
 				}
 			}else {
 				if(backwards){
-					if(encoderDataRight.getDistance() > -DANCE_DISTANCE){
+					if(encoderDataRight.getDistance() > -3){
 						leftPower =  0.0;
 						rightPower = -0.4;
 					}else {
@@ -594,6 +594,7 @@ public class Drives extends GenericSubsystem{
 						leftPower = 0.0;
 						rightPower = 0.4;
 					}else {
+//						danceCycles++;
 						backwards = true;
 						leftPower = 0.0;
 						rightPower = 0.0;

@@ -135,17 +135,6 @@ public class Elevations2 extends GenericSubsystem{
 	}
 
 	/**
-	 * Adds things to the live window
-	 */
-	@Override
-	protected void liveWindow() {
-		LiveWindow.addActuator(getName(), "Right Elevator", rightElevationMotor);
-		LiveWindow.addActuator(getName(), "Left Elevations", leftElevationMotor);
-		LiveWindow.addSensor(getName(), "Home Switch", homeSwitch);
-		LiveWindow.addSensor(getName(), "Tote Detect", newToteSensor);
-	}
-
-	/**
 	 * Loops and move the elevator accordingly 
 	 */
 	@Override
@@ -239,6 +228,17 @@ public class Elevations2 extends GenericSubsystem{
 		LOG.logMessage("Current Position: " + elevationEncoderData.getDistance());
 	}
 	
+	/**
+	 * Adds things to the live window
+	 */
+	@Override
+	protected void liveWindow() {
+		LiveWindow.addActuator(getName(), "Right Elevator", rightElevationMotor);
+		LiveWindow.addActuator(getName(), "Left Elevations", leftElevationMotor);
+		LiveWindow.addSensor(getName(), "Home Switch", homeSwitch);
+		LiveWindow.addSensor(getName(), "Tote Detect", newToteSensor);
+	}
+
 	/**
 	 * Stores all possible states.
 	 */

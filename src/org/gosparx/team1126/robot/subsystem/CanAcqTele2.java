@@ -81,16 +81,6 @@ public class CanAcqTele2 extends GenericSubsystem{
 	/***********************Variables*********************/
 
 	/**
-	 * The current angle we are at
-	 */
-	private double currAngle;
-
-	/**
-	 * the current position of the hook
-	 */
-	private double currHookPos;
-
-	/**
 	 * the wanted angle of the arms
 	 */
 	private double wantedAngle;

@@ -42,7 +42,9 @@ public class Elevations2 extends GenericSubsystem{
 	 */
 	private DigitalInput homeSwitch;
 	
-	
+	/**
+	 * Used to detected the presence of a new Tote
+	 */
 	private DigitalInput newToteSensor;
 	
 	//******************CONSTANTS********************
@@ -61,11 +63,12 @@ public class Elevations2 extends GenericSubsystem{
 
 	@Override
 	protected boolean init() {
-		rightElevationMotor = new Talon(IO.PWM_RIGHT_ELEVATION);
-		leftElevationMotor = new Talon(IO.PWM_LEFT_ELEVATION);
+		rightElevationMotor = new Talon(IO.PWM_ELEVATIONS_RIGHT);
+		leftElevationMotor = new Talon(IO.PWM_ELEVATIONS_LEFT);
 		elevationEncoder = new Encoder(IO.DIO_ELEVATIONS_A, IO.DIO_ELEVATIONS_B);
 		elevationEncoderData = new EncoderData(elevationEncoder, DISTANCE_PER_TICK);
 		homeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_ORIGIN);
+		newToteSensor = new DigitalInput(IO.DIO):
 		return false;
 	}
 

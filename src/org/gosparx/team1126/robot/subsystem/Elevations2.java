@@ -42,6 +42,9 @@ public class Elevations2 extends GenericSubsystem{
 	 */
 	private DigitalInput homeSwitch;
 	
+	
+	private DigitalInput newToteSensor;
+	
 	//******************CONSTANTS********************
 	
 	/**

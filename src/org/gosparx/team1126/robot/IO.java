@@ -6,19 +6,11 @@ public final class IO {
 	public static final int DRIVER_JOYSTICK_RIGHT		= 1;
 	public static final int OPERATOR_JOYSTICK 			= 2;
 	
-	//Motor
-	public static final int PWM_LEFT_FRONT_DRIVES 		= 0;
-	public static final int PWM_LEFT_BACK_DRIVES		= 1;
-	public static final int PWM_RIGHT_FRONT_DRIVES		= 3;
-	public static final int PWM_RIGHT_BACK_DRIVES		= 2;
-	public static final int PWM_LEFT_ELEVATION          = 4;
-	public static final int PWM_RIGHT_ELEVATION 		= 5;
-	
 	//PWM
 	public static final int PWM_DRIVES_LEFT_FRONT		= 0;
 	public static final int PWM_DRIVES_LEFT_REAR		= 1;
-	public static final int PWM_DRIVES_RIGHT_FRONT		= 2;
-	public static final int PWM_DRIVES_RIGHT_REAR		= 3;
+	public static final int PWM_DRIVES_RIGHT_FRONT		= 3;
+	public static final int PWM_DRIVES_RIGHT_REAR		= 2;
 	public static final int PWM_ELEVATIONS_LEFT			= 4;
 	public static final int PWM_ELEVATIONS_RIGHT 		= 5;
 	public static final int PWM_CAN_ROTATE				= 6;
@@ -29,8 +21,8 @@ public final class IO {
 	//Analog
 	public static final int ANA_GYRO					= 0;
 	public static final int ANA_AUTOSWITCH				= 1;
+	
 	public static final int ANA_COLOR_LEFT_RED			= 4;
-
 	public static final int ANA_COLOR_LEFT_BLUE			= 5;
 	public static final int ANA_COLOR_RIGHT_RED			= 6;
 	public static final int ANA_COLOR_RIGHT_BLUE		= 7;
@@ -47,24 +39,24 @@ public final class IO {
 	public static final int DIO_CAN_ROTATE_A			= 8;
 	public static final int DIO_CAN_ROTATE_B			= 9;
 	
-	public static final int DIO_LEFT_STEP				= 14;
-	public static final int DIO_RIGHT_STEP 				= 15;
+	public static final int DIO_LEFT_STEP				= 10;//REMOVE
+	public static final int DIO_RIGHT_STEP 				= 11;//REMOVE
+	
+	public static final int DIO_TOTE_SENSOR				= 14;
 	public static final int DIO_CAN_AUTO_RIGHT_GRAB		= 17;
 	public static final int DIO_CAN_AUTO_LEFT_GRAB		= 16;
 	
 	public static final int DIO_ELEVATIONS_ORIGIN		= 21;
-	public static final int DIO_TOTE_HOME_RIGHT			= 22;
-	public static final int DIO_TOTE_HOME_lEFT 			= 23;
 	public static final int DIO_COLOR_LED_LEFT			= 24;
 	public static final int DIO_COLOR_LED_RIGHT			= 25;
-	public static final int DIG_DRIVES_ELE_ENC_B		= 5;
+	
 	//PNU
 	public static final int PNU_SHIFT					= 0;
 	public static final int PNU_ACQ_TOTE				= 1;
 	public static final int PNU_ACQ_TRAVEL				= 2;
-	public static final int PNU_ACQ_CAN_LEFT			= 3;
+	public static final int PNU_DISENGAGE_DRIVES		= 3;
 	public static final int PNU_ACQ_CAN_RIGHT			= 4;
-	public static final int PNU_DISENGAGE_DRIVES		= 5;
+	public static final int PNU_ACQ_CAN_LEFT			= 5;
 	public static final int PNU_TOTE_STOP				= 6;
-	public static final int PNU_ACQ_CLUTCH				= 9;
+	public static final int PNU_ACQ_CLUTCH				= 7;
 }

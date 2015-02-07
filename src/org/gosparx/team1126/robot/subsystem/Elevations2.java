@@ -42,7 +42,9 @@ public class Elevations2 extends GenericSubsystem{
 	 */
 	private DigitalInput homeSwitch;
 	
-	
+	/**
+	 * Used to detected the presence of a new Tote
+	 */
 	private DigitalInput newToteSensor;
 	
 	//******************CONSTANTS********************
@@ -117,11 +119,12 @@ public class Elevations2 extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		rightElevationMotor = new Talon(IO.PWM_RIGHT_ELEVATION);
-		leftElevationMotor = new Talon(IO.PWM_LEFT_ELEVATION);
+		rightElevationMotor = new Talon(IO.PWM_ELEVATIONS_RIGHT);
+		leftElevationMotor = new Talon(IO.PWM_ELEVATIONS_LEFT);
 		elevationEncoder = new Encoder(IO.DIO_ELEVATIONS_A, IO.DIO_ELEVATIONS_B);
 		elevationEncoderData = new EncoderData(elevationEncoder, DISTANCE_PER_TICK);
 		homeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_ORIGIN);
+		newToteSensor = new DigitalInput(IO.DIO_TOTE_SENSOR);
 		return false;
 	}
 
@@ -133,6 +136,7 @@ public class Elevations2 extends GenericSubsystem{
 		LiveWindow.addActuator(getName(), "Right Elevator", rightElevationMotor);
 		LiveWindow.addActuator(getName(), "Left Elevations", leftElevationMotor);
 		LiveWindow.addSensor(getName(), "Home Switch", homeSwitch);
+		LiveWindow.addSensor(getName(), "Tote Detect", newToteSensor);
 	}
 
 	/**
@@ -146,7 +150,7 @@ public class Elevations2 extends GenericSubsystem{
 		double calculatedWantedSpeedDown = (wantedPosition - elevationEncoderData.getDistance()) / (MAX_OFF * 2);
 		if(currState == State.STANDBY && newToteSensor.get()){
 			lowerTote();
-			LOG.logMessage("New tote acquired, starting lift sequence");
+			LOG.logMessage("New tote acquired, starting lifting sequence");
 		}
 		switch(currState){
 		case STANDBY:

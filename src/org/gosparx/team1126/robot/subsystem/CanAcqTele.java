@@ -49,14 +49,14 @@ public class CanAcqTele extends GenericSubsystem{
 	private EncoderData acqRotateED;
 
 	/**
-	 * The distance the hook will travel per tick NOT FOR SURE - TODO find
+	 * The distance the hook will travel per tick 
 	 */
-	private static final double DISTANCE_PER_TICK_HOOK = 0.0;
+	private static final double DISTANCE_PER_TICK_HOOK = .0040614375;
 
 	/**
-	 * The distance the arms will rotate per tick NOT FOR SURE - TODO find
+	 * The distance the arms will rotate per tick 
 	 */
-	private static final double DISTANCE_PER_TICK_ROTATE = 0.0;
+	private static final double DISTANCE_PER_TICK_ROTATE = (1/112) / 256;
 
 	/**
 	 * The rate the arms will lower and raise NOT FOR SURE
@@ -66,10 +66,15 @@ public class CanAcqTele extends GenericSubsystem{
 	
 
 	/**
-	 * The current state canAcq is in
+	 * The current state canAcq is in for rotating
 	 */
-	private State canAcqState = State.STANDBY;
+	private State canAcqStateRotate = State.STANDBY;
 
+	/**
+	 * 
+	 */
+	private State canAcqStateHook = State.STANDBY;
+	
 	/**
 	 * The distance the encoder traveled for the rotate
 	 */
@@ -153,11 +158,11 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		switch(canAcqState){
+		switch(canAcqStateRotate){
 		case LOWERING_ARMS:
 			rotateTal.set(MOTOR_SPEED);
 			rotateDistTravel = acqRotateED.getDistance();
-			canAcqState = State.LOWERING_HOOK;
+			canAcqStateRotate = State.LOWERING_HOOK;
 			break;
 		case RAISING_ARMS:
 			if(acqTote){
@@ -165,7 +170,7 @@ public class CanAcqTele extends GenericSubsystem{
 					rotateTal.set(-MOTOR_SPEED);
 				}else {
 					rotateTal.set(STOP_MOTOR);
-					canAcqState = State.STANDBY;
+					canAcqStateRotate = State.STANDBY;
 					reset(false);
 				}
 				}else if(rotateDistLeft < rotateDistTravel){
@@ -173,21 +178,21 @@ public class CanAcqTele extends GenericSubsystem{
 				rotateDistTravel = acqRotateED.getDistance();
 			}else{
 				rotateTal.set(STOP_MOTOR);
-				canAcqState = State.STANDBY;
+				canAcqStateRotate = State.STANDBY;
 				reset(false);
 			}
 			break;
 		case LOWERING_HOOK:
 			hookTal.set(MOTOR_SPEED);
 			hookDistTravel = acqHookED.getDistance();
-			canAcqState = State.STANDBY;
+			canAcqStateRotate = State.STANDBY;
 			break;
 		case RAISING_HOOK:
 			if(hookDistLeft <= hookDistTravel ){
 				hookTal.set(-MOTOR_SPEED);
 			}else {
 				rotateTal.set(STOP_MOTOR);
-				canAcqState = State.RAISING_ARMS;
+				canAcqStateRotate = State.RAISING_ARMS;
 				reset(true);
 			}
 			break;
@@ -196,6 +201,24 @@ public class CanAcqTele extends GenericSubsystem{
 			break;
 		default:
 			LOG.logError("Error");
+		}
+		
+		switch(canAcqStateHook){
+		case LOWERING_HOOK:
+			hookTal.set(MOTOR_SPEED);
+			hookDistTravel = acqHookED.getDistance();
+			canAcqStateRotate = State.STANDBY;
+			break;
+		case RAISING_HOOK:
+			if(hookDistLeft <= hookDistTravel ){
+				hookTal.set(-MOTOR_SPEED);
+			}else {
+				rotateTal.set(STOP_MOTOR);
+				canAcqStateRotate = State.RAISING_ARMS;
+				reset(true);
+			}
+			break;
+			default: LOG.logError("Error");
 		}
 		return false;
 	}
@@ -212,7 +235,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		LOG.logMessage("Current State: " + canAcqState);
+		LOG.logMessage("Current State: " + canAcqStateRotate);
 	}
 
 	/**
@@ -220,7 +243,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 * @param wantedAcqState
 	 */
 	public void setAcqState(State wantedAcqState){
-		canAcqState = wantedAcqState;
+		canAcqStateRotate = wantedAcqState;
 	}
 
 	/**
@@ -228,7 +251,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	public void aquiredNewTote(){
 		acqTote = true;
-		canAcqState = State.RAISING_ARMS;
+		canAcqStateRotate = State.RAISING_ARMS;
 	}
 
 	/**

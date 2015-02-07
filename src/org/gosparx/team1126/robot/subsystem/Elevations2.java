@@ -9,6 +9,9 @@ public class Elevations2 extends GenericSubsystem{
 	
 	
 	//******************VARIABLES********************
+	private double wantedSpeed;
+	private double wantedPosition;
+	private State currState;
 	
 	public Elevations2() {
 		super("Elevations", Thread.NORM_PRIORITY);
@@ -28,14 +31,20 @@ public class Elevations2 extends GenericSubsystem{
 
 	@Override
 	protected boolean execute() {
-		// TODO Auto-generated method stub
+		switch(currState){
+		case STANDBY:
+			break;
+		case MOVE:
+			break;
+		case SETTING_HOME:
+			break;
+		}
 		return false;
 	}
 
 	@Override
 	protected long sleepTime() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 10;
 	}
 
 	@Override
@@ -45,12 +54,16 @@ public class Elevations2 extends GenericSubsystem{
 	}
 	
 	public enum State{
-		Standby;
+		STANDBY,
+		MOVE,
+		SETTING_HOME;
 		
 		public String toString(State num){
 			switch(num){
-			case Standby: 	return "Standby";
-			default: 		return "Unknow State";
+			case STANDBY: 		return "Standby";
+			case MOVE: 			return "Moving";
+			case SETTING_HOME: 	return "Setting Home";
+			default: 		return "Unknown State";
 			}
 		}
 	}

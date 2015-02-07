@@ -182,19 +182,6 @@ public class CanAcqTele extends GenericSubsystem{
 				reset(false);
 			}
 			break;
-		case LOWERING_HOOK:
-			hookTal.set(MOTOR_SPEED);
-			hookDistTravel = acqHookED.getDistance();
-			canAcqStateRotate = State.STANDBY;
-			break;
-		case RAISING_HOOK:
-			if(hookDistLeft <= hookDistTravel ){
-				hookTal.set(-MOTOR_SPEED);
-			}else {
-				rotateTal.set(STOP_MOTOR);
-				reset(true);
-			}
-			break;
 		case STANDBY:
 			LOG.logMessage("In Standby");
 			break;

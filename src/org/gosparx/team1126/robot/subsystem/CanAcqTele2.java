@@ -13,7 +13,7 @@ public class CanAcqTele2 extends GenericSubsystem{
 
 	@Override
 	protected void liveWindow() {
-	
+
 	}
 
 	@Override
@@ -31,4 +31,34 @@ public class CanAcqTele2 extends GenericSubsystem{
 
 	}
 
+	public enum HookState{
+		STANDBY,
+		MOVING;
+
+		public String toString(){
+			switch(this){
+			case STANDBY:
+				return "In standby";
+			case MOVING:
+				return "Moving";
+			default:
+				return "Error" + this;
+			}
+		}
+	}
+	public enum RotateState{
+		STANDBY,
+		ROTATING;
+		
+		public String toString(){
+			switch(this){
+			case STANDBY:
+				return "In standby";
+			case ROTATING:
+				return "Rotating";
+			default:
+				return "Error" + this;
+			}
+		}
+	}
 }

@@ -125,6 +125,7 @@ public class Elevations2 extends GenericSubsystem{
 		elevationEncoderData = new EncoderData(elevationEncoder, DISTANCE_PER_TICK);
 		homeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_ORIGIN);
 		newToteSensor = new DigitalInput(IO.DIO_TOTE_SENSOR);
+		currState = State.SETTING_HOME;
 		return false;
 	}
 

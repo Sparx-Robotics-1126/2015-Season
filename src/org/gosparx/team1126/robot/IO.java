@@ -39,8 +39,10 @@ public final class IO {
 	public static final int DIO_CAN_ROTATE_A			= 8;
 	public static final int DIO_CAN_ROTATE_B			= 9;
 	
-	public static final int DIO_LEFT_STEP				= 14;
-	public static final int DIO_RIGHT_STEP 				= 15;
+	public static final int DIO_LEFT_STEP				= 10;//REMOVE
+	public static final int DIO_RIGHT_STEP 				= 11;//REMOVE
+	
+	public static final int DIO_TOTE_SENSOR				= 14;
 	public static final int DIO_CAN_AUTO_RIGHT_GRAB		= 17;
 	public static final int DIO_CAN_AUTO_LEFT_GRAB		= 16;
 	

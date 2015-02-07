@@ -119,7 +119,7 @@ public class Elevations2 extends GenericSubsystem{
 		elevationEncoder = new Encoder(IO.DIO_ELEVATIONS_A, IO.DIO_ELEVATIONS_B);
 		elevationEncoderData = new EncoderData(elevationEncoder, DISTANCE_PER_TICK);
 		homeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_ORIGIN);
-		newToteSensor = new DigitalInput(IO.DIO):
+		newToteSensor = new DigitalInput(IO.DIO_TOTE_SENSOR):
 		return false;
 	}
 
@@ -131,6 +131,7 @@ public class Elevations2 extends GenericSubsystem{
 		LiveWindow.addActuator(getName(), "Right Elevator", rightElevationMotor);
 		LiveWindow.addActuator(getName(), "Left Elevations", leftElevationMotor);
 		LiveWindow.addSensor(getName(), "Home Switch", homeSwitch);
+		LiveWindow.addSensor(getName(), "Tote Detect", newToteSensor);
 	}
 
 	/**

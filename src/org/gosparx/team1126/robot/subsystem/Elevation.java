@@ -5,6 +5,7 @@ import org.gosparx.sensors.EncoderData;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
@@ -36,21 +37,9 @@ public class Elevation extends GenericSubsystem{
 	private static final double DIST_PER_TICK = 0.125/256;
 	
 	/**
-	 * Checks to see if standby or holding position
-	 */
-	public boolean isDone () {
-		return (elevationState == State.STANDBY || elevationState == State.HOLD_POSITION);
-	}
-	
-	/**
 	 * Threshold for tote distance 
 	 */
 	private static final double TOTE_THRESHOLD = 0.1; //TODO Test if this is enough clearance
-	
-	/**
-	 * variable set to true when lifting a tote
-	 */
-	boolean liftingTote;
 	
 	/**
 	 * The holding position shouldn't go above or below .5 inch
@@ -82,21 +71,17 @@ public class Elevation extends GenericSubsystem{
 	 */
 	private static final double TOTE_CLEARANCE_THRESHOLD = .5; //TODO find out for adjustment
 	
-	//***************************Victors***************************
+	//***************************Talons***************************
 	
 	/**
 	 * this is the left motors
 	 */
-	private Victor leftElevation;
+	private Talon leftElevation;
 	
 	/**
 	 * this is the right motors
 	 */
-	private Victor rightElevation;
-	
-	/**
-	 * this is the encoder for elevations 
-	 */
+	private Talon rightElevation;
 	
 	//***************************Sensors***************************
 	
@@ -133,10 +118,32 @@ public class Elevation extends GenericSubsystem{
 	private double encoderThreshold; 
 	
 	/**
+	 * variable set to true when lifting a tote
+	 */
+	private boolean liftingTote;
+	
+	/**
+	 * Right Elevation power
+	 */
+	private double rightPower;
+	
+	/**
+	 * LEft Elevation power;
+	 */
+	private double leftPower;
+	
+	/**
 	 * this is the constructor of the Elevation
 	 */
 	private Elevation() {
 		super("Elevation", Thread.NORM_PRIORITY);
+	}
+	
+	/**
+	 * Checks to see if standby or holding position
+	 */
+	public boolean isDone () {
+		return (elevationState == State.STANDBY || elevationState == State.HOLD_POSITION);
 	}
 	
 	/**
@@ -161,31 +168,28 @@ public class Elevation extends GenericSubsystem{
 	 * Called by Generic Subsystem to initialize
 	 */
 	protected boolean init() {
-		leftElevation = new Victor(IO.PWM_LEFT_ELEVATION);
-		rightElevation = new Victor(IO.PWM_RIGHT_ELEVATION);
+		leftElevation = new Talon(IO.PWM_LEFT_ELEVATION);
+		rightElevation = new Talon(IO.PWM_RIGHT_ELEVATION);
 		elevationEncoder = new Encoder(IO.ENCODER_ELEVATION_A, IO.ENCODER_ELEVATION_B);
 		elevationEncoderData = new EncoderData(elevationEncoder, DIST_PER_TICK);
+		homeSwitch = new DigitalInput(IO.SWITCH_ELEVATIONS_RIGHT);
 		elevationState = State.STANDBY;
 		targetDistance = 0;
 		encoderThreshold = 0;
-		homeSwitch = new DigitalInput(IO.SWITCH_ELEVATIONS_RIGHT);
-		if (homeSwitch.get()) {
-		}
-		else {
+		if (!homeSwitch.get()){
 			findHome();
 		}
 		return true;
 	}
+	
 	/**
 	 * Put things on the live window
 	 */
 	@Override
 	protected void liveWindow() {
-		String subsystemName = "Elevation";
-		LiveWindow.addActuator(subsystemName, "rightElevation", rightElevation);
-		LiveWindow.addActuator(subsystemName, "leftElevation", leftElevation);
-		LiveWindow.addActuator(subsystemName, "elevationEncoder", elevationEncoder);
-		
+		LiveWindow.addActuator(getName(), "Right Elevation", rightElevation);
+		LiveWindow.addActuator(getName(), "Left Elevation", leftElevation);
+		LiveWindow.addActuator(getName(), "Elevation Encoder", elevationEncoder);	
 	}
 
 	/**
@@ -194,8 +198,8 @@ public class Elevation extends GenericSubsystem{
 	protected boolean execute() {     
 		switch(elevationState){
 			case STANDBY:
-				leftElevation.set(0);
-				rightElevation.set(0);
+				leftPower = 0;
+				rightPower = 0;
 				break;
 			case LIFTING:  
 				if (elevationEncoderData.getDistance() >= targetDistance + encoderThreshold) {

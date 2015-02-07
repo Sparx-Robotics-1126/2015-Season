@@ -93,10 +93,10 @@ public class CanAcqTele2 extends GenericSubsystem{
 	private HookState currentHookState;
 
 	private RotateState currentRotateState;
+	
 	/**
 	 * @return a CanAcqTele
 	 */
-
 	public static synchronized CanAcqTele2 getInstance(){
 		if(canAcq == null){
 			canAcq = new CanAcqTele2();

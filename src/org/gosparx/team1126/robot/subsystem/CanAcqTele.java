@@ -14,6 +14,11 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 public class CanAcqTele extends GenericSubsystem{
 
 	/**
+	 * An instance of CanAcq to be used for the CanAcq class
+	 */
+	private CanAcqTele canAcq;
+	
+	/**
 	 * The victor used to rotate the arms
 	 */
 	private Talon rotateTal;
@@ -58,10 +63,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	private static final double MOTOR_SPEED = 0.3;
 
-	/**
-	 * An instance of CanAcq to be used for the CanAcq class
-	 */
-	private CanAcqTele canAcq;
+	
 
 	/**
 	 * The current state canAcq is in

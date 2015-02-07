@@ -125,7 +125,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 * The constructor for the CanAcqTele class, creates a new canAcq with Thread.NORM_PRIORITY
 	 */
 	public CanAcqTele() {
-		super("CanAcq", Thread.NORM_PRIORITY);
+		super("CanAcqTele", Thread.NORM_PRIORITY);
 	}
 
 	/**

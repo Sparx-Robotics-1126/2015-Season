@@ -243,7 +243,11 @@ public class CanAcqTele2 extends GenericSubsystem{
 	protected void writeLog() {
 
 	}
-
+	
+	/**
+	 * The states for the hook
+	 * @author Mike
+	 */
 	public enum HookState{
 		STANDBY,
 		MOVING;
@@ -259,6 +263,11 @@ public class CanAcqTele2 extends GenericSubsystem{
 			}
 		}
 	}
+	
+	/**
+	 * The states for rotating
+	 * @author Mike
+	 */
 	public enum RotateState{
 		STANDBY,
 		ROTATING;

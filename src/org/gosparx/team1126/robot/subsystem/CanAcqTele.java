@@ -86,12 +86,12 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The max position for the rotation
 	 */
-	private static final double MAX_ROTATION = 120;
+	private static final double MAX_ROTATION = 90;
 	
 	/**
 	 * The max position for the hook
 	 */
-	private static final double MAX_HOOK_POS = 60;
+	private static final double MAX_HOOK_POS = 48.25;
 	
 	/***********************Variables*********************/
 

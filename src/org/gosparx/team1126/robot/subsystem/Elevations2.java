@@ -54,9 +54,14 @@ public class Elevations2 extends GenericSubsystem{
 	private static final double DISTANCE_PER_TICK = 0.126/256;
 	
 	/**
-	 * How fast to move the motors while moving
+	 * The slowest we will run the motors if we are moving up
 	 */
-	private static final double MOVE_SPEED = 0.5;
+	private static final double MOVE_UP_SPEED = 0.5;
+	
+	/**
+	 * The slowest we will run the motors if we are moving down
+	 */
+	private static final double MOVE_DOWN_SPEED = 0.25;
 	
 	/**
 	 * The distance we must be off by to give the motors full power
@@ -137,6 +142,8 @@ public class Elevations2 extends GenericSubsystem{
 	protected boolean execute() {
 		wantedSpeed = 0;
 		elevationEncoderData.calculateSpeed();
+		double calculatedWantedSpeedUp = (wantedPosition - elevationEncoderData.getDistance()) / (MAX_OFF);
+		double calculatedWantedSpeedDown = (wantedPosition - elevationEncoderData.getDistance()) / (MAX_OFF * 2);
 		if(currState == State.STANDBY && newToteSensor.get()){
 			lowerTote();
 			LOG.logMessage("New tote acquired, starting lift sequence");
@@ -147,16 +154,16 @@ public class Elevations2 extends GenericSubsystem{
 			break;
 		case MOVE:
 			if(goingUp && (elevationEncoderData.getDistance() < wantedPosition)){
-				wantedSpeed = MOVE_SPEED;
+				wantedSpeed = (calculatedWantedSpeedUp > MOVE_UP_SPEED) ? calculatedWantedSpeedUp : MOVE_UP_SPEED;
 			} else if(!goingUp && (elevationEncoderData.getDistance() > wantedPosition)) {
-				wantedSpeed = -MOVE_SPEED;
+				wantedSpeed = (calculatedWantedSpeedDown > MOVE_DOWN_SPEED) ? calculatedWantedSpeedDown : MOVE_DOWN_SPEED;
 			} else {
 				wantedSpeed = 0;
 				currState = State.STANDBY;
 			}
 			break;
 		case SETTING_HOME:
-			wantedSpeed = -MOVE_SPEED;
+			wantedSpeed = -MOVE_DOWN_SPEED;
 			if(homeSwitch.get()){
 				LOG.logMessage("Home set");
 				wantedSpeed = 0;

@@ -17,7 +17,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 * The victor used to rotate the arms
 	 */
 	private Talon rotateTal;
-	
+
 	/**
 	 * the victor used to control the hook
 	 */
@@ -92,7 +92,17 @@ public class CanAcqTele extends GenericSubsystem{
 	 * The distance left to travel for the rotate
 	 */
 	private double rotateDistLeft = 0;
-	
+
+	/**
+	 * true if we acquired a tote false, not
+	 */
+	private boolean acqTote = false;
+
+	/**
+	 * The distance the arms will raise for every tote collected;
+	 */
+	private static final int DISTANCE_PER_TOTE = 13;
+
 	/**
 	 * if canAcq == null, make a canAcq
 	 * @return the new drives
@@ -110,7 +120,7 @@ public class CanAcqTele extends GenericSubsystem{
 	public CanAcqTele() {
 		super("CanAcq", Thread.NORM_PRIORITY);
 	}
-	
+
 	/**
 	 * instantiates all the objects
 	 * @return if false, keep looping, true loop ends
@@ -148,14 +158,22 @@ public class CanAcqTele extends GenericSubsystem{
 			canAcqState = State.LOWERING_HOOK;
 			break;
 		case RAISING_ARMS:
-			if(rotateDistLeft < rotateDistTravel){
+			if(acqTote){
+				if(rotateDistLeft < DISTANCE_PER_TOTE){
+					rotateTal.set(-MOTOR_SPEED);
+				}else {
+					rotateTal.set(STOP_MOTOR);
+					canAcqState = State.STANDBY;
+					reset(false);
+				}
+				}else if(rotateDistLeft < rotateDistTravel){
 				rotateTal.set(-MOTOR_SPEED);
 				rotateDistTravel = acqRotateED.getDistance();
 			}else{
 				rotateTal.set(STOP_MOTOR);
 				canAcqState = State.STANDBY;
+				reset(false);
 			}
-			
 			break;
 		case LOWERING_HOOK:
 			hookTal.set(MOTOR_SPEED);
@@ -168,6 +186,7 @@ public class CanAcqTele extends GenericSubsystem{
 			}else {
 				rotateTal.set(STOP_MOTOR);
 				canAcqState = State.RAISING_ARMS;
+				reset(true);
 			}
 			break;
 		case STANDBY:
@@ -185,7 +204,7 @@ public class CanAcqTele extends GenericSubsystem{
 	protected long sleepTime() {
 		return 15;
 	}
-	
+
 	/**
 	 * logs data to the rio
 	 */
@@ -193,7 +212,7 @@ public class CanAcqTele extends GenericSubsystem{
 	protected void writeLog() {
 		LOG.logMessage("Current State: " + canAcqState);
 	}
-	
+
 	/**
 	 * Sets the wanted state to the acutal state
 	 * @param wantedAcqState
@@ -201,10 +220,32 @@ public class CanAcqTele extends GenericSubsystem{
 	public void setAcqState(State wantedAcqState){
 		canAcqState = wantedAcqState;
 	}
-	
+
+	/**
+	 * every time a tote is collected it sets the case to tote collected
+	 */
+	public void aquiredNewTote(){
+		acqTote = true;
+		canAcqState = State.RAISING_ARMS;
+	}
+
+	/**
+	 * @param hook if the hook or the rotater is getting reset
+	 * resets all the encoders, and distances
+	 */
+	public void reset(boolean hook){
+		if(hook){
+			acqChanHook.reset();
+			hookDistLeft = 0;
+		}else {
+			rotateDistLeft = 0;
+			acqChanRotate.reset();
+		}
+	}
+
 	/**
 	 * The states for CanAcq
-	  *@author Mike the camel
+	 *@author Mike the camel
 	 */
 	public enum State{
 		RAISING_ARMS,

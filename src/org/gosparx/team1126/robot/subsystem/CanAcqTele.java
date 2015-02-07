@@ -8,45 +8,50 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
- * The class for controlling the acquisition
- * @author Mike the camel
+ * Controls the can tele acq
+ * @author Alex Mechler {amechler1998@gmail.com}
+ * @author Mike the Camel {Michaele789@gmail.com}
  */
 public class CanAcqTele extends GenericSubsystem{
 
-	/**
-	 * An instance of CanAcq to be used for the CanAcq class
-	 */
-	private CanAcqTele canAcq;
-	
-	/**
-	 * The victor used to rotate the arms
-	 */
-	private Talon rotateTal;
+	/************************Objects**********************/
 
 	/**
-	 * the victor used to control the hook
+	 * Supports singleton
 	 */
-	private Talon hookTal;
+	private static CanAcqTele canAcq;
 
 	/**
-	 * The encoder used for the hook acquisition
+	 * The motor that rotates the arms
 	 */
-	private Encoder acqChanHook;
+	private Talon rotateMotor;
 
 	/**
-	 * the encoder used for the rotate acquisition
+	 * The motor that controls the hook
 	 */
-	private Encoder acqChanRotate;
+	private Talon hookMotor;
 
 	/**
-	 * The encoder data for the acqChanHook encoder
+	 * The encoder that tracks the rotation
 	 */
-	private EncoderData acqHookED;
+	private Encoder rotateEnc;
+
+	/**	
+	 * The encoder data for the rotation
+	 */
+	private EncoderData rotateEncData;
 
 	/**
-	 * the encoder data for the acqChanRotate encoder
+	 * The encoder for the hook
 	 */
-	private EncoderData acqRotateED;
+	private Encoder hookEnc;
+
+	/**
+	 * The encoder data for the hook
+	 */
+	private EncoderData hookEncData;
+
+	/***********************Constants*********************/
 
 	/**
 	 * The distance the hook will travel per tick 
@@ -59,62 +64,61 @@ public class CanAcqTele extends GenericSubsystem{
 	private static final double DISTANCE_PER_TICK_ROTATE = (1/112) / 256;
 
 	/**
-	 * The rate the arms will lower and raise NOT FOR SURE
+	 * The distance the can must go up per tote
 	 */
-	private static final double MOTOR_SPEED = 0.3;
+	private static final double DISTANCE_PER_TOTE = 13.0;
 
+	/**
+	 * The minimum power for the motors to get when we are rotating up
+	 */
+	private static final double MIN_ROTATE_UP_SPEED = 0.4;
+
+	/**
+	 * the minimum power for the motors when we are rotating down
+	 */
+	private static final double MIN_ROTATE_DOWN_SPEED = 0.2;
+
+	/**
+	 * The minimum hook speed
+	 */
+	private static final double MIN_HOOK_SPEED = 0.4;
 	
-
 	/**
-	 * The current state canAcq is in for rotating
+	 * The max position for the rotation
 	 */
-	private State canAcqStateRotate;
-
-	/**
-	 * The current state canAcq is in for hook
-	 */
-	private State canAcqStateHook;
+	private static final double MAX_ROTATION = 120;
 	
 	/**
-	 * The distance the encoder traveled for the rotate
+	 * The max position for the hook
 	 */
-	private double rotateDistTravel = 0;
+	private static final double MAX_HOOK_POS = 60;
+	
+	/***********************Variables*********************/
 
 	/**
-	 * The distance the encoder traveled for the hook
+	 * the wanted angle of the arms
 	 */
-	private double hookDistTravel = 0;
+	private double wantedAngle;
 
 	/**
-	 * stops the motors
+	 * the wanted position of the hook
 	 */
-	private static final double STOP_MOTOR = 0.0;
+	private double wantedHookPos;
 
 	/**
-	 * The distance left to travel for the hook
+	 * the current state hook is in
 	 */
-	private double hookDistLeft = 0;
+	private HookState currentHookState;
 
 	/**
-	 * The distance left to travel for the rotate
+	 * The current state rotate is in
 	 */
-	private double rotateDistLeft = 0;
-
+	private RotateState currentRotateState;
+	
 	/**
-	 * true if we acquired a tote false, not
+	 * @return a CanAcqTele
 	 */
-	private boolean acqTote = false;
-
-	/**
-	 * The distance the arms will raise for every tote collected;
-	 */
-	private static final int DISTANCE_PER_TOTE = 13;
-
-	/**
-	 * if canAcq == null, make a canAcq
-	 * @return the new drives
-	 */
-	public synchronized CanAcqTele getInstance(){
+	public static synchronized CanAcqTele getInstance(){
 		if(canAcq == null){
 			canAcq = new CanAcqTele();
 		}
@@ -122,173 +126,171 @@ public class CanAcqTele extends GenericSubsystem{
 	}
 
 	/**
-	 * The constructor for the CanAcqTele class, creates a new canAcq with Thread.NORM_PRIORITY
+	 * creates a new CanAcqTele
 	 */
-	public CanAcqTele() {
+	private CanAcqTele() {
 		super("CanAcqTele", Thread.NORM_PRIORITY);
 	}
 
 	/**
-	 * instantiates all the objects
-	 * @return if false, keep looping, true loop ends
+	 * Initializes things
 	 */
 	@Override
 	protected boolean init() {
-		rotateTal = new Talon(IO.PWM_CAN_ROTATE);
-		hookTal = new Talon(IO.PWM_CAN_HOOK);
-		acqChanRotate = new Encoder(IO.DIO_CAN_ROTATE_A, IO.DIO_CAN_ROTATE_B);
-		acqChanHook = new Encoder(IO.DIO_CAN_HOOK_A, IO.DIO_CAN_HOOK_B);
-		acqRotateED = new EncoderData(acqChanRotate, DISTANCE_PER_TICK_ROTATE);
-		acqHookED = new EncoderData(acqChanHook, DISTANCE_PER_TICK_HOOK);
-		canAcqStateHook = State.STANDBY;
-		canAcqStateRotate = State.STANDBY;
-
+		rotateMotor = new Talon(IO.PWM_CAN_ROTATE);
+		rotateEnc = new Encoder(IO.DIO_CAN_ROTATE_A, IO.DIO_CAN_ROTATE_B);
+		rotateEncData = new EncoderData(rotateEnc, DISTANCE_PER_TICK_ROTATE);
+		hookMotor = new Talon(IO.PWM_CAN_HOOK);
+		hookEnc = new Encoder(IO.DIO_CAN_HOOK_A, IO.DIO_CAN_HOOK_B);
+		hookEncData = new EncoderData(hookEnc, DISTANCE_PER_TICK_HOOK);
+		currentHookState = HookState.STANDBY;
+		currentRotateState = RotateState.STANDBY;
 		return true;
 	}
+
 	/**
 	 *Overrides in genericSubsytems, does things
 	 */
 	@Override
 	protected void liveWindow() {
-		String subsystem = "CanAcq";
-		LiveWindow.addActuator(subsystem, "Rotating Victor", rotateTal);
-		LiveWindow.addActuator(subsystem, "Hooking Victor", hookTal);
+		LiveWindow.addActuator(getName(), "Rotating Victor", rotateMotor);
+		LiveWindow.addActuator(getName(), "Hooking Victor", hookMotor);
+		LiveWindow.addActuator(getName(), "Rotate Encoder", rotateEnc);
+		LiveWindow.addActuator(getName(), "Hook Encoder", hookEnc);
 	}
+
 	/**
-	 * determines if the can arms are being used
-	 * @return if false, keep looping, true end loop
+	 * Loops
 	 */
 	@Override
 	protected boolean execute() {
-		switch(canAcqStateRotate){
-		case LOWERING_ARMS:
-			rotateTal.set(MOTOR_SPEED);
-			rotateDistTravel = acqRotateED.getDistance();
-			canAcqStateHook = State.RAISING_HOOK;
-			break;
-		case RAISING_ARMS:
-			if(acqTote){
-				if(rotateDistLeft < DISTANCE_PER_TOTE){
-					rotateTal.set(-MOTOR_SPEED);
-				}else {
-					rotateTal.set(STOP_MOTOR);
-					canAcqStateRotate = State.STANDBY;
-					reset(false);
-				}
-				}else if(rotateDistLeft < rotateDistTravel){
-				rotateTal.set(-MOTOR_SPEED);
-				rotateDistTravel = acqRotateED.getDistance();
-			}else{
-				rotateTal.set(STOP_MOTOR);
-				canAcqStateRotate = State.STANDBY;
-				reset(false);
-			}
-			break;
+		double wantedHookSpeed = 0;
+		double wantedRotateSpeed = 0;
+		switch(currentRotateState){
 		case STANDBY:
-			LOG.logMessage("In Standby");
+			
 			break;
-		default:
-			LOG.logError("Error canAcqStateRotate is: " + canAcqStateRotate);
-			break;
-		}
-		
-		switch(canAcqStateHook){
-		case LOWERING_HOOK:
-			hookTal.set(MOTOR_SPEED);
-			hookDistTravel = acqHookED.getDistance();
-			canAcqStateRotate = State.STANDBY;
-			break;
-		case RAISING_HOOK:
-			if(hookDistLeft <= hookDistTravel ){
-				hookTal.set(-MOTOR_SPEED);
-			}else {
-				rotateTal.set(STOP_MOTOR);
-				reset(true);
+		case ROTATING:
+			double calculatedRotateSpeed = (wantedAngle - rotateEncData.getDistance()) / 45;
+			if(calculatedRotateSpeed > 0){
+				wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_UP_SPEED) ? calculatedRotateSpeed : MIN_ROTATE_UP_SPEED);
+			}else{
+				wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_DOWN_SPEED) ? calculatedRotateSpeed : -MIN_ROTATE_DOWN_SPEED);
+			}
+			if((rotateEncData.getDistance() >= wantedAngle && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle && calculatedRotateSpeed > 0)){
+				currentRotateState = RotateState.STANDBY;
+				wantedRotateSpeed = 0;
+				LOG.logMessage("Done rotating");
 			}
 			break;
-			default: LOG.logError("Error canAcqStateHook is: " + canAcqStateHook);
+		}
+		switch(currentHookState){
+		case STANDBY:
+			
+			break;
+		case MOVING:
+			double calculatedMovingSpeed = (wantedHookPos - hookEncData.getDistance()) / 15;
+			if(calculatedMovingSpeed > 0){
+				wantedRotateSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : MIN_HOOK_SPEED; 
+			}else{
+				wantedRotateSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : -MIN_HOOK_SPEED;
+			}
+			if((hookEncData.getDistance() >= wantedHookPos && calculatedMovingSpeed > 0) || (hookEncData.getDistance() <= wantedHookPos && calculatedMovingSpeed < 0)){
+				wantedHookSpeed = 0;
+				currentHookState = HookState.STANDBY;
+				LOG.logMessage("Done moving hook");
+			}
 			break;
 		}
+		rotateMotor.set(wantedRotateSpeed);
+		hookMotor.set(wantedHookSpeed);
 		return false;
 	}
+	
 	/**
-	 * Time rested, in milliseconds
+	 * Goes to acquiring mode
+	 */
+	public void goToAcquire(){
+		wantedHookPos = MAX_HOOK_POS;
+		wantedAngle = MAX_ROTATION;
+		currentHookState = HookState.MOVING;
+		currentRotateState = RotateState.ROTATING;
+	}
+	
+	/**
+	 * Brings the can in
+	 */
+	public void acquireCan(){
+		wantedHookPos = 0;
+		wantedAngle = 0;
+		currentHookState = HookState.MOVING;
+		currentRotateState = RotateState.ROTATING;
+	}
+	
+	/**
+	 * Moves the can up DISTANCE_PER_TOTE
+	 */
+	public void acquiredTote(){
+		wantedHookPos = hookEncData.getDistance() + DISTANCE_PER_TOTE;
+		currentHookState = HookState.MOVING;
+	}
+
+	/**
+	 * How long to sleep between loops
 	 */
 	@Override
 	protected long sleepTime() {
-		return 15;
+		return 20;
 	}
 
 	/**
-	 * logs data to the rio
+	 * Writes the info about the subsystem.
 	 */
 	@Override
 	protected void writeLog() {
-		LOG.logMessage("Current State: " + canAcqStateRotate);
+		LOG.logMessage("Current Hook State: " + currentHookState.toString());
+		LOG.logMessage("Current Rotate State: " + currentRotateState.toString());
+		LOG.logMessage("Wanted Angle: " + wantedAngle + " Current Angle: " + rotateEncData.getDistance());
+		LOG.logMessage("Wanted Hook Pos: " + wantedHookPos + " Current Hook Pos: " + hookEncData.getDistance());
 	}
-
+	
 	/**
-	 * Sets the wanted state to the actual state
-	 * @param wantedAcqState
+	 * The states for the hook
+	 * @author Mike
 	 */
-	public void setAcqState(State wantedAcqState){
-		canAcqStateRotate = wantedAcqState;
-	}
+	public enum HookState{
+		STANDBY,
+		MOVING;
 
-	/**
-	 * every time a tote is collected it sets the case to tote collected
-	 */
-	public void aquiredNewTote(){
-		acqTote = true;
-		canAcqStateRotate = State.RAISING_ARMS;
-	}
-
-	/**
-	 * @param hook if the hook or the rotater is getting reset
-	 * resets all the encoders, and distances
-	 */
-	public void reset(boolean hook){
-		if(hook){
-			acqChanHook.reset();
-			hookDistLeft = 0;
-		}else {
-			rotateDistLeft = 0;
-			acqChanRotate.reset();
-		}
-	}
-
-	/**
-	 * The states for CanAcq
-	 *@author Mike the camel
-	 */
-	public enum State{
-		RAISING_ARMS,
-		LOWERING_ARMS,
-		RAISING_HOOK,
-		LOWERING_HOOK,
-		STANDBY;
-
-		/**
-		 * Gets the name of the state
-		 * @return the correct state
-		 */
-		@Override
 		public String toString(){
 			switch(this){
-			case RAISING_ARMS:
-				return "Raising arms";
-			case LOWERING_ARMS:
-				return "Lowering arms";
-			case RAISING_HOOK:
-				return "Raising hook";
-			case LOWERING_HOOK:
-				return "Lowering hook";
 			case STANDBY:
-				return "Standby";
+				return "In standby";
+			case MOVING:
+				return "Moving";
 			default:
-				return "Error";
+				return "Error" + this;
 			}
 		}
 	}
+	
+	/**
+	 * The states for rotating
+	 * @author Mike
+	 */
+	public enum RotateState{
+		STANDBY,
+		ROTATING;
 
+		public String toString(){
+			switch(this){
+			case STANDBY:
+				return "In standby";
+			case ROTATING:
+				return "Rotating";
+			default:
+				return "Error" + this;
+			}
+		}
+	}
 }

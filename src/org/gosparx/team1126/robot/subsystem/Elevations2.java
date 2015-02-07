@@ -152,8 +152,6 @@ public class Elevations2 extends GenericSubsystem{
 	protected boolean execute() {
 		wantedSpeed = 0;
 		elevationEncoderData.calculateSpeed();
-		double calculatedWantedSpeedUp = (wantedPosition - elevationEncoderData.getDistance()) / (MAX_OFF);
-		double calculatedWantedSpeedDown = (wantedPosition - elevationEncoderData.getDistance()) / (MAX_OFF * 2);
 		if(currState == State.STANDBY && newToteSensor.get()){
 			lowerTote();
 			LOG.logMessage("New tote acquired, starting lifting sequence");
@@ -163,6 +161,8 @@ public class Elevations2 extends GenericSubsystem{
 			wantedSpeed = (wantedPosition - elevationEncoderData.getDistance()) / MAX_OFF;
 			break;
 		case MOVE:
+			double calculatedWantedSpeedUp = (wantedPosition - elevationEncoderData.getDistance()) / (MAX_OFF);
+			double calculatedWantedSpeedDown = (wantedPosition - elevationEncoderData.getDistance()) / (MAX_OFF * 2);
 			if(goingUp && (elevationEncoderData.getDistance() < wantedPosition)){
 				wantedSpeed = (calculatedWantedSpeedUp > MOVE_UP_SPEED) ? calculatedWantedSpeedUp : MOVE_UP_SPEED;
 			} else if(!goingUp && (elevationEncoderData.getDistance() > wantedPosition)) {

@@ -7,6 +7,11 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
+/**
+ * Controls the can tele acq
+ * @author Alex Mechler {amechler1998@gmail.com}
+ * @author Mike the Camel {Michaele789@gmail.com}
+ */
 public class CanAcqTele2 extends GenericSubsystem{
 
 	/************************Objects**********************/

@@ -248,7 +248,11 @@ public class CanAcqTele2 extends GenericSubsystem{
 		LOG.logMessage("Wanted Angle: " + wantedAngle + " Current Angle: " + rotateEncData.getDistance());
 		LOG.logMessage("Wanted Hook Pos: " + wantedHookPos + " Current Hook Pos: " + hookEncData.getDistance());
 	}
-
+	
+	/**
+	 * The states for the hook
+	 * @author Mike
+	 */
 	public enum HookState{
 		STANDBY,
 		MOVING;
@@ -264,6 +268,11 @@ public class CanAcqTele2 extends GenericSubsystem{
 			}
 		}
 	}
+	
+	/**
+	 * The states for rotating
+	 * @author Mike
+	 */
 	public enum RotateState{
 		STANDBY,
 		ROTATING;

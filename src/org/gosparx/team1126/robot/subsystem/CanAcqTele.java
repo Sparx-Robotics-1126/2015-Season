@@ -68,12 +68,12 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The current state canAcq is in for rotating
 	 */
-	private State canAcqStateRotate = State.STANDBY;
+	private State canAcqStateRotate;
 
 	/**
 	 * The current state canAcq is in for hook
 	 */
-	private State canAcqStateHook = State.STANDBY;
+	private State canAcqStateHook;
 	
 	/**
 	 * The distance the encoder traveled for the rotate
@@ -140,6 +140,8 @@ public class CanAcqTele extends GenericSubsystem{
 		acqChanHook = new Encoder(IO.DIO_CAN_HOOK_A, IO.DIO_CAN_HOOK_B);
 		acqRotateED = new EncoderData(acqChanRotate, DISTANCE_PER_TICK_ROTATE);
 		acqHookED = new EncoderData(acqChanHook, DISTANCE_PER_TICK_HOOK);
+		canAcqStateHook = State.STANDBY;
+		canAcqStateRotate = State.STANDBY;
 
 		return true;
 	}
@@ -186,7 +188,8 @@ public class CanAcqTele extends GenericSubsystem{
 			LOG.logMessage("In Standby");
 			break;
 		default:
-			LOG.logError("Error");
+			LOG.logError("Error canAcqStateRotate is: " + canAcqStateRotate);
+			break;
 		}
 		
 		switch(canAcqStateHook){
@@ -203,7 +206,8 @@ public class CanAcqTele extends GenericSubsystem{
 				reset(true);
 			}
 			break;
-			default: LOG.logError("Error");
+			default: LOG.logError("Error canAcqStateHook is: " + canAcqStateHook);
+			break;
 		}
 		return false;
 	}

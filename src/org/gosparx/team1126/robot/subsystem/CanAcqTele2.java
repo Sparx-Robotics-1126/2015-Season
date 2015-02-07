@@ -77,7 +77,17 @@ public class CanAcqTele2 extends GenericSubsystem{
 	 * The minimum hook speed
 	 */
 	private static final double MIN_HOOK_SPEED = 0.4;
-
+	
+	/**
+	 * The max position for the rotation
+	 */
+	private static final double MAX_ROTATION = 120;
+	
+	/**
+	 * The max position for the hook
+	 */
+	private static final double MAX_HOOK_POS = 60;
+	
 	/***********************Variables*********************/
 
 	/**
@@ -178,6 +188,34 @@ public class CanAcqTele2 extends GenericSubsystem{
 		rotateMotor.set(wantedRotateSpeed);
 		hookMotor.set(wantedHookSpeed);
 		return false;
+	}
+	
+	/**
+	 * Goes to acquiring mode
+	 */
+	public void goToAcquire(){
+		wantedHookPos = MAX_HOOK_POS;
+		wantedAngle = MAX_ROTATION;
+		currentHookState = HookState.MOVING;
+		currentRotateState = RotateState.ROTATING;
+	}
+	
+	/**
+	 * Brings the can in
+	 */
+	public void acquireCan(){
+		wantedHookPos = 0;
+		wantedAngle = 0;
+		currentHookState = HookState.MOVING;
+		currentRotateState = RotateState.ROTATING;
+	}
+	
+	/**
+	 * Moves the can up DISTANCE_PER_TOTE
+	 */
+	public void acquiredTote(){
+		wantedHookPos = hookEncData.getDistance() + DISTANCE_PER_TOTE;
+		currentHookState = HookState.MOVING;
 	}
 
 	/**

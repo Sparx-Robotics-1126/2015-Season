@@ -1,5 +1,6 @@
 package org.gosparx.team1126.robot;
 
+import org.gosparx.team1126.robot.subsystem.CanAcquisition;
 import org.gosparx.team1126.robot.subsystem.Controls;
 import org.gosparx.team1126.robot.subsystem.Drives;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
@@ -25,7 +26,8 @@ public class Robot extends SampleRobot{
 		subsystems = new GenericSubsystem[]{	
         	Controls.getInstance(),
         	LogWriter.getInstance(),
-        	Drives.getInstance()
+        	Drives.getInstance(),
+        	CanAcquisition.getInstance()
 		};
 		
 		for(GenericSubsystem system: subsystems){
@@ -44,7 +46,7 @@ public class Robot extends SampleRobot{
 	 *  Called one time when the robot enters teleop
 	 */
 	public void operatorControl() {
-
+		
 	}
 
 	/**

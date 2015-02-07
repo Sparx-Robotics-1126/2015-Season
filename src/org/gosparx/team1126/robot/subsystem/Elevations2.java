@@ -6,6 +6,7 @@ import org.gosparx.team1126.robot.IO;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 public class Elevations2 extends GenericSubsystem{
 
@@ -59,14 +60,17 @@ public class Elevations2 extends GenericSubsystem{
 	protected boolean init() {
 		rightElevationMotor = new Talon(IO.PWM_RIGHT_ELEVATION);
 		leftElevationMotor = new Talon(IO.PWM_LEFT_ELEVATION);
-
+		elevationEncoder = new Encoder(IO.DIO_ELEVATIONS_A, IO.DIO_ELEVATIONS_B);
+		elevationEncoderData = new EncoderData(elevationEncoder, DISTANCE_PER_TICK);
+		homeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_ORIGIN);
 		return false;
 	}
 
 	@Override
 	protected void liveWindow() {
-		// TODO Auto-generated method stub
-		
+		LiveWindow.addActuator(getName(), "Right Elevator", rightElevationMotor);
+		LiveWindow.addActuator(getName(), "Left Elevations", leftElevationMotor);
+		LiveWindow.addSensor(getName(), "Home Switch", homeSwitch);
 	}
 
 	@Override
@@ -77,13 +81,11 @@ public class Elevations2 extends GenericSubsystem{
 
 	@Override
 	protected long sleepTime() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 20;
 	}
 
 	@Override
 	protected void writeLog() {
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -97,5 +99,4 @@ public class Elevations2 extends GenericSubsystem{
 			}
 		}
 	}
-
 }

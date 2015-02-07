@@ -34,8 +34,6 @@ public final class IO {
 	public static final int ANA_COLOR_LEFT_BLUE			= 5;
 	public static final int ANA_COLOR_RIGHT_RED			= 6;
 	public static final int ANA_COLOR_RIGHT_BLUE		= 7;
-	public static final int SWITCH_ELEVATIONS_LEFT		= 18;
-	public static final int SWITCH_ELEVATIONS_RIGHT		= 19;
 	
 	//DIO
 	public static final int DIO_DRIVES_LEFT_ENC_A		= 0;
@@ -53,7 +51,6 @@ public final class IO {
 	public static final int DIO_RIGHT_STEP 				= 15;
 	public static final int DIO_CAN_AUTO_RIGHT_GRAB		= 17;
 	public static final int DIO_CAN_AUTO_LEFT_GRAB		= 16;
-	public static final int SELECTOR_SWITCH_CHANNEL     = 1;
 	
 	public static final int DIO_ELEVATIONS_ORIGIN		= 21;
 	public static final int DIO_TOTE_HOME_RIGHT			= 22;

@@ -170,9 +170,9 @@ public class Elevation extends GenericSubsystem{
 	protected boolean init() {
 		leftElevation = new Talon(IO.PWM_LEFT_ELEVATION);
 		rightElevation = new Talon(IO.PWM_RIGHT_ELEVATION);
-		elevationEncoder = new Encoder(IO.ENCODER_ELEVATION_A, IO.ENCODER_ELEVATION_B);
+		elevationEncoder = new Encoder(IO.DIO_ELEVATIONS_A, IO.DIO_ELEVATIONS_B);
 		elevationEncoderData = new EncoderData(elevationEncoder, DIST_PER_TICK);
-		homeSwitch = new DigitalInput(IO.SWITCH_ELEVATIONS_RIGHT);
+		homeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_ORIGIN);
 		elevationState = State.STANDBY;
 		targetDistance = 0;
 		encoderThreshold = 0;

@@ -175,6 +175,7 @@ public class CanAcqTele2 extends GenericSubsystem{
 			if((rotateEncData.getDistance() >= wantedAngle && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle && calculatedRotateSpeed > 0)){
 				currentRotateState = RotateState.STANDBY;
 				wantedRotateSpeed = 0;
+				LOG.logMessage("Done rotating");
 			}
 			break;
 		}
@@ -192,6 +193,7 @@ public class CanAcqTele2 extends GenericSubsystem{
 			if((hookEncData.getDistance() >= wantedHookPos && calculatedMovingSpeed > 0) || (hookEncData.getDistance() <= wantedHookPos && calculatedMovingSpeed < 0)){
 				wantedHookSpeed = 0;
 				currentHookState = HookState.STANDBY;
+				LOG.logMessage("Done moving hook");
 			}
 			break;
 		}
@@ -241,7 +243,10 @@ public class CanAcqTele2 extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-
+		LOG.logMessage("Current Hook State: " + currentHookState.toString());
+		LOG.logMessage("Current Rotate State: " + currentRotateState.toString());
+		LOG.logMessage("Wanted Angle: " + wantedAngle + " Current Angle: " + rotateEncData.getDistance());
+		LOG.logMessage("Wanted Hook Pos: " + wantedHookPos + " Current Hook Pos: " + hookEncData.getDistance());
 	}
 
 	public enum HookState{

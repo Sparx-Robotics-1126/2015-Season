@@ -71,7 +71,7 @@ public class CanAcqTele extends GenericSubsystem{
 	private State canAcqStateRotate = State.STANDBY;
 
 	/**
-	 * 
+	 * The current state canAcq is in for hook
 	 */
 	private State canAcqStateHook = State.STANDBY;
 	
@@ -162,7 +162,7 @@ public class CanAcqTele extends GenericSubsystem{
 		case LOWERING_ARMS:
 			rotateTal.set(MOTOR_SPEED);
 			rotateDistTravel = acqRotateED.getDistance();
-			canAcqStateRotate = State.LOWERING_HOOK;
+			canAcqStateHook = State.RAISING_HOOK;
 			break;
 		case RAISING_ARMS:
 			if(acqTote){
@@ -192,7 +192,6 @@ public class CanAcqTele extends GenericSubsystem{
 				hookTal.set(-MOTOR_SPEED);
 			}else {
 				rotateTal.set(STOP_MOTOR);
-				canAcqStateRotate = State.RAISING_ARMS;
 				reset(true);
 			}
 			break;
@@ -214,7 +213,6 @@ public class CanAcqTele extends GenericSubsystem{
 				hookTal.set(-MOTOR_SPEED);
 			}else {
 				rotateTal.set(STOP_MOTOR);
-				canAcqStateRotate = State.RAISING_ARMS;
 				reset(true);
 			}
 			break;
@@ -239,7 +237,7 @@ public class CanAcqTele extends GenericSubsystem{
 	}
 
 	/**
-	 * Sets the wanted state to the acutal state
+	 * Sets the wanted state to the actual state
 	 * @param wantedAcqState
 	 */
 	public void setAcqState(State wantedAcqState){

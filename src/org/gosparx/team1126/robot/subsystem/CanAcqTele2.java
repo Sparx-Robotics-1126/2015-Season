@@ -100,13 +100,19 @@ public class CanAcqTele2 extends GenericSubsystem{
 	 */
 	private double wantedHookPos;
 	
+	/**
+	 * the current state hook is in
+	 */
 	private HookState currentHookState;
 	
+	/**
+	 * The current state rotate is in
+	 */
 	private RotateState currentRotateState;
+	
 	/**
 	 * @return a CanAcqTele
 	 */
-	
 	public static synchronized CanAcqTele2 getInstance(){
 		if(canAcq == null){
 			canAcq = new CanAcqTele2();
@@ -132,6 +138,8 @@ public class CanAcqTele2 extends GenericSubsystem{
 		hookMotor = new Talon(IO.PWM_CAN_HOOK);
 		hookEnc = new Encoder(IO.DIO_CAN_HOOK_A, IO.DIO_CAN_HOOK_B);
 		hookEncData = new EncoderData(hookEnc, DISTANCE_PER_TICK_HOOK);
+		currentHookState = HookState.STANDBY;
+		currentRotateState = RotateState.STANDBY;
 		return true;
 	}
 	
@@ -142,6 +150,8 @@ public class CanAcqTele2 extends GenericSubsystem{
 	protected void liveWindow() {
 		LiveWindow.addActuator(getName(), "Rotating Victor", rotateMotor);
 		LiveWindow.addActuator(getName(), "Hooking Victor", hookMotor);
+		LiveWindow.addActuator(getName(), "Rotate Encoder", rotateEnc);
+		LiveWindow.addActuator(getName(), "Hook Encoder", hookEnc);
 	}
 
 	/**

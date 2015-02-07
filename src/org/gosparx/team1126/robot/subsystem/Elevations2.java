@@ -1,6 +1,7 @@
 package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.sensors.EncoderData;
+import org.gosparx.team1126.robot.IO;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
@@ -25,13 +26,19 @@ public class Elevations2 extends GenericSubsystem{
 	 */
 	private Talon leftElevationMotor;
 	
-	
+	/**
+	 * Elevations encoder - tells distance elevations has traveled
+	 */
 	private Encoder elevationEncoder;
 	
-	
+	/**
+	 * Elevations encoder data - returns accurate values of elevations position
+	 */
 	private EncoderData elevationEncoderData;
 	
-	
+	/**
+	 * The home position switch
+	 */
 	private DigitalInput homeSwitch;
 	
 	//******************CONSTANTS********************
@@ -50,7 +57,9 @@ public class Elevations2 extends GenericSubsystem{
 
 	@Override
 	protected boolean init() {
-		// TODO Auto-generated method stub
+		rightElevationMotor = new Talon(IO.PWM_RIGHT_ELEVATION);
+		leftElevationMotor = new Talon(IO.PWM_LEFT_ELEVATION);
+
 		return false;
 	}
 

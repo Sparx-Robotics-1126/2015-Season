@@ -42,10 +42,17 @@ public class Elevations2 extends GenericSubsystem{
 	 */
 	private static final double DISTANCE_PER_TICK = 0.126/256;
 	
+	private static final double MOVE_SPEED = 0.5;
+	
+	private static final double MAX_OFF = 10;
+	
+	private static final double TOTE_LIFT_DIST = 13;
+	
 	//******************VARIABLES********************
 	private double wantedSpeed;
 	private double wantedPosition;
 	private State currState;
+	private boolean goingUp;
 	
 	public Elevations2() {
 		super("Elevations", Thread.NORM_PRIORITY);
@@ -65,17 +72,54 @@ public class Elevations2 extends GenericSubsystem{
 
 	@Override
 	protected boolean execute() {
+		wantedSpeed = 0;
+		elevationEncoderData.calculateSpeed();
 		switch(currState){
 		case STANDBY:
+			wantedSpeed = (wantedPosition - elevationEncoderData.getDistance()) / MAX_OFF;
 			break;
 		case MOVE:
+			if(goingUp && (elevationEncoderData.getDistance() < wantedPosition)){
+				wantedSpeed = MOVE_SPEED;
+			} else if(!goingUp && (elevationEncoderData.getDistance() > wantedPosition)) {
+				wantedSpeed = -MOVE_SPEED;
+			} else {
+				currState = State.STANDBY;
+			}
 			break;
 		case SETTING_HOME:
+			wantedSpeed = -MOVE_SPEED;
+			if(homeSwitch.get()){
+				wantedSpeed = 0;
+				wantedPosition = 0;
+				elevationEncoderData.reset();
+				elevationEncoder.reset();
+				currState = State.STANDBY;
+			}
 			break;
 		}
+		rightElevationMotor.set(wantedSpeed);
+		leftElevationMotor.set(wantedSpeed);
 		return false;
 	}
+	
+	public boolean isDone(){
+		return currState == State.STANDBY;
+	}
+	
+	public void lowerTote(){
+		setHome();
+	}
+	
+	public void setHome(){
+		currState = State.SETTING_HOME;
+	}
 
+	public void liftTote(){
+		currState = State.MOVE;
+		wantedPosition = TOTE_LIFT_DIST;
+	}
+	
 	@Override
 	protected long sleepTime() {
 		return 10;
@@ -83,8 +127,7 @@ public class Elevations2 extends GenericSubsystem{
 
 	@Override
 	protected void writeLog() {
-		// TODO Auto-generated method stub
-		
+	
 	}
 	
 	public enum State{

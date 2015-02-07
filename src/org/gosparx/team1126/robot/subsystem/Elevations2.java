@@ -119,7 +119,7 @@ public class Elevations2 extends GenericSubsystem{
 		elevationEncoder = new Encoder(IO.DIO_ELEVATIONS_A, IO.DIO_ELEVATIONS_B);
 		elevationEncoderData = new EncoderData(elevationEncoder, DISTANCE_PER_TICK);
 		homeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_ORIGIN);
-		newToteSensor = new DigitalInput(IO.DIO_TOTE_SENSOR):
+		newToteSensor = new DigitalInput(IO.DIO_TOTE_SENSOR);
 		return false;
 	}
 
@@ -143,7 +143,7 @@ public class Elevations2 extends GenericSubsystem{
 		elevationEncoderData.calculateSpeed();
 		if(currState == State.STANDBY && newToteSensor.get()){
 			lowerTote();
-			LOG.logMessage("New tote acquired, starting lift sequence");
+			LOG.logMessage("New tote acquired, starting lifting sequence");
 		}
 		switch(currState){
 		case STANDBY:

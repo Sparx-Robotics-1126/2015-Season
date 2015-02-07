@@ -15,7 +15,7 @@ public class CanAcqTele2 extends GenericSubsystem{
 	 * Supports singleton
 	 */
 	private static CanAcqTele2 canAcq;
-	
+
 	/**
 	 * The motor that rotates the arms
 	 */
@@ -25,29 +25,29 @@ public class CanAcqTele2 extends GenericSubsystem{
 	 * The motor that controls the hook
 	 */
 	private Talon hookMotor;
-	
+
 	/**
 	 * The encoder that tracks the rotation
 	 */
 	private Encoder rotateEnc;
-	
+
 	/**	
 	 * The encoder data for the rotation
 	 */
 	private EncoderData rotateEncData;
-	
+
 	/**
 	 * The encoder for the hook
 	 */
 	private Encoder hookEnc;
-	
+
 	/**
 	 * The encoder data for the hook
 	 */
 	private EncoderData hookEncData;
-	
+
 	/***********************Constants*********************/
-	
+
 	/**
 	 * The distance the hook will travel per tick 
 	 */
@@ -62,58 +62,58 @@ public class CanAcqTele2 extends GenericSubsystem{
 	 * The distance the can must go up per tote
 	 */
 	private static final double DISTANCE_PER_TOTE = 13.0;
-	
+
 	/**
 	 * The minimum power for the motors to get when we are rotating up
 	 */
 	private static final double MIN_ROTATE_UP_SPEED = 0.4;
-	
+
 	/**
 	 * the minimum power for the motors when we are rotating down
 	 */
 	private static final double MIN_ROTATE_DOWN_SPEED = 0.2;
-	
+
 	/**
 	 * The minimum hook speed
 	 */
 	private static final double MIN_HOOK_SPEED = 0.4;
-	
+
 	/***********************Variables*********************/
-	
+
 	/**
 	 * The current angle we are at
 	 */
 	private double currAngle;
-	
+
 	/**
 	 * the current position of the hook
 	 */
 	private double currHookPos;
-	
+
 	/**
 	 * the wanted angle of the arms
 	 */
 	private double wantedAngle;
-	
+
 	/**
 	 * the wanted position of the hook
 	 */
 	private double wantedHookPos;
-	
+
 	private HookState currentHookState;
-	
+
 	private RotateState currentRotateState;
 	/**
 	 * @return a CanAcqTele
 	 */
-	
+
 	public static synchronized CanAcqTele2 getInstance(){
 		if(canAcq == null){
 			canAcq = new CanAcqTele2();
 		}
 		return canAcq;
 	}
-	
+
 	/**
 	 * creates a new CanAcqTele
 	 */
@@ -134,7 +134,7 @@ public class CanAcqTele2 extends GenericSubsystem{
 		hookEncData = new EncoderData(hookEnc, DISTANCE_PER_TICK_HOOK);
 		return true;
 	}
-	
+
 	/**
 	 *Overrides in genericSubsytems, does things
 	 */
@@ -149,6 +149,44 @@ public class CanAcqTele2 extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
+		double wantedHookSpeed = 0;
+		double wantedRotateSpeed = 0;
+		switch(currentRotateState){
+		case STANDBY:
+			
+			break;
+		case ROTATING:
+			double calculatedRotateSpeed = (wantedAngle - rotateEncData.getDistance()) / 45;
+			if(calculatedRotateSpeed > 0){
+				wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_UP_SPEED) ? calculatedRotateSpeed : MIN_ROTATE_UP_SPEED);
+			}else{
+				wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_DOWN_SPEED) ? calculatedRotateSpeed : -MIN_ROTATE_DOWN_SPEED);
+			}
+			if((rotateEncData.getDistance() >= wantedAngle && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle && calculatedRotateSpeed > 0)){
+				currentRotateState = RotateState.STANDBY;
+				wantedRotateSpeed = 0;
+			}
+			break;
+		}
+		switch(currentHookState){
+		case STANDBY:
+			
+			break;
+		case MOVING:
+			double calculatedMovingSpeed = (wantedHookPos - hookEncData.getDistance()) / 15;
+			if(calculatedMovingSpeed > 0){
+				wantedRotateSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : MIN_HOOK_SPEED; 
+			}else{
+				wantedRotateSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : -MIN_HOOK_SPEED;
+			}
+			if((hookEncData.getDistance() >= wantedHookPos && calculatedMovingSpeed > 0) || (hookEncData.getDistance() <= wantedHookPos && calculatedMovingSpeed < 0)){
+				wantedHookSpeed = 0;
+				currentHookState = HookState.STANDBY;
+			}
+			break;
+		}
+		rotateMotor.set(wantedRotateSpeed);
+		hookMotor.set(wantedHookSpeed);
 		return false;
 	}
 
@@ -186,7 +224,7 @@ public class CanAcqTele2 extends GenericSubsystem{
 	public enum RotateState{
 		STANDBY,
 		ROTATING;
-		
+
 		public String toString(){
 			switch(this){
 			case STANDBY:

@@ -8,6 +8,11 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
+/**
+ * Controls the elevations system.
+ * @author Alex Mechler {amechler1998@gmail.com}
+ * @author Nate
+ */
 public class Elevations2 extends GenericSubsystem{
 
 	//******************OBJECTS**********************

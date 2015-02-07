@@ -5,6 +5,7 @@ import org.gosparx.team1126.robot.sensors.EncoderData;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 public class CanAcqTele2 extends GenericSubsystem{
 
@@ -54,6 +55,10 @@ public class CanAcqTele2 extends GenericSubsystem{
 	
 	private double wantedHookPos;
 	
+	private HookState currentHookState;
+	
+	private RotateState currentRotateState;
+	
 	public static synchronized CanAcqTele2 getInstance(){
 		if(canAcq == null){
 			canAcq = new CanAcqTele2();
@@ -75,10 +80,14 @@ public class CanAcqTele2 extends GenericSubsystem{
 		hookEncData = new EncoderData(hookEnc, DISTANCE_PER_TICK_HOOK);
 		return true;
 	}
-
+	
+	/**
+	 *Overrides in genericSubsytems, does things
+	 */
 	@Override
 	protected void liveWindow() {
-
+		LiveWindow.addActuator(getName(), "Rotating Victor", rotateMotor);
+		LiveWindow.addActuator(getName(), "Hooking Victor", hookMotor);
 	}
 
 	@Override

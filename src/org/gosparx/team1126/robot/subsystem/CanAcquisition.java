@@ -24,9 +24,14 @@ public class CanAcquisition extends GenericSubsystem{
 	private static final int DROP_RELEASE_POSITION = 0;
 	
 	/**
+	 * Position for which the arms to drop
+	 */
+	private static final int RIGHT_RAISE_RELEASE_POSITION = 180;
+	
+	/**
 	 * Position for which the arms raise
 	 */
-	private static final int RAISE_RELEASE_POSITION = 0;
+	private static final int LEFT_RAISE_RELEASE_POSITION = 0;
 	
 	/**
 	 * The "grab" position of the pnu
@@ -49,9 +54,14 @@ public class CanAcquisition extends GenericSubsystem{
 	private Servo releasingArmsServo;
 
 	/**
-	 * this is the servo to raise both arms
+	 * this is the servo to raise right arm
 	 */
-	private Servo raisingArmsServo; 
+	private Servo raisingRightArmsServo; 
+	
+	/**
+	 * this is the servo to raise left arms
+	 */
+	private Servo raisingLeftArmsServo; 
 
 	/**
 	 * This is the solenoid for the right arm
@@ -123,8 +133,8 @@ public class CanAcquisition extends GenericSubsystem{
 		rightArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_RIGHT_GRAB);
 		leftArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_LEFT_GRAB);
 		releasingArmsServo = new Servo(IO.PWM_ARM_DOWN);
-		raisingArmsServo = new Servo(IO.PWM_ARM_UP);
-		
+		raisingRightArmsServo = new Servo(IO.PWM_RIGHT_ARM_UP);
+		raisingLeftArmsServo = new Servo(IO.PWM_LEFT_ARM_UP);
 		rightArm = new Solenoid(IO.PNU_ACQ_CAN_RIGHT);
 		leftArm = new Solenoid(IO.PNU_ACQ_CAN_LEFT);
 		return true;
@@ -136,7 +146,8 @@ public class CanAcquisition extends GenericSubsystem{
 	@Override
 	protected void liveWindow() {
 		LiveWindow.addActuator(getName(), "Release Arm", releasingArmsServo);
-		LiveWindow.addActuator(getName(), "Raise Arms", raisingArmsServo);
+		LiveWindow.addActuator(getName(), "Raise Right Arms", raisingRightArmsServo);
+		LiveWindow.addActuator(getName(), "Raise Right Arms", raisingLeftArmsServo);
 		LiveWindow.addActuator(getName(), "Right Arm", rightArm);
 		LiveWindow.addActuator(getName(), "Left Arm", leftArm);
 		LiveWindow.addSensor(getName(), "Right Arm Touch", rightArmInCan);
@@ -183,7 +194,8 @@ public class CanAcquisition extends GenericSubsystem{
 			currentState = State.STANDBY;
 			break;
 		case DISABLE:
-			raisingArmsServo.setAngle(RAISE_RELEASE_POSITION);
+			raisingRightArmsServo.setAngle(RIGHT_RAISE_RELEASE_POSITION);
+			raisingLeftArmsServo.setAngle(LEFT_RAISE_RELEASE_POSITION);
 			currentState = State.STANDBY;
 			break;
 		default:

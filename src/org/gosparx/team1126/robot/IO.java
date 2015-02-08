@@ -21,8 +21,9 @@ public final class IO {
 	public static final int PWM_ELEVATIONS_RIGHT 		= 5;
 	public static final int PWM_CAN_ROTATE				= 6;
 	public static final int PWM_CAN_HOOK				= 7;
-	public static final int PWM_ARM_DOWN				= 8;
-	public static final int PWM_ARM_UP					= 9;
+	public static final int PWM_ARM_DOWN				= 10;
+	public static final int PWM_RIGHT_ARM_UP			= 9;
+	public static final int PWM_LEFT_ARM_UP				= 8;
 	
 	//Analog
 	public static final int ANA_GYRO					= 0;

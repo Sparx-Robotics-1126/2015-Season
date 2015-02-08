@@ -61,7 +61,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The distance the arms will rotate per tick 
 	 */
-	private static final double DISTANCE_PER_TICK_ROTATE = (1/112) / 256;
+	private static final double DISTANCE_PER_TICK_ROTATE = (1.0/112.0) / 256.0;
 
 	/**
 	 * The distance the can must go up per tote

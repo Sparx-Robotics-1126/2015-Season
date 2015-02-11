@@ -44,6 +44,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	private CanAcquisition canAcq;
 	
+	private Elevations2 elevations;
+	
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
 	//**************************************************************************
@@ -117,7 +119,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		driverJoyRight.addActionListener(this);
 		driverJoyRight.addButton(ATTACK3_TOP_BUTTON);
 		driverJoyRight.addButton(ATTACK3_TRIGGER);
-		driverJoyRight.start();
+//		driverJoyRight.start();
 		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK);
 		operatorJoy.addActionListener(this);
 		operatorJoy.addButton(LOGI_A);
@@ -126,6 +128,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 //		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
+		elevations = Elevations2.getInstance();
 		return true;
 	}
 
@@ -176,11 +179,13 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
 					//TODO: Up Shift
-					canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
+//					canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
+					elevations.lowerTote();
 					break;
 				case ATTACK3_TRIGGER:
 					//TODO: Down Shift
-					canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
+//					canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
+					elevations.liftTote();
 					break;
 				}
 				break;

@@ -53,10 +53,15 @@ public class Elevations2 extends GenericSubsystem{
 	private EncoderData elevationLeftEncoderData;
 
 	/**
-	 * The home position switch
+	 * The home position for the right side
 	 */
-	private DigitalInput homeSwitch;
-
+	private DigitalInput rightHomeSwitch;
+	
+	/**
+	 * The home position for the left side
+	 */
+	private DigitalInput leftHomeSwitch;
+	
 	/**
 	 * Used to detected the presence of a new Tote
 	 */
@@ -68,7 +73,7 @@ public class Elevations2 extends GenericSubsystem{
 	 * Converts encoder rotation to distance elevation travel in inches
 	 * calculated: lead screw pitch / enocder ticks
 	 */
-	private static final double DISTANCE_PER_TICK = 0.126/256;
+	private static final double DISTANCE_PER_TICK = 0.00048828;
 
 	/**
 	 * The slowest we will run the motors if we are moving up
@@ -88,7 +93,7 @@ public class Elevations2 extends GenericSubsystem{
 	/**
 	 * How far we need to lift the tote for clearance.
 	 */
-	private static final double TOTE_LIFT_DIST = 13;
+	private static final double TOTE_LIFT_DIST = 15;
 
 	/**
 	 * Max offset between te two sides
@@ -126,6 +131,9 @@ public class Elevations2 extends GenericSubsystem{
 	 * Are we going up or down?
 	 */
 	private boolean goingUp;
+	
+	private boolean rightDone = false;
+	private boolean leftDone = false;
 
 	/**
 	 * Returns the only instance of elevations
@@ -152,12 +160,15 @@ public class Elevations2 extends GenericSubsystem{
 		rightElevationMotor = new Talon(IO.PWM_ELEVATIONS_RIGHT);
 		leftElevationMotor = new Talon(IO.PWM_ELEVATIONS_LEFT);
 		elevationRightEncoder = new Encoder(IO.DIO_ELEVATIONS_A, IO.DIO_ELEVATIONS_B);
+		elevationRightEncoder.setDistancePerPulse(DISTANCE_PER_TICK);
 		elevationRightEncoderData = new EncoderData(elevationRightEncoder, DISTANCE_PER_TICK);
-		elevationLeftEncoder = new Encoder(IO.DIO_ELEVATIONS_A, IO.DIO_ELEVATIONS_B);
+		elevationLeftEncoder = new Encoder(7, 6);
+		elevationLeftEncoder.setDistancePerPulse(DISTANCE_PER_TICK);
 		elevationLeftEncoderData = new EncoderData(elevationLeftEncoder, DISTANCE_PER_TICK);
-		homeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_ORIGIN);
+		rightHomeSwitch = new DigitalInput(21);
+		leftHomeSwitch = new DigitalInput(22);
 		newToteSensor = new DigitalInput(IO.DIO_TOTE_SENSOR);
-		currState = State.SETTING_HOME;
+		currState = State.STANDBY;
 		return false;
 	}
 
@@ -169,13 +180,13 @@ public class Elevations2 extends GenericSubsystem{
 		wantedSpeed = 0;
 		elevationRightEncoderData.calculateSpeed();
 		elevationLeftEncoderData.calculateSpeed();
-		if(currState == State.STANDBY && newToteSensor.get()){
-			lowerTote();
-			LOG.logMessage("New tote acquired, starting lifting sequence");
-		}
+//		if(currState == State.STANDBY && newToteSensor.get()){
+//			lowerTote();
+//			LOG.logMessage("New tote acquired, starting lifting sequence");
+//		}
 		switch(currState){
 		case STANDBY:
-			wantedSpeed = (wantedPosition - elevationRightEncoderData.getDistance()) / MAX_OFF;
+//			wantedSpeed = (wantedPosition - elevationRightEncoderData.getDistance()) / MAX_OFF;
 			break;
 		case MOVE:
 			double calculatedWantedSpeedUp = (wantedPosition - elevationRightEncoderData.getDistance()) / (MAX_OFF);
@@ -203,30 +214,55 @@ public class Elevations2 extends GenericSubsystem{
 				leftWantedSpeed -= 0.05;
 			}else{
 				if(rightDistance > wantedPosition){
-					rightWantedSpeed = -0.5;
-					leftWantedSpeed = -0.5;
+					rightWantedSpeed = -0.8;
+					leftWantedSpeed = -0.8;
 				}else{
-					rightWantedSpeed = 0.5;
-					leftWantedSpeed = 0.5;
+					rightWantedSpeed = 0.8;
+					leftWantedSpeed = 0.8;
 				}
 			}
 			
 			//DONE
-			if(Math.abs(rightDistance - wantedPosition) < MAX_OFFSET){
+			if((rightDistance > wantedPosition && goingUp) || (rightDistance < wantedPosition && !goingUp) && !rightDone){
 				LOG.logMessage("POSITION HAS BEEN FOUND at: " + wantedPosition);
+				rightDone = true;
+				rightWantedSpeed = 0;
+			}
+			
+			if((leftDistance > wantedPosition && goingUp) || (leftDistance < wantedPosition && !goingUp) && !leftDone){
+				LOG.logMessage("POSITION HAS BEEN FOUND at: " + wantedPosition);
+				leftDone = true;
+				leftWantedSpeed = 0;
+			}
+			
+			if(leftDone && rightDone){
+				leftDone = false;
+				rightDone = false;
 				currState = State.STANDBY;
 			}
+			
 			break;
 		case SETTING_HOME:
-			wantedSpeed = -MOVE_DOWN_SPEED;
-			if(homeSwitch.get()){
-				LOG.logMessage("Home set");
-				wantedSpeed = 0;
+			if(!rightHomeSwitch.get()){
+				LOG.logMessage("Right Home set");	
+				elevationRightEncoderData.reset();
+				rightWantedSpeed = 0;
+			}else{
+				rightWantedSpeed = -0.15;
+			}
+			
+			if(!leftHomeSwitch.get()){
+				LOG.logMessage("Left Home set");
+				elevationLeftEncoderData.reset();
+				leftWantedSpeed = 0;
+			}else{
+				leftWantedSpeed = -0.2;
+			}
+			
+			if(!rightHomeSwitch.get() && !leftHomeSwitch.get()){
+				currState = State.STANDBY;
 				goingUp = true;
 				wantedPosition = TOTE_LIFT_DIST;
-				elevationRightEncoderData.reset();
-				elevationLeftEncoderData.reset();
-				currState = State.MOVE;
 			}
 			break;
 		}
@@ -263,7 +299,7 @@ public class Elevations2 extends GenericSubsystem{
 	public void liftTote(){
 		goingUp = true;
 		wantedPosition = TOTE_LIFT_DIST;
-		currState = State.MOVE;
+		currState = State.COMPLEX_MOVE;
 	}
 
 	/**
@@ -281,7 +317,9 @@ public class Elevations2 extends GenericSubsystem{
 	protected void writeLog() {
 		LOG.logMessage("Current State: " + currState.toString(currState));
 		LOG.logMessage("Wanted Position: " + wantedPosition);
-		LOG.logMessage("Current Position: " + elevationEncoderData.getDistance());
+		LOG.logMessage("Current Position: Right: " + elevationRightEncoderData.getDistance() + " Left: " + elevationLeftEncoderData.getDistance());
+		LOG.logMessage("Right Sensor: " + rightHomeSwitch.get() + " Left: " + leftHomeSwitch.get());
+		LOG.logMessage("New Tote: " + newToteSensor.get());
 	}
 
 	/**
@@ -291,7 +329,10 @@ public class Elevations2 extends GenericSubsystem{
 	protected void liveWindow() {
 		LiveWindow.addActuator(getName(), "Right Elevator", rightElevationMotor);
 		LiveWindow.addActuator(getName(), "Left Elevations", leftElevationMotor);
-		LiveWindow.addSensor(getName(), "Home Switch", homeSwitch);
+		LiveWindow.addActuator(getName(), "Right Encoder", elevationRightEncoder);
+		LiveWindow.addActuator(getName(), "Left Encoder", elevationLeftEncoder);
+		LiveWindow.addSensor(getName(), "Right Home Switch", rightHomeSwitch);
+		LiveWindow.addSensor(getName(), "LEft Home Switch", leftHomeSwitch);
 		LiveWindow.addSensor(getName(), "Tote Detect", newToteSensor);
 	}
 

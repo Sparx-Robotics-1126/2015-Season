@@ -3,6 +3,7 @@ package org.gosparx.team1126.robot;
 import org.gosparx.team1126.robot.subsystem.CanAcquisition;
 import org.gosparx.team1126.robot.subsystem.Controls;
 import org.gosparx.team1126.robot.subsystem.Drives;
+import org.gosparx.team1126.robot.subsystem.Elevations2;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 import org.gosparx.team1126.robot.util.LogWriter;
 
@@ -26,8 +27,9 @@ public class Robot extends SampleRobot{
 		subsystems = new GenericSubsystem[]{	
         	Controls.getInstance(),
         	LogWriter.getInstance(),
-        	Drives.getInstance(),
-        	CanAcquisition.getInstance()
+        	Elevations2.getInstance()
+//        	Drives.getInstance(),
+//        	CanAcquisition.getInstance()
 		};
 		
 		for(GenericSubsystem system: subsystems){

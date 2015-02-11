@@ -16,92 +16,117 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 public class Elevations2 extends GenericSubsystem{
 
 	//******************OBJECTS**********************
-	
+
 	/**
 	 * The only instance of Elevatios2
 	 */
 	private static Elevations2 elevations;
-	
+
 	/**
 	 * Right Elevations motor
 	 */
 	private Talon rightElevationMotor;
-	
+
 	/**
 	 * Left Elevations motor
 	 */
 	private Talon leftElevationMotor;
-	
+
 	/**
 	 * Elevations encoder - tells distance elevations has traveled
 	 */
-	private Encoder elevationEncoder;
-	
+	private Encoder elevationRightEncoder;
+
 	/**
 	 * Elevations encoder data - returns accurate values of elevations position
 	 */
-	private EncoderData elevationEncoderData;
-	
+	private EncoderData elevationRightEncoderData;
+
+	/**
+	 * Elevations encoder - tells distance elevations has traveled
+	 */
+	private Encoder elevationLeftEncoder;
+
+	/**
+	 * Elevations encoder data - returns accurate values of elevations position
+	 */
+	private EncoderData elevationLeftEncoderData;
+
 	/**
 	 * The home position switch
 	 */
 	private DigitalInput homeSwitch;
-	
+
 	/**
 	 * Used to detected the presence of a new Tote
 	 */
 	private DigitalInput newToteSensor;
-	
+
 	//******************CONSTANTS********************
-	
+
 	/**
 	 * Converts encoder rotation to distance elevation travel in inches
 	 * calculated: lead screw pitch / enocder ticks
 	 */
 	private static final double DISTANCE_PER_TICK = 0.126/256;
-	
+
 	/**
 	 * The slowest we will run the motors if we are moving up
 	 */
 	private static final double MOVE_UP_SPEED = 0.5;
-	
+
 	/**
 	 * The slowest we will run the motors if we are moving down
 	 */
 	private static final double MOVE_DOWN_SPEED = 0.25;
-	
+
 	/**
 	 * The distance we must be off by to give the motors full power
 	 */
 	private static final double MAX_OFF = 10;
-	
+
 	/**
 	 * How far we need to lift the tote for clearance.
 	 */
 	private static final double TOTE_LIFT_DIST = 13;
-	
+
+	/**
+	 * Max offset between te two sides
+	 */
+	private static final double MAX_OFFSET = 0.25;
+
 	//******************VARIABLES********************
-	
+
 	/**
 	 * The wanted speed of the motors
 	 */
-	private double wantedSpeed;
-	
+	private double rightWantedSpeed = 0;
+
+	/**
+	 * The wanted speed of the motors
+	 */
+	private double leftWantedSpeed = 0;
+
+	/**
+	 * USed if both motors should be set to the same value
+	 */
+	private double wantedSpeed = 0;
+
 	/**
 	 * The wanted position of the elevations system
 	 */
 	private double wantedPosition;
-	
+
 	/**
 	 * The current state of the system
 	 */
 	private State currState;
-	
+
 	/**
 	 * Are we going up or down?
 	 */
 	private boolean goingUp;
-	
+
 	/**
 	 * Returns the only instance of elevations
 	 */
@@ -111,7 +136,7 @@ public class Elevations2 extends GenericSubsystem{
 		}
 		return elevations;
 	}
-	
+
 	/**
 	 * Creates a new elevations
 	 */
@@ -126,8 +151,10 @@ public class Elevations2 extends GenericSubsystem{
 	protected boolean init() {
 		rightElevationMotor = new Talon(IO.PWM_ELEVATIONS_RIGHT);
 		leftElevationMotor = new Talon(IO.PWM_ELEVATIONS_LEFT);
-		elevationEncoder = new Encoder(IO.DIO_ELEVATIONS_A, IO.DIO_ELEVATIONS_B);
-		elevationEncoderData = new EncoderData(elevationEncoder, DISTANCE_PER_TICK);
+		elevationRightEncoder = new Encoder(IO.DIO_ELEVATIONS_A, IO.DIO_ELEVATIONS_B);
+		elevationRightEncoderData = new EncoderData(elevationRightEncoder, DISTANCE_PER_TICK);
+		elevationLeftEncoder = new Encoder(IO.DIO_ELEVATIONS_A, IO.DIO_ELEVATIONS_B);
+		elevationLeftEncoderData = new EncoderData(elevationLeftEncoder, DISTANCE_PER_TICK);
 		homeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_ORIGIN);
 		newToteSensor = new DigitalInput(IO.DIO_TOTE_SENSOR);
 		currState = State.SETTING_HOME;
@@ -140,24 +167,53 @@ public class Elevations2 extends GenericSubsystem{
 	@Override
 	protected boolean execute() {
 		wantedSpeed = 0;
-		elevationEncoderData.calculateSpeed();
+		elevationRightEncoderData.calculateSpeed();
+		elevationLeftEncoderData.calculateSpeed();
 		if(currState == State.STANDBY && newToteSensor.get()){
 			lowerTote();
 			LOG.logMessage("New tote acquired, starting lifting sequence");
 		}
 		switch(currState){
 		case STANDBY:
-			wantedSpeed = (wantedPosition - elevationEncoderData.getDistance()) / MAX_OFF;
+			wantedSpeed = (wantedPosition - elevationRightEncoderData.getDistance()) / MAX_OFF;
 			break;
 		case MOVE:
-			double calculatedWantedSpeedUp = (wantedPosition - elevationEncoderData.getDistance()) / (MAX_OFF);
-			double calculatedWantedSpeedDown = (wantedPosition - elevationEncoderData.getDistance()) / (MAX_OFF * 2);
-			if(goingUp && (elevationEncoderData.getDistance() < wantedPosition)){
+			double calculatedWantedSpeedUp = (wantedPosition - elevationRightEncoderData.getDistance()) / (MAX_OFF);
+			double calculatedWantedSpeedDown = (wantedPosition - elevationRightEncoderData.getDistance()) / (MAX_OFF * 2);
+			if(goingUp && (elevationRightEncoderData.getDistance() < wantedPosition)){
 				wantedSpeed = (calculatedWantedSpeedUp > MOVE_UP_SPEED) ? calculatedWantedSpeedUp : MOVE_UP_SPEED;
-			} else if(!goingUp && (elevationEncoderData.getDistance() > wantedPosition)) {
+			} else if(!goingUp && (elevationRightEncoderData.getDistance() > wantedPosition)) {
 				wantedSpeed = (calculatedWantedSpeedDown > MOVE_DOWN_SPEED) ? calculatedWantedSpeedDown : MOVE_DOWN_SPEED;
 			} else {
 				wantedSpeed = 0;
+				currState = State.STANDBY;
+			}
+			rightWantedSpeed = wantedSpeed;
+			leftWantedSpeed = wantedSpeed;
+			break;
+		case COMPLEX_MOVE:
+			double rightDistance = elevationRightEncoderData.getDistance();
+			double leftDistance = elevationLeftEncoderData.getDistance();
+
+			if(rightDistance > (leftDistance + MAX_OFFSET)){
+				rightWantedSpeed -= 0.05;
+				leftWantedSpeed += 0.05;
+			}else if(leftDistance > (rightDistance + MAX_OFFSET)){
+				rightWantedSpeed += 0.05;
+				leftWantedSpeed -= 0.05;
+			}else{
+				if(rightDistance > wantedPosition){
+					rightWantedSpeed = -0.5;
+					leftWantedSpeed = -0.5;
+				}else{
+					rightWantedSpeed = 0.5;
+					leftWantedSpeed = 0.5;
+				}
+			}
+			
+			//DONE
+			if(Math.abs(rightDistance - wantedPosition) < MAX_OFFSET){
+				LOG.logMessage("POSITION HAS BEEN FOUND at: " + wantedPosition);
 				currState = State.STANDBY;
 			}
 			break;
@@ -168,24 +224,24 @@ public class Elevations2 extends GenericSubsystem{
 				wantedSpeed = 0;
 				goingUp = true;
 				wantedPosition = TOTE_LIFT_DIST;
-				elevationEncoderData.reset();
-				elevationEncoder.reset();
+				elevationRightEncoderData.reset();
+				elevationLeftEncoderData.reset();
 				currState = State.MOVE;
 			}
 			break;
 		}
-		rightElevationMotor.set(wantedSpeed);
-		leftElevationMotor.set(wantedSpeed);
+		rightElevationMotor.set(rightWantedSpeed);
+		leftElevationMotor.set(leftWantedSpeed);
 		return false;
 	}
-	
+
 	/**
 	 * @return if we are done moving the totes
 	 */
 	public boolean isDone(){
 		return currState == State.STANDBY;
 	}
-	
+
 	/**
 	 * Lowers the totes
 	 */
@@ -193,7 +249,7 @@ public class Elevations2 extends GenericSubsystem{
 		goingUp = false;
 		setHome();
 	}
-	
+
 	/**
 	 * Sets the home position
 	 */
@@ -209,7 +265,7 @@ public class Elevations2 extends GenericSubsystem{
 		wantedPosition = TOTE_LIFT_DIST;
 		currState = State.MOVE;
 	}
-	
+
 	/**
 	 * @return How long to sleep for
 	 */
@@ -227,7 +283,7 @@ public class Elevations2 extends GenericSubsystem{
 		LOG.logMessage("Wanted Position: " + wantedPosition);
 		LOG.logMessage("Current Position: " + elevationEncoderData.getDistance());
 	}
-	
+
 	/**
 	 * Adds things to the live window
 	 */
@@ -245,8 +301,9 @@ public class Elevations2 extends GenericSubsystem{
 	public enum State{
 		STANDBY,
 		MOVE,
+		COMPLEX_MOVE,
 		SETTING_HOME;
-		
+
 		/**
 		 * @param state The current state
 		 * @return the name of the state

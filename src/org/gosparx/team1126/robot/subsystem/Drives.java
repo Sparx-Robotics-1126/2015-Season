@@ -332,8 +332,8 @@ public class Drives extends GenericSubsystem{
 	@Override
 	protected boolean init() {
 		//LEFT
-		leftFront = new Victor(IO.PWM_LEFT_FRONT_DRIVES);
-		leftBack = new Victor(IO.PWM_LEFT_BACK_DRIVES);
+		leftFront = new Victor(IO.PWM_DRIVES_LEFT_FRONT);
+		leftBack = new Victor(IO.PWM_DRIVES_LEFT_REAR);
 		encoderLeft = new Encoder(IO.DIO_DRIVES_LEFT_ENC_A, IO.DIO_DRIVES_LEFT_ENC_B);
 		encoderDataLeft = new EncoderData(encoderLeft, DISTANCE_PER_TICK);
 		leftPID = new PID(P_LEFT, I_LEFT, 1, D_LEFT, true, false);
@@ -342,8 +342,8 @@ public class Drives extends GenericSubsystem{
 		leftPower = 0;
 
 		//RIGHT
-		rightFront = new Victor(IO.PWM_RIGHT_FRONT_DRIVES);
-		rightBack = new Victor(IO.PWM_RIGHT_BACK_DRIVES);
+		rightFront = new Victor(IO.PWM_DRIVES_RIGHT_FRONT);
+		rightBack = new Victor(IO.PWM_DRIVES_RIGHT_REAR);
 		encoderRight = new Encoder(IO.DIO_DRIVES_RIGHT_ENC_A, IO.DIO_DRIVES_RIGHT_ENC_B);
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		rightPID = new PID(P_RIGHT, I_RIGHT, 1, D_RIGHT, true, false);

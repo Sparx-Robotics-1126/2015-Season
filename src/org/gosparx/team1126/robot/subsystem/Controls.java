@@ -188,7 +188,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					drives.setAutoFunction(Drives.State.AUTO_LIGHT_LINE_UP);
 					break;
 				case ATTACK3_TRIGGER:
-					drives.autoDance();
+//					drives.autoDance();
+					drives.setPower(0.2, 0.2, false);
 					break;
 				}
 				break;

@@ -3,6 +3,7 @@ package org.gosparx.team1126.robot.subsystem;
 import org.gosparx.team1126.robot.IO;
 import org.gosparx.team1126.robot.sensors.EncoderData;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -51,6 +52,16 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	private EncoderData hookEncData;
 
+	/**
+	 * Rotate home sensor
+	 */
+	private DigitalInput rotateHome;
+	
+	/**
+	 * Hook home sensor
+	 */
+	private DigitalInput hookHome;
+	
 	/***********************Constants*********************/
 
 	/**
@@ -143,6 +154,8 @@ public class CanAcqTele extends GenericSubsystem{
 		hookMotor = new Talon(IO.PWM_CAN_HOOK);
 		hookEnc = new Encoder(IO.DIO_CAN_HOOK_A, IO.DIO_CAN_HOOK_B);
 		hookEncData = new EncoderData(hookEnc, DISTANCE_PER_TICK_HOOK);
+		hookHome = new DigitalInput(0)
+		rotateHome = new DigitalInput(0);
 		currentHookState = HookState.STANDBY;
 		currentRotateState = RotateState.STANDBY;
 		return true;
@@ -155,6 +168,8 @@ public class CanAcqTele extends GenericSubsystem{
 	protected void liveWindow() {
 		LiveWindow.addActuator(getName(), "Rotating Victor", rotateMotor);
 		LiveWindow.addActuator(getName(), "Hooking Victor", hookMotor);
+		LiveWindow.addSensor(getName(), "Hook Home", hookHome);
+		LiveWindow.addSensor(getName(), "Rotate Home", rotateHome);
 		LiveWindow.addActuator(getName(), "Rotate Encoder", rotateEnc);
 		LiveWindow.addActuator(getName(), "Hook Encoder", hookEnc);
 	}
@@ -183,7 +198,17 @@ public class CanAcqTele extends GenericSubsystem{
 				LOG.logMessage("Done rotating");
 			}
 			break;
+		case ROTATE_FINDING_HOME:
+			wantedRotateSpeed = 0.2;
+			if(!rotateHome.get()){
+				wantedRotateSpeed = 0;
+				currentRotateState = RotateState.STANDBY;
+				LOG.logMessage("Rotate has found home");
+				rotateEncData.reset();
+			}
+			break;
 		}
+			
 		switch(currentHookState){
 		case STANDBY:
 			
@@ -199,6 +224,14 @@ public class CanAcqTele extends GenericSubsystem{
 				wantedHookSpeed = 0;
 				currentHookState = HookState.STANDBY;
 				LOG.logMessage("Done moving hook");
+			}
+			break;
+		case HOOK_FINDING_HOME:
+			wantedHookSpeed = 0.5;
+			if(hookHome.get()){
+				currentHookState = HookState.STANDBY;
+				wantedHookSpeed = 0;
+				LOG.logMessage("Hook has found home");
 			}
 			break;
 		}
@@ -260,7 +293,8 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	public enum HookState{
 		STANDBY,
-		MOVING;
+		MOVING,
+		HOOK_FINDING_HOME;
 
 		public String toString(){
 			switch(this){
@@ -280,7 +314,8 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	public enum RotateState{
 		STANDBY,
-		ROTATING;
+		ROTATING,
+		ROTATE_FINDING_HOME;
 
 		public String toString(){
 			switch(this){

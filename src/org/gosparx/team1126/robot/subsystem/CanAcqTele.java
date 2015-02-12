@@ -154,8 +154,8 @@ public class CanAcqTele extends GenericSubsystem{
 		hookMotor = new Talon(IO.PWM_CAN_HOOK);
 		hookEnc = new Encoder(IO.DIO_CAN_HOOK_A, IO.DIO_CAN_HOOK_B);
 		hookEncData = new EncoderData(hookEnc, DISTANCE_PER_TICK_HOOK);
-		hookHome = new DigitalInput(0)
-		rotateHome = new DigitalInput(0);
+		hookHome = new DigitalInput(18);
+		rotateHome = new DigitalInput(19);
 		currentHookState = HookState.STANDBY;
 		currentRotateState = RotateState.STANDBY;
 		return true;
@@ -285,6 +285,7 @@ public class CanAcqTele extends GenericSubsystem{
 		LOG.logMessage("Current Rotate State: " + currentRotateState.toString());
 		LOG.logMessage("Wanted Angle: " + wantedAngle + " Current Angle: " + rotateEncData.getDistance());
 		LOG.logMessage("Wanted Hook Pos: " + wantedHookPos + " Current Hook Pos: " + hookEncData.getDistance());
+		LOG.logMessage("Hook Home: " + hookHome.get() + " Rotate Home: " + rotateHome.get());
 	}
 	
 	/**

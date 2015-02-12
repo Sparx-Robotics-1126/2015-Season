@@ -1,5 +1,6 @@
 package org.gosparx.team1126.robot;
 
+import org.gosparx.team1126.robot.subsystem.CanAcqTele;
 import org.gosparx.team1126.robot.subsystem.CanAcquisition;
 import org.gosparx.team1126.robot.subsystem.Controls;
 import org.gosparx.team1126.robot.subsystem.Drives;
@@ -27,7 +28,8 @@ public class Robot extends SampleRobot{
         	Controls.getInstance(),
         	LogWriter.getInstance(),
         	Drives.getInstance(),
-        	CanAcquisition.getInstance()
+        	CanAcquisition.getInstance(),
+        	CanAcqTele.getInstance()
 		};
 		
 		for(GenericSubsystem system: subsystems){

@@ -159,10 +159,10 @@ public class Elevations2 extends GenericSubsystem{
 	protected boolean init() {
 		rightElevationMotor = new Talon(IO.PWM_ELEVATIONS_RIGHT);
 		leftElevationMotor = new Talon(IO.PWM_ELEVATIONS_LEFT);
-		elevationRightEncoder = new Encoder(IO.DIO_ELEVATIONS_A, IO.DIO_ELEVATIONS_B);
+		elevationRightEncoder = new Encoder(10, 11);
 		elevationRightEncoder.setDistancePerPulse(DISTANCE_PER_TICK);
 		elevationRightEncoderData = new EncoderData(elevationRightEncoder, DISTANCE_PER_TICK);
-		elevationLeftEncoder = new Encoder(7, 6);
+		elevationLeftEncoder = new Encoder(4, 5);
 		elevationLeftEncoder.setDistancePerPulse(DISTANCE_PER_TICK);
 		elevationLeftEncoderData = new EncoderData(elevationLeftEncoder, DISTANCE_PER_TICK);
 		rightHomeSwitch = new DigitalInput(21);

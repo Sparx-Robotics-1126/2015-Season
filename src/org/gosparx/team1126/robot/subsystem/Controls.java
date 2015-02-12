@@ -134,8 +134,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean execute() {
-		drives.setPower(-driverJoyLeft.getAxis(ATTACK3_Y_AXIS),
-				-driverJoyRight.getAxis(ATTACK3_Y_AXIS), true);
+//		drives.setPower(-driverJoyLeft.getAxis(ATTACK3_Y_AXIS),
+//				-driverJoyRight.getAxis(ATTACK3_Y_AXIS), true);
 		return false;
 	}
 
@@ -189,7 +189,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				case ATTACK3_TRIGGER:
 //					drives.autoDance();
-					drives.setPower(0.2, 0.2, false);
+					drives.setPower(-0.6, -0.6, false);
+					LOG.logMessage("CONTORLS WANTS NUATRAL");
 					break;
 				}
 				break;

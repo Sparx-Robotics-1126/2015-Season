@@ -34,10 +34,10 @@ public final class IO {
 	public static final int ANA_COLOR_RIGHT_BLUE		= 7;
 	
 	//DIO
-	public static final int DIO_DRIVES_LEFT_ENC_A		= 0;
-	public static final int DIO_DRIVES_LEFT_ENC_B		= 1;
-	public static final int DIO_DRIVES_RIGHT_ENC_A		= 3;
-	public static final int DIO_DRIVES_RIGHT_ENC_B		= 2;
+	public static final int DIO_DRIVES_LEFT_ENC_A		= 1;
+	public static final int DIO_DRIVES_LEFT_ENC_B		= 0;
+	public static final int DIO_DRIVES_RIGHT_ENC_A		= 2;
+	public static final int DIO_DRIVES_RIGHT_ENC_B		= 3;
 	public static final int DIO_ELEVATIONS_A			= 4;
 	public static final int DIO_ELEVATIONS_B			= 5;
 	public static final int DIO_CAN_HOOK_A				= 6;
@@ -60,9 +60,9 @@ public final class IO {
 	public static final int PNU_SHIFT					= 0;
 	public static final int PNU_ACQ_TOTE				= 1;
 	public static final int PNU_ACQ_TRAVEL				= 2;
-	public static final int PNU_ACQ_CAN_LEFT			= 3;
+	public static final int PNU_ACQ_CAN_LEFT			= 5;
 	public static final int PNU_ACQ_CAN_RIGHT			= 4;
-	public static final int PNU_DISENGAGE_DRIVES		= 5;
+	public static final int PNU_DISENGAGE_DRIVES		= 3;
 	public static final int PNU_TOTE_STOP				= 6;
 	public static final int PNU_ACQ_CLUTCH				= 9;
 }

@@ -56,7 +56,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * The last shifting state of drives
 	 */
-	private State lastShiftState;
+	private State lastShiftState = State.SHIFTING_LOW;
 
 	/**
 	 * Variable for determining which state the color sensor
@@ -474,7 +474,7 @@ public class Drives extends GenericSubsystem{
 
 		switch(autoFunctions){
 		case AUTO_STAND_BY:
-			if(currentDriveState == State.IN_HIGH_GEAR || currentDriveState == State.IN_LOW_GEAR){
+			if(currentDriveState == State.IN_HIGH_GEAR || currentDriveState == State.IN_LOW_GEAR || currentDriveState == State.IN_NEUTRAL_GEAR){
 				rightPower = wantedRightPower;
 				leftPower = wantedLeftPower;
 			}
@@ -681,9 +681,10 @@ public class Drives extends GenericSubsystem{
 		}else{
 			if(driverControl != isDriverControlled){//FIRST TIME
 				currentDriveState = State.NEUTRAL_SETUP;
+				isDriverControlled = driverControl;
 			}
 			wantedLeftPower = left;
-			wantedRightPower = right;
+			wantedRightPower = 0;
 		}
 		isDriverControlled = driverControl;
 	}
@@ -821,6 +822,8 @@ public class Drives extends GenericSubsystem{
 				return "In auto light line up";
 			case AUTO_DANCE:
 				return "Dancing";
+			case NEUTRAL_SETUP:
+				return "Neutral Setup";
 			default:
 				return "Error";
 			}

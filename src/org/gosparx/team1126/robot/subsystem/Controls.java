@@ -44,6 +44,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	private CanAcquisition canAcq;
 	
+	private CanAcqTele canAcqTele;
+	
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
 	//**************************************************************************
@@ -123,9 +125,10 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
-//		operatorJoy.start();
+		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
+		canAcqTele = CanAcqTele.getInstance();
 		return true;
 	}
 
@@ -199,12 +202,15 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case LOGI_A:
 					//TODO: Floor Mode
+					canAcqTele.initalizedPositions();
 					break;
 				case LOGI_B:
 					//TODO: HP Mode
+					canAcqTele.goToAcquire();
 					break;
 				case LOGI_Y:
 					//TODO: Safe Mode
+					canAcqTele.acquireCan();
 					break;
 				}
 				break;

@@ -125,7 +125,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
-//		operatorJoy.start();
+		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
 		elevations = Elevations2.getInstance();
@@ -180,12 +180,10 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				case ATTACK3_TOP_BUTTON:
 					//TODO: Up Shift
 //					canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
-					elevations.lowerTote();
 					break;
 				case ATTACK3_TRIGGER:
 					//TODO: Down Shift
 //					canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
-					elevations.liftTote();
 					break;
 				}
 				break;
@@ -203,12 +201,15 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			case IO.OPERATOR_JOYSTICK:
 				switch(e.getID()){
 				case LOGI_A:
+					elevations.setHome();
 					//TODO: Floor Mode
 					break;
 				case LOGI_B:
+					elevations.liftTote();
 					//TODO: HP Mode
 					break;
 				case LOGI_Y:
+					elevations.lowerTotes();
 					//TODO: Safe Mode
 					break;
 				}

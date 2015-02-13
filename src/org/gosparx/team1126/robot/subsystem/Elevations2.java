@@ -56,12 +56,12 @@ public class Elevations2 extends GenericSubsystem{
 	 * The home position for the right side
 	 */
 	private DigitalInput rightHomeSwitch;
-	
+
 	/**
 	 * The home position for the left side
 	 */
 	private DigitalInput leftHomeSwitch;
-	
+
 	/**
 	 * Used to detected the presence of a new Tote
 	 */
@@ -100,6 +100,8 @@ public class Elevations2 extends GenericSubsystem{
 	 */
 	private static final double MAX_OFFSET = 0.25;
 
+	private static final double MIN_SPEED = 0.2;
+	
 	//******************VARIABLES********************
 
 	/**
@@ -131,7 +133,7 @@ public class Elevations2 extends GenericSubsystem{
 	 * Are we going up or down?
 	 */
 	private boolean goingUp;
-	
+
 	private boolean rightDone = false;
 	private boolean leftDone = false;
 
@@ -166,7 +168,7 @@ public class Elevations2 extends GenericSubsystem{
 		elevationLeftEncoder.setDistancePerPulse(DISTANCE_PER_TICK);
 		elevationLeftEncoderData = new EncoderData(elevationLeftEncoder, DISTANCE_PER_TICK);
 		rightHomeSwitch = new DigitalInput(21);
-		leftHomeSwitch = new DigitalInput(22);
+		leftHomeSwitch = new DigitalInput(20);
 		newToteSensor = new DigitalInput(IO.DIO_TOTE_SENSOR);
 		currState = State.STANDBY;
 		return false;
@@ -180,13 +182,13 @@ public class Elevations2 extends GenericSubsystem{
 		wantedSpeed = 0;
 		elevationRightEncoderData.calculateSpeed();
 		elevationLeftEncoderData.calculateSpeed();
-//		if(currState == State.STANDBY && newToteSensor.get()){
-//			lowerTote();
-//			LOG.logMessage("New tote acquired, starting lifting sequence");
-//		}
+		//		if(currState == State.STANDBY && newToteSensor.get()){
+		//			lowerTote();
+		//			LOG.logMessage("New tote acquired, starting lifting sequence");
+		//		}
 		switch(currState){
 		case STANDBY:
-//			wantedSpeed = (wantedPosition - elevationRightEncoderData.getDistance()) / MAX_OFF;
+			//			wantedSpeed = (wantedPosition - elevationRightEncoderData.getDistance()) / MAX_OFF;
 			break;
 		case MOVE:
 			double calculatedWantedSpeedUp = (wantedPosition - elevationRightEncoderData.getDistance()) / (MAX_OFF);
@@ -205,39 +207,62 @@ public class Elevations2 extends GenericSubsystem{
 		case COMPLEX_MOVE:
 			double rightDistance = elevationRightEncoderData.getDistance();
 			double leftDistance = elevationLeftEncoderData.getDistance();
-
+			double rightSpeed = (wantedPosition - rightDistance)/5.0;
+			double leftSpeed = (wantedPosition - leftDistance)/5.0;
+			
 			if(rightDistance > (leftDistance + MAX_OFFSET)){
-				rightWantedSpeed -= 0.05;
-				leftWantedSpeed += 0.05;
+				rightWantedSpeed -= 0.02;
+				leftWantedSpeed += 0.02;
 			}else if(leftDistance > (rightDistance + MAX_OFFSET)){
-				rightWantedSpeed += 0.05;
-				leftWantedSpeed -= 0.05;
+				rightWantedSpeed += 0.02;
+				leftWantedSpeed -= 0.02;
 			}else{
-				if(rightDistance > wantedPosition){
-					rightWantedSpeed = -0.8;
-					leftWantedSpeed = -0.8;
+				if(goingUp){
+					rightWantedSpeed = Math.abs(rightSpeed) < MIN_SPEED ? MIN_SPEED: rightSpeed;
+					leftWantedSpeed = Math.abs(leftSpeed) < MIN_SPEED ? MIN_SPEED: leftSpeed;
 				}else{
-					rightWantedSpeed = 0.8;
-					leftWantedSpeed = 0.8;
+					rightWantedSpeed = Math.abs(rightSpeed) < MIN_SPEED ? -MIN_SPEED: rightSpeed;
+					leftWantedSpeed = Math.abs(leftSpeed) < MIN_SPEED ? -MIN_SPEED: leftSpeed;
 				}
 			}
 			
+
 			//DONE
-			if((rightDistance > wantedPosition && goingUp) || (rightDistance < wantedPosition && !goingUp) && !rightDone){
-				LOG.logMessage("POSITION HAS BEEN FOUND at: " + wantedPosition);
+			if(((rightDistance > wantedPosition - 0.25 && goingUp) || (rightDistance < wantedPosition + 0.25 && !goingUp)) && !rightDone){
+				LOG.logMessage("RIGHT POSITION HAS BEEN FOUND at: " + wantedPosition);
 				rightDone = true;
 				rightWantedSpeed = 0;
 			}
-			
-			if((leftDistance > wantedPosition && goingUp) || (leftDistance < wantedPosition && !goingUp) && !leftDone){
-				LOG.logMessage("POSITION HAS BEEN FOUND at: " + wantedPosition);
+
+			if(((leftDistance > wantedPosition - 0.25 && goingUp) || (leftDistance < wantedPosition + 0.25 && !goingUp)) && !leftDone){
+				LOG.logMessage("LEFT POSITION HAS BEEN FOUND at: " + wantedPosition);
 				leftDone = true;
 				leftWantedSpeed = 0;
 			}
-			
+
+			if(rightDone){
+				rightWantedSpeed = 0;
+			}
+			if(leftDone){
+				leftWantedSpeed = 0;
+			}
+
 			if(leftDone && rightDone){
 				leftDone = false;
 				rightDone = false;
+				currState = State.STANDBY;
+			}
+
+			if(!rightHomeSwitch.get() && !goingUp){
+				rightWantedSpeed = 0;
+			}
+			if(!leftHomeSwitch.get() && !goingUp){
+				leftWantedSpeed = 0;
+			}
+			if(!rightHomeSwitch.get() && !leftHomeSwitch.get() && !goingUp){
+				LOG.logMessage("LIMIT SWITCHES HAVE BEEN TRIGGERED***");
+				elevationLeftEncoderData.reset();
+				elevationRightEncoderData.reset();
 				currState = State.STANDBY;
 			}
 			
@@ -248,17 +273,17 @@ public class Elevations2 extends GenericSubsystem{
 				elevationRightEncoderData.reset();
 				rightWantedSpeed = 0;
 			}else{
-				rightWantedSpeed = -0.15;
+				rightWantedSpeed = -0.3;
 			}
-			
+
 			if(!leftHomeSwitch.get()){
 				LOG.logMessage("Left Home set");
 				elevationLeftEncoderData.reset();
 				leftWantedSpeed = 0;
 			}else{
-				leftWantedSpeed = -0.2;
+				leftWantedSpeed = -0.3;
 			}
-			
+
 			if(!rightHomeSwitch.get() && !leftHomeSwitch.get()){
 				currState = State.STANDBY;
 				goingUp = true;
@@ -266,6 +291,7 @@ public class Elevations2 extends GenericSubsystem{
 			}
 			break;
 		}
+
 		rightElevationMotor.set(rightWantedSpeed);
 		leftElevationMotor.set(leftWantedSpeed);
 		return false;
@@ -291,6 +317,12 @@ public class Elevations2 extends GenericSubsystem{
 	 */
 	public void setHome(){
 		currState = State.SETTING_HOME;
+	}
+
+	public void lowerTotes(){
+		goingUp = false;
+		wantedPosition = 0;
+		currState = State.COMPLEX_MOVE;
 	}
 
 	/**
@@ -353,6 +385,7 @@ public class Elevations2 extends GenericSubsystem{
 			switch(state){
 			case STANDBY: 		return "Standby";
 			case MOVE: 			return "Moving";
+			case COMPLEX_MOVE: 	return "Complex Moving";
 			case SETTING_HOME: 	return "Setting Home";
 			default: 		return "Unknown State";
 			}

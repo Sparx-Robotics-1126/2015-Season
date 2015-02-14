@@ -19,12 +19,12 @@ public class ToteAcq extends GenericSubsystem{
 	/**
 	 * The solenoid that controls if the rollers are on the ground or at the human player
 	 */
-	private Solenoid rollerRaiser1;
+	private Solenoid longCylinder;
 
 	/**
 	 * The second solenoid that controls the rollers
 	 */
-	private Solenoid rollerRaiser2;
+	private Solenoid shortCylinder;
 
 	/**
 	 * The solenoid that controls the clutch
@@ -54,12 +54,12 @@ public class ToteAcq extends GenericSubsystem{
 	/**
 	 * the value of the solenoid if the rollers are up
 	 */
-	private static final boolean ROLLERS_UP = true;
+	private static final boolean IN = false;
 
 	/**
 	 * the value of the solenoid if the rollers are down
 	 */
-	private static final boolean ROLLERS_DOWN = !ROLLERS_UP;
+	private static final boolean OUT = !IN;
 
 	/**
 	 * The value of the solenoid when the clutch is engaged
@@ -103,9 +103,9 @@ public class ToteAcq extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean init() {
-		rollerRaiser1 = new Solenoid(IO.PNU_ACQ_TOTE_1);
-		rollerRaiser2 = new Solenoid(IO.PNU_ACQ_TOTE_2);
-		stopper = new Solenoid(IO.PNU_ACQ_TOTE_STOP);
+		longCylinder = new Solenoid(IO.PNU_ACQ_TRAVEL);
+		shortCylinder = new Solenoid(IO.PNU_ACQ_TOTE);
+		stopper = new Solenoid(IO.PNU_TOTE_STOP);
 		clutch = new Solenoid(IO.PNU_ACQ_CLUTCH);
 		currPos = RollerPosition.TRAVEL;
 		currState = ClutchState.OFF;
@@ -120,15 +120,16 @@ public class ToteAcq extends GenericSubsystem{
 	protected boolean execute() {
 		switch (currPos) {
 		case FLOOR:
-			rollerRaiser1.set(ROLLERS_DOWN);
-			rollerRaiser2.set(ROLLERS_DOWN);
+			longCylinder.set(OUT);
+			shortCylinder.set(OUT);
 			break;
 		case HUMAN_PLAYER:
-			rollerRaiser1.set(ROLLERS_UP);
+			shortCylinder.set(OUT);
+			longCylinder.set(IN);
 			break;
 		case TRAVEL:
-			rollerRaiser1.set(ROLLERS_UP);
-			rollerRaiser2.set(ROLLERS_UP);
+			longCylinder.set(IN);
+			shortCylinder.set(IN);
 			break;
 		}
 		switch (currState){
@@ -148,6 +149,7 @@ public class ToteAcq extends GenericSubsystem{
 			break;
 		}
 		return false;
+		
 		}
 
 		/**
@@ -163,7 +165,7 @@ public class ToteAcq extends GenericSubsystem{
 		 */
 		@Override
 		protected void writeLog() {
-
+LOG.logMessage("Current State: " + currState);
 		}
 
 		/**
@@ -261,8 +263,8 @@ public class ToteAcq extends GenericSubsystem{
 
 		@Override
 		protected void liveWindow() {
-			LiveWindow.addActuator(getName(), "Raiser 1", rollerRaiser1);
-			LiveWindow.addActuator(getName(), "Raiser 2", rollerRaiser2);
+			LiveWindow.addActuator(getName(), "Long Cylinder", longCylinder);
+			LiveWindow.addActuator(getName(), "Short Cylinder", shortCylinder);
 			LiveWindow.addActuator(getName(), "Clutch", clutch);
 			LiveWindow.addActuator(getName(), "Stopper", stopper);
 		}

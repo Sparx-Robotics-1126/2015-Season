@@ -46,6 +46,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private CanAcquisition canAcq;
 	
 	private ToteAcq toteAcq;
+	
+	private boolean manualShifting = false;
+	
+	private boolean operatorWantsControl = false;
+	
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
 	//**************************************************************************
@@ -125,7 +130,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
-//		operatorJoy.start();
+		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
 		toteAcq = ToteAcq.getInstance();
@@ -138,9 +143,15 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean execute() {
-		drives.setPower(-driverJoyLeft.getAxis(ATTACK3_Y_AXIS),
-				-driverJoyRight.getAxis(ATTACK3_Y_AXIS));
-		return false;
+		double left = -driverJoyLeft.getAxis(ATTACK3_Y_AXIS);
+		double right = -driverJoyRight.getAxis(ATTACK3_Y_AXIS);
+		
+		if((left != 0 && right != 0) || !operatorWantsControl){
+			drives.setPower(left, right, true);
+		}else if(operatorWantsControl){
+			drives.setPower(-0.6, 0, false);
+		}
+			return false;
 	}
 
 	/** 
@@ -208,18 +219,20 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					//TODO: Floor Mode
 					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
 					toteAcq.setClutch(ClutchState.ON);
+					operatorWantsControl = true;
 					break;
 				case LOGI_B:
 					//TODO: HP Mode
 					toteAcq.setRollerPos(RollerPosition.FLOOR);
 					toteAcq.setClutch(ClutchState.ON);
+					operatorWantsControl = true;
 					break;
 				case LOGI_Y:
 					//TODO: Safe Mode
 					toteAcq.setClutch(ClutchState.OFF);
 					toteAcq.setRollerPos(RollerPosition.TRAVEL);
+					operatorWantsControl = false;
 					break;
-					
 				}
 				break;
 			}

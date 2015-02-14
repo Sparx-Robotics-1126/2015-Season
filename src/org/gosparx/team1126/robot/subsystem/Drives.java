@@ -8,6 +8,7 @@ import org.gosparx.team1126.robot.sensors.PID;
 import org.gosparx.team1126.robot.util.Logger;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -232,7 +233,7 @@ public class Drives extends GenericSubsystem{
 	 * The position of the pnu solenoid to enable the neutral gear
 	 */
 	private static final boolean ENABLE_NEUTRAL_SELECT = true;
-	
+
 	/**
 	 * The distance the robot will dance
 	 */
@@ -248,7 +249,7 @@ public class Drives extends GenericSubsystem{
 	 * Whether you are going to dance backwards or forwards
 	 */
 	private boolean backwards = true;
-	
+
 	/**
 	 * the wanted speed for the left motors
 	 */
@@ -360,7 +361,7 @@ public class Drives extends GenericSubsystem{
 		currentSpeed = 0;
 		shiftTime = 0;
 		autoFunctions = State.AUTO_STAND_BY;
-		
+
 		pdp = new PowerDistributionPanel();
 
 		if(USE_PID_DEBUG){
@@ -375,6 +376,9 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
+		if(DriverStation.getInstance().isTest()){
+			return false;
+		}
 		encoderDataRight.calculateSpeed();
 		encoderDataLeft.calculateSpeed();
 		leftPower = 0;
@@ -574,7 +578,7 @@ public class Drives extends GenericSubsystem{
 						leftPower = 0.4;
 						rightPower = 0.0;
 					}else {
-//						danceCycles++;
+						//						danceCycles++;
 						backwards = true;
 						leftPower = 0.0;
 						rightPower = 0.0;
@@ -596,7 +600,7 @@ public class Drives extends GenericSubsystem{
 						leftPower = 0.0;
 						rightPower = 0.4;
 					}else {
-//						danceCycles++;
+						//						danceCycles++;
 						backwards = true;
 						leftPower = 0.0;
 						rightPower = 0.0;
@@ -618,11 +622,12 @@ public class Drives extends GenericSubsystem{
 			rightPower = rightPID.update(encoderDataRight.getSpeed());
 			leftPower = leftPID.update(encoderDataLeft.getSpeed());
 		}
-
-		leftFront.set(leftPower);
-		leftBack.set(leftPower);
-		rightFront.set(-rightPower);
-		rightBack.set(-rightPower);
+		if(!DriverStation.getInstance().isTest()){
+			leftFront.set(leftPower);
+			leftBack.set(leftPower);
+			rightFront.set(-rightPower);
+			rightBack.set(-rightPower);
+		}
 		return false;
 	}
 
@@ -643,14 +648,14 @@ public class Drives extends GenericSubsystem{
 		log.logMessage("Current speed: " + currentSpeed);
 		log.logMessage("Current drive state: " + currentDriveState);
 		log.logMessage("Auto State: " + autoFunctions);
-//		log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
-//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
-//		log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
-//		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
+		//		log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
+		//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
+		//		log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
+		//		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
 		log.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
 				" Right Encoder: " +encoderDataRight.getSpeed());
-//		log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
-//		log.logMessage("Gyro: " + gyro.getAngle());
+		//		log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
+		//		log.logMessage("Gyro: " + gyro.getAngle());
 	}
 
 	/**
@@ -666,7 +671,7 @@ public class Drives extends GenericSubsystem{
 		if(Math.abs(right) < 0.05){
 			right = 0;
 		}
-		
+
 		if(driverControl){
 			if(left > 0){
 				wantedLeftPower = (5/4)*Math.sqrt(left);
@@ -722,7 +727,7 @@ public class Drives extends GenericSubsystem{
 	public void setAutoFunction(State wantedAutoState){
 		autoFunctions = wantedAutoState;
 	}
-	
+
 	public void autoDance(){
 		LOG.logMessage("Drives Recieved Auto Dance");
 		setAutoFunction(State.AUTO_DANCE);

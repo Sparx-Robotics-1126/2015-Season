@@ -4,6 +4,7 @@ import org.gosparx.team1126.robot.subsystem.CanAcquisition;
 import org.gosparx.team1126.robot.subsystem.Controls;
 import org.gosparx.team1126.robot.subsystem.Drives;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
+import org.gosparx.team1126.robot.subsystem.ToteAcq;
 import org.gosparx.team1126.robot.util.LogWriter;
 
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -27,7 +28,8 @@ public class Robot extends SampleRobot{
         	Controls.getInstance(),
         	LogWriter.getInstance(),
         	Drives.getInstance(),
-        	CanAcquisition.getInstance()
+        	CanAcquisition.getInstance(),
+        	ToteAcq.getInstance()
 		};
 		
 		for(GenericSubsystem system: subsystems){

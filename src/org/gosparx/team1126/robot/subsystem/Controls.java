@@ -1,10 +1,11 @@
 package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.team1126.robot.IO;
+import org.gosparx.team1126.robot.subsystem.ToteAcq.ClutchState;
+import org.gosparx.team1126.robot.subsystem.ToteAcq.RollerPosition;
 import org.gosparx.team1126.robot.util.AdvancedJoystick;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.ButtonEvent;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.JoystickListener;
-
 import org.gosparx.team1126.robot.util.AdvancedJoystick.MultibuttonEvent;
 
 /**
@@ -44,6 +45,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	private CanAcquisition canAcq;
 	
+	private ToteAcq toteAcq;
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
 	//**************************************************************************
@@ -123,9 +125,10 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
-//		operatorJoy.start();
+		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
+		toteAcq = ToteAcq.getInstance();
 		return true;
 	}
 
@@ -196,16 +199,24 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				break;
 				
 			case IO.OPERATOR_JOYSTICK:
+			
 				switch(e.getID()){
 				case LOGI_A:
 					//TODO: Floor Mode
+					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
+					toteAcq.setClutch(ClutchState.ON);
 					break;
 				case LOGI_B:
 					//TODO: HP Mode
+					toteAcq.setRollerPos(RollerPosition.FLOOR);
+					toteAcq.setClutch(ClutchState.ON);
 					break;
 				case LOGI_Y:
 					//TODO: Safe Mode
+					toteAcq.setClutch(ClutchState.OFF);
+					toteAcq.setRollerPos(RollerPosition.TRAVEL);
 					break;
+					
 				}
 				break;
 			}

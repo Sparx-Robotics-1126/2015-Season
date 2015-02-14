@@ -1,6 +1,8 @@
 package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.team1126.robot.IO;
+import org.gosparx.team1126.robot.subsystem.ToteAcq.ClutchState;
+import org.gosparx.team1126.robot.subsystem.ToteAcq.RollerPosition;
 import org.gosparx.team1126.robot.util.AdvancedJoystick;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.ButtonEvent;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.JoystickListener;
@@ -39,10 +41,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private Drives drives;
 	
 	/**
-	 * Stores if we are currently in manual shifting
+	 * instance for CanAcquisition
 	 */
-	private boolean manualShifting;
-
+	private CanAcquisition canAcq;
+	
+	private ToteAcq toteAcq;
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
 	//**************************************************************************
@@ -99,7 +102,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private Controls() {
 		super("controls", Thread.NORM_PRIORITY);
 	}
-
+	
 	/**
 	 * instantiates a Joystick and Drives
 	 * @return false ~ keeps looping true ~ stops loop
@@ -123,8 +126,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
 //		operatorJoy.start();
-		drives = Drives.getInstance(); 
-		manualShifting = false;
+		drives = Drives.getInstance();
+		canAcq = CanAcquisition.getInstance();
+		toteAcq = ToteAcq.getInstance();
 		return true;
 	}
 
@@ -134,8 +138,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean execute() {
-//		drives.setPower(-driverJoyLeft.getAxis(ATTACK3_Y_AXIS),
-//				-driverJoyRight.getAxis(ATTACK3_Y_AXIS), true);
+		drives.setPower(-driverJoyLeft.getAxis(ATTACK3_Y_AXIS),
+				-driverJoyRight.getAxis(ATTACK3_Y_AXIS));
 		return false;
 	}
 
@@ -176,9 +180,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
 					drives.setManualShifting(true);
+					canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
 					break;
 				case ATTACK3_TRIGGER:
 					drives.setManualShifting(false);
+					canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
 					break;
 				}
 				break;
@@ -196,16 +202,24 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				break;
 				
 			case IO.OPERATOR_JOYSTICK:
+			
 				switch(e.getID()){
 				case LOGI_A:
 					//TODO: Floor Mode
+					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
+					toteAcq.setClutch(ClutchState.ON);
 					break;
 				case LOGI_B:
 					//TODO: HP Mode
+					toteAcq.setRollerPos(RollerPosition.FLOOR);
+					toteAcq.setClutch(ClutchState.ON);
 					break;
 				case LOGI_Y:
 					//TODO: Safe Mode
+					toteAcq.setClutch(ClutchState.OFF);
+					toteAcq.setRollerPos(RollerPosition.TRAVEL);
 					break;
+					
 				}
 				break;
 			}

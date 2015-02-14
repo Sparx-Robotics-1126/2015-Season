@@ -209,6 +209,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					elevations.liftTote();
 					//TODO: HP Mode
 					break;
+					
 				case LOGI_Y:
 					elevations.lowerTotes();
 					//TODO: Safe Mode

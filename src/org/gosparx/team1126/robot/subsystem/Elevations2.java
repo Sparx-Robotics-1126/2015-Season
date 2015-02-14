@@ -228,13 +228,13 @@ public class Elevations2 extends GenericSubsystem{
 			
 
 			//DONE
-			if(((rightDistance > wantedPosition - 0.25 && goingUp) || (rightDistance < wantedPosition + 0.25 && !goingUp)) && !rightDone){
+			if(((rightDistance >= wantedPosition - 0.25 && goingUp) || (rightDistance <= wantedPosition + 0.25 && !goingUp)) && !rightDone){
 				LOG.logMessage("RIGHT POSITION HAS BEEN FOUND at: " + wantedPosition);
 				rightDone = true;
 				rightWantedSpeed = 0;
 			}
 
-			if(((leftDistance > wantedPosition - 0.25 && goingUp) || (leftDistance < wantedPosition + 0.25 && !goingUp)) && !leftDone){
+			if(((leftDistance >= wantedPosition - 0.25 && goingUp) || (leftDistance <= wantedPosition + 0.25 && !goingUp)) && !leftDone){
 				LOG.logMessage("LEFT POSITION HAS BEEN FOUND at: " + wantedPosition);
 				leftDone = true;
 				leftWantedSpeed = 0;

@@ -105,7 +105,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The max position for the hook
 	 */
-	private static final double MAX_HOOK_POS = 28;
+	private static final double MAX_HOOK_POS = 23;
 	
 	/***********************Variables*********************/
 
@@ -232,7 +232,7 @@ public class CanAcqTele extends GenericSubsystem{
 			}
 			break;
 		case HOOK_FINDING_HOME:
-			wantedHookSpeed = 0.8;
+			wantedHookSpeed = 0.9;
 			if(!hookHome.get()){
 				hookEncData.reset();
 				currentHookState = HookState.STANDBY;

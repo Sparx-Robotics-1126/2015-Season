@@ -19,8 +19,8 @@ public final class IO {
 	public static final int PWM_DRIVES_RIGHT_REAR		= 3;
 	public static final int PWM_ELEVATIONS_LEFT			= 4;
 	public static final int PWM_ELEVATIONS_RIGHT 		= 5;
-	public static final int PWM_CAN_ROTATE				= 7;
-	public static final int PWM_CAN_HOOK				= 6;
+	public static final int PWM_CAN_ROTATE				= 6;
+	public static final int PWM_CAN_HOOK				= 7;
 	public static final int PWM_ARM_DOWN				= 8;
 	public static final int PWM_ARM_UP					= 9;
 	
@@ -40,8 +40,8 @@ public final class IO {
 	public static final int DIO_DRIVES_RIGHT_ENC_B		= 3;
 	public static final int DIO_ELEVATIONS_A			= 4;
 	public static final int DIO_ELEVATIONS_B			= 5;
-	public static final int DIO_CAN_HOOK_A				= 7;
-	public static final int DIO_CAN_HOOK_B				= 6;
+	public static final int DIO_CAN_HOOK_A				= 6;
+	public static final int DIO_CAN_HOOK_B				= 7;
 	public static final int DIO_CAN_ROTATE_A			= 8;
 	public static final int DIO_CAN_ROTATE_B			= 9;
 	

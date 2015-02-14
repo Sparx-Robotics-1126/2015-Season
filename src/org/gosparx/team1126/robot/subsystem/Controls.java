@@ -114,12 +114,12 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		driverJoyLeft.addButton(ATTACK3_TOP_BUTTON);
 		driverJoyLeft.addButton(ATTACK3_TRIGGER);
 		driverJoyLeft.addMultibutton(ATTACK3_TRIGGER, ATTACK3_TOP_BUTTON);
-		driverJoyLeft.start();
+//		driverJoyLeft.start();
 		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT);
 		driverJoyRight.addActionListener(this);
 		driverJoyRight.addButton(ATTACK3_TOP_BUTTON);
 		driverJoyRight.addButton(ATTACK3_TRIGGER);
-		driverJoyRight.start();
+//		driverJoyRight.start();
 		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK);
 		operatorJoy.addActionListener(this);
 		operatorJoy.addButton(LOGI_A);
@@ -138,7 +138,6 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean execute() {
-		
 		return false;
 	}
 
@@ -179,11 +178,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
 					//TODO: Up Shift
-					canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
 					break;
 				case ATTACK3_TRIGGER:
 					//TODO: Down Shift
-					canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
 					break;
 				}
 				break;

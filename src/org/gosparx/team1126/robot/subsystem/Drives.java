@@ -211,7 +211,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * determines if it's in high or low gear
 	 */
-	private static final boolean LOW_GEAR = true;
+	private static final boolean LOW_GEAR = false;
 
 	/**
 	 * stops the motors for auto
@@ -377,6 +377,8 @@ public class Drives extends GenericSubsystem{
 	protected boolean execute() {
 		encoderDataRight.calculateSpeed();
 		encoderDataLeft.calculateSpeed();
+		leftPower = 0;
+		rightPower = 0;
 		currentSpeed = (encoderDataRight.getSpeed() + encoderDataLeft.getSpeed()) / 2;
 		switch(currentDriveState){
 		case IN_LOW_GEAR:

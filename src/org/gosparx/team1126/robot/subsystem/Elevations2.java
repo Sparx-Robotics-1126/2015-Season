@@ -100,7 +100,7 @@ public class Elevations2 extends GenericSubsystem{
 	 */
 	private static final double MAX_OFFSET = 0.25;
 
-	private static final double MIN_SPEED = 0.2;
+	private static final double MIN_SPEED = 0.15;
 	
 	//******************VARIABLES********************
 
@@ -164,7 +164,7 @@ public class Elevations2 extends GenericSubsystem{
 		elevationRightEncoder = new Encoder(10, 11);
 		elevationRightEncoder.setDistancePerPulse(DISTANCE_PER_TICK);
 		elevationRightEncoderData = new EncoderData(elevationRightEncoder, DISTANCE_PER_TICK);
-		elevationLeftEncoder = new Encoder(4, 5);
+		elevationLeftEncoder = new Encoder(5, 4);
 		elevationLeftEncoder.setDistancePerPulse(DISTANCE_PER_TICK);
 		elevationLeftEncoderData = new EncoderData(elevationLeftEncoder, DISTANCE_PER_TICK);
 		rightHomeSwitch = new DigitalInput(21);
@@ -273,7 +273,7 @@ public class Elevations2 extends GenericSubsystem{
 				elevationRightEncoderData.reset();
 				rightWantedSpeed = 0;
 			}else{
-				rightWantedSpeed = -0.3;
+				rightWantedSpeed = -0.2;
 			}
 
 			if(!leftHomeSwitch.get()){

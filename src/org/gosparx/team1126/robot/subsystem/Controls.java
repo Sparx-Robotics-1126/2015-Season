@@ -114,7 +114,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		driverJoyLeft.addButton(ATTACK3_TOP_BUTTON);
 		driverJoyLeft.addButton(ATTACK3_TRIGGER);
 		driverJoyLeft.addMultibutton(ATTACK3_TRIGGER, ATTACK3_TOP_BUTTON);
-		driverJoyLeft.start();
+//		driverJoyLeft.start();
 		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT);
 		driverJoyRight.addActionListener(this);
 		driverJoyRight.addButton(ATTACK3_TOP_BUTTON);
@@ -197,6 +197,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				}
 				break;
+				
 				
 			case IO.OPERATOR_JOYSTICK:
 				switch(e.getID()){

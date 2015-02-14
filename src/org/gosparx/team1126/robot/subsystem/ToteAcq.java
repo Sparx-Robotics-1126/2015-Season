@@ -119,7 +119,7 @@ public class ToteAcq extends GenericSubsystem{
 	@Override
 	protected boolean execute() {
 		switch (currPos) {
-		case FLOOR:{
+		case FLOOR:
 			rollerRaiser1.set(ROLLERS_DOWN);
 			rollerRaiser2.set(ROLLERS_DOWN);
 			break;

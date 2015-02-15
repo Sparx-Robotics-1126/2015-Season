@@ -280,23 +280,23 @@ public class Drives extends GenericSubsystem{
 	@Override
 	protected boolean init() {
 		//LEFT
-		leftFront = new Victor(IO.PWM_LEFT_FRONT_DRIVES);
-		leftBack = new Victor(IO.PWM_LEFT_BACK_DRIVES);
+		leftFront = new Victor(IO.PWM_DRIVES_LEFT_FRONT);
+		leftBack = new Victor(IO.PWM_DRIVES_LEFT_REAR);
 		encoderLeft = new Encoder(IO.DIO_DRIVES_LEFT_ENC_A, IO.DIO_DRIVES_LEFT_ENC_B);
 		encoderDataLeft = new EncoderData(encoderLeft, DISTANCE_PER_TICK);
 		leftPID = new PID(P_LEFT, I_LEFT, 1, D_LEFT, true, false);
 		colorSensorLeft = new ColorSensor(IO.ANA_COLOR_LEFT_RED, IO.ANA_COLOR_LEFT_BLUE, IO.DIO_COLOR_LED_LEFT);
-		leftTouch = new DigitalInput(IO.DIO_LEFT_STEP);
+		leftTouch = new DigitalInput(12);//REMOVE
 		leftPower = 0;
 
 		//RIGHT
-		rightFront = new Victor(IO.PWM_RIGHT_FRONT_DRIVES);
-		rightBack = new Victor(IO.PWM_RIGHT_BACK_DRIVES);
+		rightFront = new Victor(IO.PWM_DRIVES_RIGHT_FRONT);
+		rightBack = new Victor(IO.PWM_DRIVES_RIGHT_REAR);
 		encoderRight = new Encoder(IO.DIO_DRIVES_RIGHT_ENC_A, IO.DIO_DRIVES_RIGHT_ENC_B);
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		rightPID = new PID(P_RIGHT, I_RIGHT, 1, D_RIGHT, true, false);
 		colorSensorRight = new ColorSensor(IO.ANA_COLOR_RIGHT_RED, IO.ANA_COLOR_RIGHT_BLUE, IO.DIO_COLOR_LED_RIGHT);
-		rightTouch = new DigitalInput(IO.DIO_RIGHT_STEP);
+		rightTouch = new DigitalInput(13);//REMOVE
 		rightPower = 0;
 
 		//OTHER

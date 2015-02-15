@@ -4,6 +4,7 @@ import java.security.InvalidParameterException;
 
 import org.gosparx.team1126.robot.util.Logger;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -50,7 +51,7 @@ public abstract class GenericSubsystem extends Thread {
 	 * This is used to create a liveWindow setup
 	 */
 	abstract protected void liveWindow();
-	
+
 	/**
 	 * Once start is called, this method is called until it returns true.
 	 * 
@@ -89,21 +90,25 @@ public abstract class GenericSubsystem extends Thread {
 		System.out.println("***Starting: " + getName());
 		liveWindow();
 		do{
-			try{
-				retVal = execute();
-			}catch(Exception e){
-				if(LOG != null)
-					LOG.logError("Uncaught Exception! " + e.getMessage());
-				e.printStackTrace(System.err);
-			}
-			if(Timer.getFPGATimestamp() >= lastLogged + logTime()){
-				writeLog();
-				lastLogged = Timer.getFPGATimestamp();
-			}
-			try {
-				Thread.sleep(sleepTime());
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			if(!DriverStation.getInstance().isTest()){
+				try{
+					retVal = execute();
+				}catch(Exception e){
+					if(LOG != null)
+						LOG.logError("Uncaught Exception! " + e.getMessage());
+					e.printStackTrace(System.err);
+				}
+				if(Timer.getFPGATimestamp() >= lastLogged + logTime()){
+					writeLog();
+					lastLogged = Timer.getFPGATimestamp();
+				}
+				try {
+					Thread.sleep(sleepTime());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}else{
+				retVal = false;
 			}
 		}while(!retVal);
 		if(LOG != null)

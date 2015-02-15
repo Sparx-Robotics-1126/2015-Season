@@ -45,7 +45,15 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	private CanAcquisition canAcq;
 	
+	/**
+	 * Instance for ToteAcq
+	 */
 	private ToteAcq toteAcq;
+	
+	/**
+	 * Instance for Elevations
+	 */
+	private Elevations elevations;
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
 	//**************************************************************************
@@ -125,10 +133,12 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
+		operatorJoy.addButton(LOGI_X);
 		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
 		toteAcq = ToteAcq.getInstance();
+		elevations = Elevations.getInstance();
 		return true;
 	}
 
@@ -179,11 +189,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
 					//TODO: Up Shift
-					canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
 					break;
 				case ATTACK3_TRIGGER:
 					//TODO: Down Shift
-					canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
 					break;
 				}
 				break;
@@ -216,7 +224,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					toteAcq.setClutch(ClutchState.OFF);
 					toteAcq.setRollerPos(RollerPosition.TRAVEL);
 					break;
-					
+				case LOGI_X:
+
+					break;
 				}
 				break;
 			}

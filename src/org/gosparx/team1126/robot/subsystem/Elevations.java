@@ -6,6 +6,7 @@ import org.gosparx.team1126.robot.sensors.EncoderData;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
@@ -146,6 +147,10 @@ public class Elevations extends GenericSubsystem{
 	 * Are we going up or down?
 	 */
 	private boolean goingUp;
+	
+	private boolean newToteDetected = false;
+	
+	private double toteSenceTime = 0;
 
 	private boolean scoreTotes;
 	private boolean rightDone = false;
@@ -197,9 +202,13 @@ public class Elevations extends GenericSubsystem{
 		elevationRightEncoderData.calculateSpeed();
 		elevationLeftEncoderData.calculateSpeed();
 
-		if(currState == State.STANDBY && !newToteSensor.get()){
-			lowerTotes();
+		if(currState == State.STANDBY && newToteSensor.get() && !newToteDetected){
+			toteSenceTime = Timer.getFPGATimestamp();
+			newToteDetected = true;
+		}else if(Timer.getFPGATimestamp() >= toteSenceTime + 0.5 && newToteDetected){
 			LOG.logMessage("New tote acquired, starting lifting sequence");
+			newToteDetected = false;
+			lowerTotes();
 		}
 
 		switch(currState){
@@ -242,13 +251,13 @@ public class Elevations extends GenericSubsystem{
 			}
 
 			//DONE
-			if(((rightDistance >= wantedPosition - 0.25 && goingUp) || (rightDistance <= wantedPosition + 0.25 && !goingUp)) && !rightDone){
+			if(((rightDistance >= wantedPosition - 0.1 && goingUp) || (rightDistance <= wantedPosition + 0.1 && !goingUp)) && !rightDone){
 				LOG.logMessage("RIGHT POSITION HAS BEEN FOUND at: " + wantedPosition);
 				rightDone = true;
 				rightWantedSpeed = 0;
 			}
 
-			if(((leftDistance >= wantedPosition - 0.25 && goingUp) || (leftDistance <= wantedPosition + 0.25 && !goingUp)) && !leftDone){
+			if(((leftDistance >= wantedPosition - 0.1 && goingUp) || (leftDistance <= wantedPosition + 0.1 && !goingUp)) && !leftDone){
 				LOG.logMessage("LEFT POSITION HAS BEEN FOUND at: " + wantedPosition);
 				leftDone = true;
 				leftWantedSpeed = 0;
@@ -316,8 +325,8 @@ public class Elevations extends GenericSubsystem{
 			break;
 		}
 
-		rightElevationMotor.set(rightWantedSpeed);
-		leftElevationMotor.set(leftWantedSpeed);
+		rightElevationMotor.set(rightWantedSpeed/1.75);
+		leftElevationMotor.set(leftWantedSpeed/1.75);
 		return false;
 	}
 
@@ -398,7 +407,7 @@ public class Elevations extends GenericSubsystem{
 		LOG.logMessage("Current Posit"
 				+ "ion: Right: " + elevationRightEncoderData.getDistance() + " Left: " + elevationLeftEncoderData.getDistance());
 		LOG.logMessage("Right Sensor: " + !rightHomeSwitch.get() + " Left: " + !leftHomeSwitch.get());
-		LOG.logMessage("New Tote: " + !newToteSensor.get());
+		LOG.logMessage("New Tote: " + newToteSensor.get());
 	}
 
 	/**

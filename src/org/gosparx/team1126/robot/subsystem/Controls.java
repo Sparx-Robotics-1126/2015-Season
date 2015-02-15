@@ -157,7 +157,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		double left = -driverJoyLeft.getAxis(ATTACK3_Y_AXIS);
 		double right = -driverJoyRight.getAxis(ATTACK3_Y_AXIS);
 		
-		if((left != 0 && right != 0) || !operatorWantsControl){
+		if((left != 0 || right != 0) || !operatorWantsControl){
 			drives.setPower(left, right, true);
 		}else if(operatorWantsControl){
 			drives.setPower(-0.6, 0, false);

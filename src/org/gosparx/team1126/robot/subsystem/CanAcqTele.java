@@ -197,6 +197,11 @@ public class CanAcqTele extends GenericSubsystem{
 			}else{
 				wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_DOWN_SPEED) ? calculatedRotateSpeed : -MIN_ROTATE_DOWN_SPEED);
 			}
+			
+			if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  60){
+				//call elevations to go up
+			}
+			
 			if((rotateEncData.getDistance() >= wantedAngle - 2 && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle + 2 && calculatedRotateSpeed > 0)){
 				currentRotateState = RotateState.STANDBY;
 				wantedRotateSpeed = 0;

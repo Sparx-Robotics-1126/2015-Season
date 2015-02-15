@@ -23,6 +23,8 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	private static CanAcqTele canAcq;
 
+	private Elevations elevations;
+	
 	/**
 	 * The motor that rotates the arms
 	 */
@@ -163,6 +165,7 @@ public class CanAcqTele extends GenericSubsystem{
 		currentHookState = HookState.STANDBY;
 		currentRotateState = RotateState.STANDBY;
 		pdp = new PowerDistributionPanel();
+		elevations = Elevations.getInstance();
 		return true;
 	}
 
@@ -199,7 +202,7 @@ public class CanAcqTele extends GenericSubsystem{
 			}
 			
 			if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  60){
-				//call elevations to go up
+				elevations.moveElevator(15, 1);
 			}
 			
 			if((rotateEncData.getDistance() >= wantedAngle - 2 && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle + 2 && calculatedRotateSpeed > 0)){
@@ -224,7 +227,7 @@ public class CanAcqTele extends GenericSubsystem{
 			
 			break;
 		case MOVING:
-			double calculatedMovingSpeed = -(wantedHookPos - hookEncData.getDistance()) / 5;
+			double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 2)*0.75;
 			if(calculatedMovingSpeed > 0){
 				wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : MIN_HOOK_SPEED; 
 			}else{

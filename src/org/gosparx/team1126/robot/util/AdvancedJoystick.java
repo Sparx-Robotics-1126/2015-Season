@@ -156,7 +156,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 	 * @return the modified axis value
 	 */
 	public double getAxis(int axis){
-		return (joy.getRawAxis(axis) > DEADBAND) ? joy.getRawAxis(axis) : 0;
+		return (Math.abs(joy.getRawAxis(axis)) > DEADBAND) ? joy.getRawAxis(axis) : 0;
 	}
 
 	/**

@@ -52,6 +52,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	private ToteAcq toteAcq;
 	
+	private CanAcqTele canAcqTele;
+	
 	/**
 	 * Instance for Elevations
 	 */
@@ -87,9 +89,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	//********************************************************************
 	//*******************Driver Controller Mapping**********************
 	//********************************************************************
-	private static final int ATTACK3_Y_AXIS = 2;
-	private static final int ATTACK3_X_AXIS = 2;
-	private static final int ATTACK3_Z_AXIS = 3;
+	private static final int ATTACK3_Y_AXIS = 1;
+	private static final int ATTACK3_X_AXIS = 0;
+	private static final int ATTACK3_Z_AXIS = 2;
 	private static final int ATTACK3_TRIGGER = 1;
 	private static final int ATTACK3_TOP_BUTTON = 2;
 
@@ -124,18 +126,17 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		driverJoyLeft.addButton(ATTACK3_TOP_BUTTON);
 		driverJoyLeft.addButton(ATTACK3_TRIGGER);
 		driverJoyLeft.addMultibutton(ATTACK3_TRIGGER, ATTACK3_TOP_BUTTON);
-//		driverJoyLeft.start();
+		driverJoyLeft.start();
 		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT);
 		driverJoyRight.addActionListener(this);
 		driverJoyRight.addButton(ATTACK3_TOP_BUTTON);
 		driverJoyRight.addButton(ATTACK3_TRIGGER);
-//		driverJoyRight.start();
+		driverJoyRight.start();
 		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK);
 		operatorJoy.addActionListener(this);
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
-		operatorJoy.start();
 		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
@@ -151,6 +152,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean execute() {
+		drives.setPower(driverJoyLeft.getAxis(ATTACK3_Y_AXIS), driverJoyRight.getAxis(ATTACK3_Y_AXIS));
 		return false;
 	}
 
@@ -213,21 +215,24 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case LOGI_A:
 					//TODO: Floor Mode
+//					canAcqTele.initalizedPositions();
+//					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
+//					toteAcq.setClutch(ClutchState.ON);
 					canAcqTele.initalizedPositions();
-					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
-					toteAcq.setClutch(ClutchState.ON);
 					break;
 				case LOGI_B:
 					//TODO: HP Mode
+//					canAcqTele.goToAcquire();
+//					toteAcq.setRollerPos(RollerPosition.FLOOR);
+//					toteAcq.setClutch(ClutchState.ON);
 					canAcqTele.goToAcquire();
-					toteAcq.setRollerPos(RollerPosition.FLOOR);
-					toteAcq.setClutch(ClutchState.ON);
 					break;
 				case LOGI_Y:
-					//TODO: Safe Mode
 					canAcqTele.acquireCan();
-					toteAcq.setClutch(ClutchState.OFF);
-					toteAcq.setRollerPos(RollerPosition.TRAVEL);
+					//TODO: Safe Mode
+//					canAcqTele.acquireCan();
+//					toteAcq.setClutch(ClutchState.OFF);
+//					toteAcq.setRollerPos(RollerPosition.TRAVEL);
 					break;
 				case LOGI_X:
 

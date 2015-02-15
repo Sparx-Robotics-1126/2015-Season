@@ -304,7 +304,8 @@ public class Elevations extends GenericSubsystem{
 			}
 
 			if(!rightHomeSwitch.get() && !leftHomeSwitch.get()){
-				liftTote();
+//				liftTote();
+				currState = State.STANDBY;
 				goingUp = true;
 				wantedPosition = TOTE_LIFT_DIST;
 			}

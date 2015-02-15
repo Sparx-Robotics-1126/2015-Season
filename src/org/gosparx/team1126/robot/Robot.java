@@ -32,7 +32,7 @@ public class Robot extends SampleRobot{
         	Elevations.getInstance(),
         	Drives.getInstance(),
         	CanAcquisition.getInstance(),
-        	CanAcqTele.getInstance()
+        	CanAcqTele.getInstance(),
         	ToteAcq.getInstance()
 		};
 		

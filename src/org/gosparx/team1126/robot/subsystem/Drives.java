@@ -466,10 +466,10 @@ public class Drives extends GenericSubsystem{
 			leftPower = leftPID.update(encoderDataLeft.getSpeed());
 		}
 
-		leftFront.set(leftPower);
+		leftFront.set(-leftPower);
 		leftBack.set(-leftPower);
 		rightFront.set(rightPower);
-		rightBack.set(-rightPower);
+		rightBack.set(rightPower);
 		return false;
 	}
 

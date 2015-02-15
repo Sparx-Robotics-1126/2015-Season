@@ -105,9 +105,14 @@ public class CanAcqTele extends GenericSubsystem{
 	private static final double MAX_ROTATION = 85;
 	
 	/**
-	 * The max position for the hook
+	 * The position for the hook to acq
 	 */
-	private static final double MAX_HOOK_POS = 23;
+	private static final double ACQ_CAN_DIST = 23;
+	
+	/**
+	 * The max pos for the hook
+	 */
+	private static final double MAX_HOOK_POS = 44;
 	
 	/***********************Variables*********************/
 
@@ -258,7 +263,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 * Goes to acquiring mode
 	 */
 	public void goToAcquire(){
-		wantedHookPos = MAX_HOOK_POS;
+		wantedHookPos = ACQ_CAN_DIST;
 		wantedAngle = MAX_ROTATION;
 		currentHookState = HookState.MOVING;
 		currentRotateState = RotateState.ROTATING;
@@ -286,7 +291,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 * Moves the can up DISTANCE_PER_TOTE
 	 */
 	public void acquiredTote(){
-		wantedHookPos = hookEncData.getDistance() + DISTANCE_PER_TOTE;
+		wantedHookPos = Math.min(hookEncData.getDistance() + DISTANCE_PER_TOTE, MAX_HOOK_POS);
 		currentHookState = HookState.MOVING;
 	}
 

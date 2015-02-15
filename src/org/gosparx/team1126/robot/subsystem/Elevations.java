@@ -21,6 +21,8 @@ public class Elevations extends GenericSubsystem{
 	 * The only instance of Elevatios2
 	 */
 	private static Elevations elevations;
+	
+	private CanAcqTele canAcqTele;
 
 	/**
 	 * Right Elevations motor
@@ -52,7 +54,7 @@ public class Elevations extends GenericSubsystem{
 	 */
 	private EncoderData elevationLeftEncoderData;
 
-	/**
+	/**d
 	 * The home position for the right side
 	 */
 	private DigitalInput rightHomeSwitch;
@@ -103,12 +105,12 @@ public class Elevations extends GenericSubsystem{
 	/**
 	 * The minimum speed the elevator can travel while moving up
 	 */
-	private static final double MIN_UP_SPEED = 0.15;
+	private static final double MIN_UP_SPEED = 0.4;
 
 	/**
 	 * The minimum speed the elevator can travel while moving down
 	 */
-	private static final double MIN_DOWN_SPEED = 0.25;
+	private static final double MIN_DOWN_SPEED = 0.15;
 
 	//******************VARIABLES********************
 
@@ -184,6 +186,7 @@ public class Elevations extends GenericSubsystem{
 		leftHomeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_LEFT_ORIGIN);
 		newToteSensor = new DigitalInput(IO.DIO_TOTE_SENSOR);
 		currState = State.SETTING_HOME;
+		canAcqTele = CanAcqTele.getInstance();
 		return false;
 	}
 
@@ -198,6 +201,7 @@ public class Elevations extends GenericSubsystem{
 
 		if(currState == State.STANDBY && !newToteSensor.get()){
 			lowerTotes();
+			canAcqTele.acquiredTote();
 			LOG.logMessage("New tote acquired, starting lifting sequence");
 		}
 

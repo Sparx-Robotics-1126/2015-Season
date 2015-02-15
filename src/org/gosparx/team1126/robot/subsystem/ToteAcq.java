@@ -149,123 +149,123 @@ public class ToteAcq extends GenericSubsystem{
 			break;
 		}
 		return false;
-		
-		}
+
+	}
+
+	/**
+	 * How long to sleep in ms
+	 */
+	@Override
+	protected long sleepTime() {
+		return 20;
+	}
+
+	/**
+	 * Writes info about the subsystem
+	 */
+	@Override
+	protected void writeLog() {
+		LOG.logMessage("Current State: " + currState);
+	}
+
+	/**
+	 * Set the Clutch on or off
+	 * @param state the desired clutchState
+	 */
+	public void setClutch(ClutchState state){
+		currState = state;
+	}
+
+	/**
+	 * Set the stopper on or off
+	 * @param state the desired StopState
+	 */
+	public void setStopper(StopState state){
+		currStop = state;
+	}
+
+	/**
+	 * Sets the roller position
+	 * @param pos the desired position
+	 */
+	public void setRollerPos(RollerPosition pos){
+		currPos = pos;
+	}
+
+	/**
+	 * A enum of all of the posible roller positions 
+	 */
+	public enum RollerPosition{
+		TRAVEL,
+		HUMAN_PLAYER,
+		FLOOR;
 
 		/**
-		 * How long to sleep in ms
+		 * @return a string name of the enum
 		 */
-		@Override
-		protected long sleepTime() {
-			return 20;
-		}
-
-		/**
-		 * Writes info about the subsystem
-		 */
-		@Override
-		protected void writeLog() {
-LOG.logMessage("Current State: " + currState);
-		}
-
-		/**
-		 * Set the Clutch on or off
-		 * @param state the desired clutchState
-		 */
-		public void setClutch(ClutchState state){
-			currState = state;
-		}
-
-		/**
-		 * Set the stopper on or off
-		 * @param state the desired StopState
-		 */
-		public void setStopper(StopState state){
-			currStop = state;
-		}
-
-		/**
-		 * Sets the roller position
-		 * @param pos the desired position
-		 */
-		public void setRollerPos(RollerPosition pos){
-			currPos = pos;
-		}
-
-		/**
-		 * A enum of all of the posible roller positions 
-		 */
-		public enum RollerPosition{
-			TRAVEL,
-			HUMAN_PLAYER,
-			FLOOR;
-
-			/**
-			 * @return a string name of the enum
-			 */
-			public String getName(){
-				switch (this) {
-				case TRAVEL:
-					return "Travel";
-				case HUMAN_PLAYER:
-					return "Human Player";
-				case FLOOR:
-					return "Floor";
-				default:
-					return "Unknown Roller Position";
-				}
+		public String getName(){
+			switch (this) {
+			case TRAVEL:
+				return "Travel";
+			case HUMAN_PLAYER:
+				return "Human Player";
+			case FLOOR:
+				return "Floor";
+			default:
+				return "Unknown Roller Position";
 			}
-		}
-
-		/**
-		 * A enum for if the rollers are on or off
-		 */
-		public enum ClutchState{
-			ON,
-			OFF;
-
-			/**
-			 * @return a string name of the enum
-			 */
-			public String getName(){
-				switch (this) {
-				case ON:
-					return "Rollers On";
-				case OFF:
-					return "Rollers Off";
-				default:
-					return "Unknown Roller State";
-				}
-			}
-		}
-
-		/**
-		 * The possible states for the stop
-		 */
-		public enum StopState{
-			ON,
-			OFF;
-
-			/**
-			 * @return a string name of the enum
-			 */
-			public String getName(){
-				switch(this){
-				case ON:
-					return "Totes stopped";
-				case OFF:
-					return "Totes not stopped";
-				default:
-					return "Unknown State";
-				}
-			}
-		}
-
-		@Override
-		protected void liveWindow() {
-			LiveWindow.addActuator(getName(), "Long Cylinder", longCylinder);
-			LiveWindow.addActuator(getName(), "Short Cylinder", shortCylinder);
-			LiveWindow.addActuator(getName(), "Clutch", clutch);
-			LiveWindow.addActuator(getName(), "Stopper", stopper);
 		}
 	}
+
+	/**
+	 * A enum for if the rollers are on or off
+	 */
+	public enum ClutchState{
+		ON,
+		OFF;
+
+		/**
+		 * @return a string name of the enum
+		 */
+		public String getName(){
+			switch (this) {
+			case ON:
+				return "Rollers On";
+			case OFF:
+				return "Rollers Off";
+			default:
+				return "Unknown Roller State";
+			}
+		}
+	}
+
+	/**
+	 * The possible states for the stop
+	 */
+	public enum StopState{
+		ON,
+		OFF;
+
+		/**
+		 * @return a string name of the enum
+		 */
+		public String getName(){
+			switch(this){
+			case ON:
+				return "Totes stopped";
+			case OFF:
+				return "Totes not stopped";
+			default:
+				return "Unknown State";
+			}
+		}
+	}
+
+	@Override
+	protected void liveWindow() {
+		LiveWindow.addActuator(getName(), "Long Cylinder", longCylinder);
+		LiveWindow.addActuator(getName(), "Short Cylinder", shortCylinder);
+		LiveWindow.addActuator(getName(), "Clutch", clutch);
+		LiveWindow.addActuator(getName(), "Stopper", stopper);
+	}
+}

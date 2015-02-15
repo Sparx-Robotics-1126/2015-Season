@@ -103,12 +103,12 @@ public class Elevations extends GenericSubsystem{
 	/**
 	 * The minimum speed the elevator can travel while moving up
 	 */
-	private static final double MIN_UP_SPEED = 0.15;
+	private static final double MIN_UP_SPEED = 0.4;
 
 	/**
 	 * The minimum speed the elevator can travel while moving down
 	 */
-	private static final double MIN_DOWN_SPEED = 0.25;
+	private static final double MIN_DOWN_SPEED = 0.15;
 
 	//******************VARIABLES********************
 
@@ -147,6 +147,7 @@ public class Elevations extends GenericSubsystem{
 	 */
 	private boolean goingUp;
 
+	private boolean scoreTotes;
 	private boolean rightDone = false;
 	private boolean leftDone = false;
 
@@ -208,8 +209,8 @@ public class Elevations extends GenericSubsystem{
 		case COMPLEX_MOVE:
 			double rightDistance = elevationRightEncoderData.getDistance();
 			double leftDistance = elevationLeftEncoderData.getDistance();
-			double rightSpeed = (wantedPosition - rightDistance)/6.0;
-			double leftSpeed = (wantedPosition - leftDistance)/6.0;
+			double rightSpeed = (wantedPosition - rightDistance)/3.0;
+			double leftSpeed = (wantedPosition - leftDistance)/3.0;
 
 			//MAX SPEEd
 			if(rightSpeed < 0){
@@ -222,7 +223,7 @@ public class Elevations extends GenericSubsystem{
 			}else{
 				leftSpeed = Math.abs(leftSpeed) > maxPower ? maxPower : leftSpeed;
 			}
-			
+
 			//ELEVATOR LEVEL
 			if(rightDistance > (leftDistance + MAX_OFFSET)){
 				rightWantedSpeed -= 0.02;
@@ -266,7 +267,11 @@ public class Elevations extends GenericSubsystem{
 				if(goingUp){
 					currState = State.STANDBY;
 				}else{
-					liftTote();
+					if(scoreTotes){
+						currState = State.STANDBY;
+					}else{
+						liftTote();
+					}
 				}
 			}
 
@@ -277,7 +282,7 @@ public class Elevations extends GenericSubsystem{
 			if(!leftHomeSwitch.get() && !goingUp){
 				leftWantedSpeed = 0;
 			}
-			
+
 			if(!rightHomeSwitch.get() && !leftHomeSwitch.get() && !goingUp){
 				LOG.logMessage("LIMIT SWITCHES HAVE BEEN TRIGGERED***");
 				elevationLeftEncoderData.reset();
@@ -334,6 +339,7 @@ public class Elevations extends GenericSubsystem{
 	 * Used to lower the elevator to lower poisition
 	 */
 	public void lowerTotes(){
+		scoreTotes = false;
 		goingUp = false;
 		wantedPosition = 0;
 		currState = State.COMPLEX_MOVE;
@@ -346,6 +352,14 @@ public class Elevations extends GenericSubsystem{
 	public void liftTote(){
 		goingUp = true;
 		wantedPosition = TOTE_LIFT_DIST;
+		currState = State.COMPLEX_MOVE;
+		maxPower = 1;
+	}
+	
+	public void scoreTotes(){
+		scoreTotes = true;
+		goingUp = false;
+		wantedPosition = 0;
 		currState = State.COMPLEX_MOVE;
 		maxPower = 1;
 	}

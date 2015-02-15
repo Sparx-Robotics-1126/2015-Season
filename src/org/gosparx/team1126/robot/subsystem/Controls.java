@@ -3,6 +3,7 @@ package org.gosparx.team1126.robot.subsystem;
 import org.gosparx.team1126.robot.IO;
 import org.gosparx.team1126.robot.subsystem.ToteAcq.ClutchState;
 import org.gosparx.team1126.robot.subsystem.ToteAcq.RollerPosition;
+import org.gosparx.team1126.robot.subsystem.ToteAcq.StopState;
 import org.gosparx.team1126.robot.util.AdvancedJoystick;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.ButtonEvent;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.JoystickListener;
@@ -138,6 +139,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
 		operatorJoy.addButton(LOGI_X);
+		operatorJoy.addButton(LOGI_R1);
 		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
@@ -226,22 +228,31 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					//TODO: Floor Mode
 					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
 					toteAcq.setClutch(ClutchState.ON);
+					toteAcq.setStopper(StopState.ON);
 					operatorWantsControl = true;
 					break;
 				case LOGI_B:
 					//TODO: HP Mode
 					toteAcq.setRollerPos(RollerPosition.FLOOR);
 					toteAcq.setClutch(ClutchState.ON);
+					toteAcq.setStopper(StopState.ON);
 					operatorWantsControl = true;
 					break;
 				case LOGI_Y:
 					//TODO: Safe Mode
 					toteAcq.setClutch(ClutchState.OFF);
 					toteAcq.setRollerPos(RollerPosition.TRAVEL);
+					toteAcq.setStopper(StopState.ON);
 					operatorWantsControl = false;
 					break;
 				case LOGI_X:
-
+					elevations.lowerTotes();
+					break;
+				case LOGI_R1:
+					elevations.scoreTotes();
+					toteAcq.setClutch(ClutchState.ON);
+					toteAcq.setStopper(StopState.OFF);
+					operatorWantsControl = true;
 					break;
 				}
 				break;

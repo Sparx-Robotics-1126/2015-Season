@@ -226,6 +226,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 //					toteAcq.setRollerPos(RollerPosition.FLOOR);
 //					toteAcq.setClutch(ClutchState.ON);
 					canAcqTele.goToAcquire();
+					elevations.lowerTotes();
 					break;
 				case LOGI_Y:
 					canAcqTele.acquireCan();

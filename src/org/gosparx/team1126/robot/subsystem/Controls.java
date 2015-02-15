@@ -211,9 +211,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case LOGI_A:
 					//TODO: Floor Mode
-					elevations.setHome();
-//					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
-//					toteAcq.setClutch(ClutchState.ON);
+					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
+					toteAcq.setClutch(ClutchState.ON);
 					break;
 				case LOGI_B:
 					//TODO: HP Mode
@@ -226,7 +225,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					toteAcq.setRollerPos(RollerPosition.TRAVEL);
 					break;
 				case LOGI_X:
-					elevations.moveElevator(6, 0.5);
+
 					break;
 				}
 				break;

@@ -183,7 +183,7 @@ public class Elevations extends GenericSubsystem{
 		rightHomeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_RIGHT_ORIGIN);
 		leftHomeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_LEFT_ORIGIN);
 		newToteSensor = new DigitalInput(IO.DIO_TOTE_SENSOR);
-		currState = State.STANDBY;
+		currState = State.SETTING_HOME;
 		return false;
 	}
 
@@ -304,7 +304,7 @@ public class Elevations extends GenericSubsystem{
 			}
 
 			if(!rightHomeSwitch.get() && !leftHomeSwitch.get()){
-				currState = State.STANDBY;
+				liftTote();
 				goingUp = true;
 				wantedPosition = TOTE_LIFT_DIST;
 			}

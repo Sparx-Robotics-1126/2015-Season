@@ -3,6 +3,8 @@ package org.gosparx.team1126.robot.subsystem;
 import org.gosparx.team1126.robot.IO;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.Relay.Value;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -16,22 +18,16 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  */
 
 public class CanAcquisition extends GenericSubsystem{
-
 	
 	/**
-	 * Position for which the arms to drop
+	 * The position to drop arms
 	 */
-	private static final int DROP_RELEASE_POSITION = 0;
+	private static final Value DROP_AMRS = Value.kOn;
 	
 	/**
-	 * Position for which the arms to drop
+	 * The position to raise arms
 	 */
-	private static final int RIGHT_RAISE_RELEASE_POSITION = 180;
-	
-	/**
-	 * Position for which the arms raise
-	 */
-	private static final int LEFT_RAISE_RELEASE_POSITION = 0;
+	private static final Value RAISE_ARMS = Value.kOff;
 	
 	/**
 	 * The "grab" position of the pnu
@@ -49,30 +45,20 @@ public class CanAcquisition extends GenericSubsystem{
 	private DigitalInput leftArmInCan;
 
 	/**
-	 * This is the servo that releases both the arms
+	 * The solenoid for arm controls 
 	 */
-	private Servo releasingArmsServo;
-
-	/**
-	 * this is the servo to raise right arm
-	 */
-	private Servo raisingRightArmsServo; 
+	private Relay arms;
 	
-	/**
-	 * this is the servo to raise left arms
-	 */
-	private Servo raisingLeftArmsServo; 
-
 	/**
 	 * This is the solenoid for the right arm
 	 */
 	private Solenoid rightArm;
 
-	/** 
+	/**
 	 * This is the solenoid for the left arm
 	 */
 	private Solenoid leftArm;
-
+	
 	/**
 	 * The can acquisition for the singleton model
 	 */
@@ -132,9 +118,7 @@ public class CanAcquisition extends GenericSubsystem{
 		// TODO get all IO from IO class
 		rightArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_RIGHT_GRAB);
 		leftArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_LEFT_GRAB);
-		releasingArmsServo = new Servo(IO.PWM_ARM_DOWN);
-		raisingRightArmsServo = new Servo(IO.PWM_RIGHT_ARM_UP);
-		raisingLeftArmsServo = new Servo(IO.PWM_LEFT_ARM_UP);
+		arms = new Relay(0);
 		rightArm = new Solenoid(IO.PNU_ACQ_CAN_RIGHT);
 		leftArm = new Solenoid(IO.PNU_ACQ_CAN_LEFT);
 		return true;
@@ -145,9 +129,7 @@ public class CanAcquisition extends GenericSubsystem{
 	 */
 	@Override
 	protected void liveWindow() {
-		LiveWindow.addActuator(getName(), "Release Arm", releasingArmsServo);
-		LiveWindow.addActuator(getName(), "Raise Right Arms", raisingRightArmsServo);
-		LiveWindow.addActuator(getName(), "Raise Right Arms", raisingLeftArmsServo);
+		LiveWindow.addActuator(getName(), "Arms", arms);
 		LiveWindow.addActuator(getName(), "Right Arm", rightArm);
 		LiveWindow.addActuator(getName(), "Left Arm", leftArm);
 		LiveWindow.addSensor(getName(), "Right Arm Touch", rightArmInCan);
@@ -165,7 +147,7 @@ public class CanAcquisition extends GenericSubsystem{
 			hasRight = false;
 			break;
 		case DROP_ARMS:
-			releasingArmsServo.setAngle(DROP_RELEASE_POSITION);
+			arms.set(DROP_AMRS);
 			currentState = State.ATTEMPT_TO_GRAB;
 			break;
 		case ATTEMPT_TO_GRAB:
@@ -194,8 +176,7 @@ public class CanAcquisition extends GenericSubsystem{
 			currentState = State.STANDBY;
 			break;
 		case DISABLE:
-			raisingRightArmsServo.setAngle(RIGHT_RAISE_RELEASE_POSITION);
-			raisingLeftArmsServo.setAngle(LEFT_RAISE_RELEASE_POSITION);
+			arms.set(RAISE_ARMS);
 			currentState = State.STANDBY;
 			break;
 		default:

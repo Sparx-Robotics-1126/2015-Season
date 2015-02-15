@@ -439,19 +439,20 @@ public class Drives extends GenericSubsystem{
 		case SHIFTING_NEUTRAL:
 			lastShiftState = State.SHIFTING_NEUTRAL;
 			neutralPnu.set(ENABLE_NEUTRAL_SELECT);
-			shiftingPnu.set(LOW_GEAR);
-			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
+		
+			if(Timer.getFPGATimestamp() >= shiftTime + 0.1){
+				shiftingPnu.set(!LOW_GEAR);
+			}
+			
+			if(Timer.getFPGATimestamp() >= shiftTime + 0.5){
+				leftPower = 0.2;
+			}else{
+				leftPower = -0.2;
+			}
+			
+			if(Timer.getFPGATimestamp() >= shiftTime + 1){
 				currentDriveState = finalDriveState;
 			}
-			if(currentSpeed < 0){
-				rightPower = SHIFTINGSPEED * - 1;
-				leftPower = SHIFTINGSPEED * - 1;
-			}else{
-				rightPower = SHIFTINGSPEED;
-				leftPower = SHIFTINGSPEED;
-			}
-			rightPower/=2;
-			leftPower/=2;
 			break;
 		case NEUTRAL_SETUP:
 			//WANT TO GO TO NEUTRAL

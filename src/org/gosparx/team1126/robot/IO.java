@@ -34,8 +34,8 @@ public final class IO {
 	public static final int ANA_COLOR_RIGHT_BLUE		= 7;
 	
 	//DIO
-	public static final int DIO_DRIVES_LEFT_ENC_A		= 0;
-	public static final int DIO_DRIVES_LEFT_ENC_B		= 1;
+	public static final int DIO_DRIVES_LEFT_ENC_A		= 1;
+	public static final int DIO_DRIVES_LEFT_ENC_B		= 0;
 	public static final int DIO_DRIVES_RIGHT_ENC_A		= 3;
 	public static final int DIO_DRIVES_RIGHT_ENC_B		= 2;
 	public static final int DIO_ELEVATIONS_A			= 4;

@@ -361,7 +361,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private static final String DRIVES_TO_AUTOZONE_FROM_STAGING_NAME = "Into Autozone from wall";
 	private int[][] DRIVES_TO_AUTOZONE_FROM_STAGING = {
-			{AutoCommands.DRIVES_GO_FORWARD.toId(), 145, 50},
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 135, 50},
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.END.toId()}
 	};
@@ -372,7 +372,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private static final String ONE_YELLOW_TOTE_FROM_STAGING_NAME = "One yellow tote into Autozone";
 	private int[][] ONE_YELLOW_TOTE_FROM_STAGING = {
-			{AutoCommands.DRIVES_GO_FORWARD.toId(), 140, 75},
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 135, 75},
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.DRIVES_GO_REVERSE.toId(), 6, 100}, 
 			{AutoCommands.DRIVES_DONE.toId()},
@@ -397,11 +397,13 @@ public class Autonomous extends GenericSubsystem{
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.DRIVES_GO_REVERSE.toId(), 36, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
-		{AutoCommands.DRIVES_TURN_RIGHT.toId(), 35},
+		{AutoCommands.DRIVES_TURN_RIGHT.toId(), 45},
 		{AutoCommands.DRIVES_DONE.toId()},
-		{AutoCommands.DRIVES_GO_REVERSE.toId(), 120, 50},
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 140, 75},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.DRIVES_TURN_LEFT.toId(), 35},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 10, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.ARMS_RELEASE.toId()},
 		{AutoCommands.ARMS_RAISE.toId()},
@@ -414,7 +416,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private static final String TWO_CANS_RIGHT_STEP_NAME = "Two Cans from Step to right";
 	private static final int[][] TWO_CANS_RIGHT_STEP= {
-		{AutoCommands.DRIVES_GO_FORWARD.toId(), 55, 50},
+		{AutoCommands.DRIVES_GO_FORWARD.toId(), 55, 75},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.DRIVES_STEP_LINUP.toId()},
 		{AutoCommands.DRIVES_DONE.toId()},
@@ -426,11 +428,13 @@ public class Autonomous extends GenericSubsystem{
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.DRIVES_GO_REVERSE.toId(), 36, 50},
 		{AutoCommands.DRIVES_DONE.toId()},
-		{AutoCommands.DRIVES_TURN_LEFT.toId(), 35},
+		{AutoCommands.DRIVES_TURN_LEFT.toId(), 45},
 		{AutoCommands.DRIVES_DONE.toId()},
-		{AutoCommands.DRIVES_GO_REVERSE.toId(), 120, 50},
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 140, 50},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.DRIVES_TURN_RIGHT.toId(), 35},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 10, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.ARMS_RELEASE.toId()},
 		{AutoCommands.ARMS_RAISE.toId()},

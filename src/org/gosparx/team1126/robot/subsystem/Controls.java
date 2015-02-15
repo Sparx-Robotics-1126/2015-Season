@@ -123,7 +123,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
-//		operatorJoy.start();
+		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
 		return true;
@@ -193,6 +193,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				case ATTACK3_TRIGGER:
 					//TODO: force low gear
+					canAcq.setAutoFunction(CanAcquisition.State.DROP_ARMS);
 					break;
 				}
 				break;

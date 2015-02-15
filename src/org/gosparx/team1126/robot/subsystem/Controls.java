@@ -153,6 +153,16 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	@Override
 	protected boolean execute() {
 		drives.setPower(driverJoyLeft.getAxis(ATTACK3_Y_AXIS), driverJoyRight.getAxis(ATTACK3_Y_AXIS));
+		
+		//TRIMS
+		double hookOveride = operatorJoy.getAxis(-LOGI_RIGHT_X_AXIS);
+		double rotateOveride = operatorJoy.getAxis(-LOGI_RIGHT_Y_AXIS);
+		if(hookOveride > 0){
+			canAcqTele.manualHookOverride(hookOveride);
+		}
+		if(rotateOveride > 0){
+			canAcqTele.manualRotateOverride(rotateOveride);
+		}
 		return false;
 	}
 

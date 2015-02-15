@@ -24,7 +24,7 @@ public class CanAcqTele extends GenericSubsystem{
 	private static CanAcqTele canAcq;
 
 	private Elevations elevations;
-	
+
 	/**
 	 * The motor that rotates the arms
 	 */
@@ -59,14 +59,14 @@ public class CanAcqTele extends GenericSubsystem{
 	 * Rotate home sensor
 	 */
 	private DigitalInput rotateHome;
-	
+
 	/**
 	 * Hook home sensor
 	 */
 	private DigitalInput hookHome;
 
 	private PowerDistributionPanel pdp;
-	
+
 	/***********************Constants*********************/
 
 	/**
@@ -98,22 +98,22 @@ public class CanAcqTele extends GenericSubsystem{
 	 * The minimum hook speed
 	 */
 	private static final double MIN_HOOK_SPEED = 0.4;
-	
+
 	/**
 	 * The max position for the rotation
 	 */
 	private static final double MAX_ROTATION = 85;
-	
+
 	/**
 	 * The position for the hook to acq
 	 */
 	private static final double ACQ_CAN_DIST = 23;
-	
+
 	/**
 	 * The max pos for the hook
 	 */
 	private static final double MAX_HOOK_POS = 44;
-	
+
 	/***********************Variables*********************/
 
 	/**
@@ -136,6 +136,16 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	private RotateState currentRotateState;
 	
+	/**
+	 * The wanted speed of the hooks
+	 */
+	private double wantedHookSpeed = 0;
+	
+	/**
+	 * The wanted speed of rotation
+	 */
+	private double wantedRotateSpeed = 0;
+
 	/**
 	 * @return a CanAcqTele
 	 */
@@ -192,11 +202,9 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		double wantedHookSpeed = 0;
-		double wantedRotateSpeed = 0;
 		switch(currentRotateState){
 		case STANDBY:
-			
+
 			break;
 		case ROTATING:
 			double calculatedRotateSpeed = -(wantedAngle - rotateEncData.getDistance()) / 490;
@@ -205,11 +213,11 @@ public class CanAcqTele extends GenericSubsystem{
 			}else{
 				wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_DOWN_SPEED) ? calculatedRotateSpeed : -MIN_ROTATE_DOWN_SPEED);
 			}
-			
+
 			if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  60){
 				elevations.moveElevator(15, 1);
 			}
-			
+
 			if((rotateEncData.getDistance() >= wantedAngle - 2 && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle + 2 && calculatedRotateSpeed > 0)){
 				currentRotateState = RotateState.STANDBY;
 				wantedRotateSpeed = 0;
@@ -226,10 +234,10 @@ public class CanAcqTele extends GenericSubsystem{
 			}
 			break;
 		}
-			
+
 		switch(currentHookState){
 		case STANDBY:
-			
+
 			break;
 		case MOVING:
 			double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 2)*0.75;
@@ -258,7 +266,23 @@ public class CanAcqTele extends GenericSubsystem{
 		hookMotor.set(-wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor
 		return false;
 	}
-	
+
+	/**
+	 * Set the rotate manual speed directly
+	 * @param speed - (-1 - 1)
+	 */
+	public void manualRotateOverride(double speed){
+		wantedRotateSpeed = speed;
+	}
+
+	/**
+	 * Set the hook manual speed directly
+	 * @param speed - (-1 - 1)
+	 */
+	public void manualHookOverride(double speed){
+		wantedHookSpeed = speed;
+	}
+
 	/**
 	 * Goes to acquiring mode
 	 */
@@ -268,15 +292,15 @@ public class CanAcqTele extends GenericSubsystem{
 		currentHookState = HookState.MOVING;
 		currentRotateState = RotateState.ROTATING;
 	}
-	
+
 	/**
-	 * Inital Setup
+	 * Initial Setup
 	 */
 	public void initalizedPositions(){
 		currentHookState = HookState.HOOK_FINDING_HOME;
 		currentRotateState = RotateState.ROTATE_FINDING_HOME;
 	}
-	
+
 	/**
 	 * Brings the can in
 	 */
@@ -286,7 +310,7 @@ public class CanAcqTele extends GenericSubsystem{
 		currentHookState = HookState.MOVING;
 		currentRotateState = RotateState.ROTATING;
 	}
-	
+
 	/**
 	 * Moves the can up DISTANCE_PER_TOTE
 	 */
@@ -315,7 +339,7 @@ public class CanAcqTele extends GenericSubsystem{
 		LOG.logMessage("Hook Home: " + hookHome.get() + " Rotate Home: " + rotateHome.get());
 		LOG.logMessage("Hook Current: " + pdp.getCurrent(IO.PWM_CAN_HOOK));
 	}
-	
+
 	/**
 	 * The states for the hook
 	 * @author Mike
@@ -338,7 +362,7 @@ public class CanAcqTele extends GenericSubsystem{
 			}
 		}
 	}
-	
+
 	/**
 	 * The states for rotating
 	 * @author Mike

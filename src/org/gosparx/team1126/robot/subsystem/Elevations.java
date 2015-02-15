@@ -104,7 +104,7 @@ public class Elevations extends GenericSubsystem{
 	 * The minimum speed the elevator can travel while moving up
 	 */
 	private static final double MIN_UP_SPEED = 0.15;
-	
+
 	/**
 	 * The minimum speed the elevator can travel while moving down
 	 */
@@ -131,6 +131,11 @@ public class Elevations extends GenericSubsystem{
 	 * The wanted position of the elevations system
 	 */
 	private double wantedPosition;
+
+	/**
+	 * A value between 0 - 1 which is the max speed the motors will go
+	 */
+	private double maxPower;
 
 	/**
 	 * The current state of the system
@@ -190,15 +195,15 @@ public class Elevations extends GenericSubsystem{
 		wantedSpeed = 0;
 		elevationRightEncoderData.calculateSpeed();
 		elevationLeftEncoderData.calculateSpeed();
-		
+
 		if(currState == State.STANDBY && !newToteSensor.get()){
 			lowerTotes();
 			LOG.logMessage("New tote acquired, starting lifting sequence");
 		}
-		
+
 		switch(currState){
 		case STANDBY:
-			
+
 			break;
 		case COMPLEX_MOVE:
 			double rightDistance = elevationRightEncoderData.getDistance();
@@ -206,6 +211,19 @@ public class Elevations extends GenericSubsystem{
 			double rightSpeed = (wantedPosition - rightDistance)/6.0;
 			double leftSpeed = (wantedPosition - leftDistance)/6.0;
 
+			//MAX SPEEd
+			if(rightSpeed < 0){
+				rightSpeed = Math.abs(rightSpeed) > maxPower ? -maxPower : rightSpeed;
+			}else{
+				rightSpeed = Math.abs(rightSpeed) > maxPower ? maxPower : rightSpeed;
+			}
+			if(leftSpeed < 0){
+				leftSpeed = Math.abs(leftSpeed) > maxPower ? -maxPower : leftSpeed;
+			}else{
+				leftSpeed = Math.abs(leftSpeed) > maxPower ? maxPower : leftSpeed;
+			}
+			
+			//ELEVATOR LEVEL
 			if(rightDistance > (leftDistance + MAX_OFFSET)){
 				rightWantedSpeed -= 0.02;
 				leftWantedSpeed += 0.02;
@@ -221,7 +239,6 @@ public class Elevations extends GenericSubsystem{
 					leftWantedSpeed = Math.abs(leftSpeed) < MIN_DOWN_SPEED ? -MIN_DOWN_SPEED: leftSpeed;
 				}
 			}
-
 
 			//DONE
 			if(((rightDistance >= wantedPosition - 0.25 && goingUp) || (rightDistance <= wantedPosition + 0.25 && !goingUp)) && !rightDone){
@@ -253,12 +270,14 @@ public class Elevations extends GenericSubsystem{
 				}
 			}
 
+			//BOTTOM LIMIT
 			if(!rightHomeSwitch.get() && !goingUp){
 				rightWantedSpeed = 0;
 			}
 			if(!leftHomeSwitch.get() && !goingUp){
 				leftWantedSpeed = 0;
 			}
+			
 			if(!rightHomeSwitch.get() && !leftHomeSwitch.get() && !goingUp){
 				LOG.logMessage("LIMIT SWITCHES HAVE BEEN TRIGGERED***");
 				elevationLeftEncoderData.reset();
@@ -318,6 +337,7 @@ public class Elevations extends GenericSubsystem{
 		goingUp = false;
 		wantedPosition = 0;
 		currState = State.COMPLEX_MOVE;
+		maxPower = 1;
 	}
 
 	/**
@@ -327,6 +347,23 @@ public class Elevations extends GenericSubsystem{
 		goingUp = true;
 		wantedPosition = TOTE_LIFT_DIST;
 		currState = State.COMPLEX_MOVE;
+		maxPower = 1;
+	}
+
+	/**
+	 * The position to which you want to move the elevator to
+	 * @param position - 0 is ground level, 14 is max height
+	 * @param maxPower - (0 - 1) the max power of the robot
+	 */
+	public void moveElevator(double position, double power){
+		if(elevationRightEncoderData.getDistance() > position){
+			goingUp = false;
+		}else{
+			goingUp = true;
+		}
+		currState = State.COMPLEX_MOVE;
+		wantedPosition = position;
+		maxPower = power;
 	}
 
 	/**

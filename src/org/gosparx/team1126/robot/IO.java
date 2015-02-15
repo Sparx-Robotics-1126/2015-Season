@@ -30,8 +30,8 @@ public final class IO {
 	public static final int DIO_DRIVES_LEFT_ENC_B		= 1;
 	public static final int DIO_DRIVES_RIGHT_ENC_A		= 2;
 	public static final int DIO_DRIVES_RIGHT_ENC_B		= 3;
-	public static final int DIO_ELEVATIONS_LEFT_A		= 4;
-	public static final int DIO_ELEVATIONS_LEFT_B		= 5;
+	public static final int DIO_ELEVATIONS_LEFT_A		= 5;
+	public static final int DIO_ELEVATIONS_LEFT_B		= 4;
 	public static final int DIO_CAN_HOOK_A				= 6;
 	public static final int DIO_CAN_HOOK_B				= 7;
 	public static final int DIO_CAN_ROTATE_A			= 8;

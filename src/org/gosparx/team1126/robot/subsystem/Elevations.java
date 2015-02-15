@@ -292,7 +292,7 @@ public class Elevations extends GenericSubsystem{
 				elevationRightEncoderData.reset();
 				rightWantedSpeed = 0;
 			}else{
-				rightWantedSpeed = -0.2;
+				rightWantedSpeed = -0.3;
 			}
 
 			if(!leftHomeSwitch.get()){
@@ -381,7 +381,8 @@ public class Elevations extends GenericSubsystem{
 	protected void writeLog() {
 		LOG.logMessage("Current State: " + currState.toString(currState));
 		LOG.logMessage("Wanted Position: " + wantedPosition);
-		LOG.logMessage("Current Position: Right: " + elevationRightEncoderData.getDistance() + " Left: " + elevationLeftEncoderData.getDistance());
+		LOG.logMessage("Current Posit"
+				+ "ion: Right: " + elevationRightEncoderData.getDistance() + " Left: " + elevationLeftEncoderData.getDistance());
 		LOG.logMessage("Right Sensor: " + !rightHomeSwitch.get() + " Left: " + !leftHomeSwitch.get());
 		LOG.logMessage("New Tote: " + !newToteSensor.get());
 	}

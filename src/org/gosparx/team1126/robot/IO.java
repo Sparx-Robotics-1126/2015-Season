@@ -32,12 +32,14 @@ public final class IO {
 	public static final int DIO_DRIVES_LEFT_ENC_B		= 1;
 	public static final int DIO_DRIVES_RIGHT_ENC_A		= 2;
 	public static final int DIO_DRIVES_RIGHT_ENC_B		= 3;
-	public static final int DIO_ELEVATIONS_A			= 4;
-	public static final int DIO_ELEVATIONS_B			= 5;
+	public static final int DIO_ELEVATIONS_LEFT_A		= 5;
+	public static final int DIO_ELEVATIONS_LEFT_B		= 4;
 	public static final int DIO_CAN_HOOK_A				= 6;
 	public static final int DIO_CAN_HOOK_B				= 7;
 	public static final int DIO_CAN_ROTATE_A			= 8;
 	public static final int DIO_CAN_ROTATE_B			= 9;
+	public static final int DIO_ELEVATIONS_RIGHT_A		= 10;
+	public static final int DIO_ELEVATIONS_RIGHT_B		= 11;
 	
 	public static final int DIO_LEFT_STEP				= 10;//REMOVE
 	public static final int DIO_RIGHT_STEP 				= 11;//REMOVE
@@ -46,7 +48,9 @@ public final class IO {
 	public static final int DIO_CAN_AUTO_RIGHT_GRAB		= 17;
 	public static final int DIO_CAN_AUTO_LEFT_GRAB		= 16;
 	
-	public static final int DIO_ELEVATIONS_ORIGIN		= 21;
+	public static final int DIO_ELEVATIONS_LEFT_ORIGIN	= 20;
+	public static final int DIO_ELEVATIONS_RIGHT_ORIGIN	= 21;
+	
 	public static final int DIO_COLOR_LED_LEFT			= 24;
 	public static final int DIO_COLOR_LED_RIGHT			= 25;
 	

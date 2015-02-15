@@ -13,14 +13,14 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  * @author Alex Mechler {amechler1998@gmail.com}
  * @author Nate
  */
-public class Elevations2 extends GenericSubsystem{
+public class Elevations extends GenericSubsystem{
 
 	//******************OBJECTS**********************
 
 	/**
 	 * The only instance of Elevatios2
 	 */
-	private static Elevations2 elevations;
+	private static Elevations elevations;
 
 	/**
 	 * Right Elevations motor
@@ -148,9 +148,9 @@ public class Elevations2 extends GenericSubsystem{
 	/**
 	 * Returns the only instance of elevations
 	 */
-	public static synchronized Elevations2 getInstance(){
+	public static synchronized Elevations getInstance(){
 		if(elevations == null){
-			elevations = new Elevations2();
+			elevations = new Elevations();
 		}
 		return elevations;
 	}
@@ -158,7 +158,7 @@ public class Elevations2 extends GenericSubsystem{
 	/**
 	 * Creates a new elevations
 	 */
-	private Elevations2() {
+	private Elevations() {
 		super("Elevations", Thread.NORM_PRIORITY);
 	}
 

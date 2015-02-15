@@ -44,7 +44,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	private CanAcquisition canAcq;
 	
-	private Elevations2 elevations;
+	private Elevations elevations;
 	
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
@@ -128,7 +128,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
-		elevations = Elevations2.getInstance();
+		elevations = Elevations.getInstance();
 		return true;
 	}
 

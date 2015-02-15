@@ -82,7 +82,6 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private static final int ATTACK3_Z_AXIS = 3;
 	private static final int ATTACK3_TRIGGER = 1;
 	private static final int ATTACK3_TOP_BUTTON = 2;
-	private static final int ATTACK3_TOP_BUTTON = 2;
 
 	/**
 	 * if controls == null, make a new controls

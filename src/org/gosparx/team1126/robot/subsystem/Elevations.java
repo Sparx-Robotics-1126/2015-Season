@@ -1,7 +1,7 @@
 package org.gosparx.team1126.robot.subsystem;
 
-import org.gosparx.sensors.EncoderData;
 import org.gosparx.team1126.robot.IO;
+import org.gosparx.team1126.robot.sensors.EncoderData;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;

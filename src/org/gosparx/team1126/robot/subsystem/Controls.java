@@ -180,7 +180,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				case ATTACK3_TRIGGER:
 					//TODO: Down Shift
-					canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
+					canAcq.setAutoFunction(CanAcquisition.State.DROP_ARMS);
 					break;
 				}
 				break;

@@ -101,6 +101,7 @@ public class CanAcquisition extends GenericSubsystem{
 	 */
 	public void setAutoFunction(State wantedAutoState) {
 		currentState = wantedAutoState;
+		LOG.logMessage("Auto Can State changing to: "+ State.getName(wantedAutoState));
 	}
 	
 	/**
@@ -119,6 +120,7 @@ public class CanAcquisition extends GenericSubsystem{
 		rightArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_RIGHT_GRAB);
 		leftArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_LEFT_GRAB);
 		arms = new Relay(0);
+		arms.set(RAISE_ARMS);
 		rightArm = new Solenoid(IO.PNU_ACQ_CAN_RIGHT);
 		leftArm = new Solenoid(IO.PNU_ACQ_CAN_LEFT);
 		return true;

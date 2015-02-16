@@ -107,7 +107,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The position for the hook to acq
 	 */
-	private static final double ACQ_CAN_DIST = 23;
+	private static final double ACQ_CAN_DIST = 22.5;
 
 	/**
 	 * The max pos for the hook

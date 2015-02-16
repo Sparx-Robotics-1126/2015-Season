@@ -278,7 +278,7 @@ public class Elevations extends GenericSubsystem{
 
 			//DONE
 			if(((rightDistance >= wantedPosition - 0.15 && goingUp) || (rightDistance <= wantedPosition + 0.15 && !goingUp)) && !rightDone){
-				LOG.logMessage("RIGHT POSITION HAS BEEN FOUND at: " + wantedPosition);
+//				LOG.logMessage("RIGHT POSITION HAS BEEN FOUND at: " + wantedPosition);
 				rightDone = true;
 				rightWantedSpeed = 0;
 			}
@@ -335,6 +335,7 @@ public class Elevations extends GenericSubsystem{
 
 			break;
 		case SETTING_HOME:
+			System.out.println("I HAVE GONE HERE");
 			if(!rightHomeSwitch.get()){
 				LOG.logMessage("Right Home set");	
 				elevationRightEncoderData.reset();

@@ -385,16 +385,16 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private static final String TWO_CANS_LEFT_STEP_NAME = "Two Cans from Step to left";
 	private static final int[][] TWO_CANS_LEFT_STEP= {
-		{AutoCommands.DRIVES_GO_FORWARD.toId(), 55, 100},
+		{AutoCommands.DRIVES_GO_FORWARD.toId(), 58, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
-		{AutoCommands.DRIVES_STEP_LINUP.toId()},
-		{AutoCommands.DRIVES_DONE.toId()},
+		//{AutoCommands.DRIVES_STEP_LINUP.toId()},
+		//{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.ARMS_DROP.toId()},
 		{AutoCommands.CHECK_TIME.toId(), 5, 8},
 		{AutoCommands.DRIVES_DANCE.toId()},
 		{AutoCommands.ARMS_DONE.toId()},
-		{AutoCommands.DRIVES_STEP_LINUP.toId()},
-		{AutoCommands.DRIVES_DONE.toId()},
+		//{AutoCommands.DRIVES_STEP_LINUP.toId()},
+		//{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.DRIVES_GO_REVERSE.toId(), 36, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.DRIVES_TURN_RIGHT.toId(), 45},
@@ -442,11 +442,18 @@ public class Autonomous extends GenericSubsystem{
 	};
 
 	private static final int[][] TEST_AUTO = {
-		{AutoCommands.DRIVES_GO_FORWARD.toId(), 55, 50},
+		{AutoCommands.DRIVES_GO_FORWARD.toId(), 58, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
-		{AutoCommands.DRIVES_STEP_LINUP.toId()},
+		//{AutoCommands.DRIVES_STEP_LINUP.toId()},
+		//{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.ARMS_DROP.toId()},
+		{AutoCommands.CHECK_TIME.toId(), 5, 8},
+		{AutoCommands.DRIVES_DANCE.toId()},
+		{AutoCommands.ARMS_DONE.toId()},
+		//{AutoCommands.DRIVES_STEP_LINUP.toId()},
+		//{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 140, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
-		{AutoCommands.END.toId()}
 	};
 
 
@@ -669,8 +676,9 @@ public class Autonomous extends GenericSubsystem{
 				LOG.logError("Unknown autocommand: " + currentAuto[currentStep]);
 			}
 			//WAIT
-			if(waitTime > Timer.getFPGATimestamp()){
-				increaseStep = false;
+			if(waitTime < Timer.getFPGATimestamp()){
+				increaseStep = true;
+				waitTime = Double.MAX_VALUE;
 			}
 			
 			if(increaseStep){

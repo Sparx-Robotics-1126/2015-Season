@@ -325,7 +325,7 @@ public class Elevations extends GenericSubsystem{
 			break;
 		case SETTING_HOME:
 			if(!rightHomeSwitch.get()){
-				LOG.logMessage("Right Home set");	
+//				LOG.logMessage("Right Home set");	
 				elevationRightEncoderData.reset();
 				rightWantedSpeed = 0;
 			}else{
@@ -333,7 +333,7 @@ public class Elevations extends GenericSubsystem{
 			}
 
 			if(!leftHomeSwitch.get()){
-				LOG.logMessage("Left Home set");
+//				LOG.logMessage("Left Home set");
 				elevationLeftEncoderData.reset();
 				leftWantedSpeed = 0;
 			}else{

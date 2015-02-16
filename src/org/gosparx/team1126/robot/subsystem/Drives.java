@@ -132,9 +132,6 @@ public class Drives extends GenericSubsystem{
 	 */
 	private PowerDistributionPanel pdp;
 
-
-	private PowerDistributionPanel pdp;
-
 	//********************************CONSTANTS****************************
 	/**
 	 * The P value in the drives left/right PID loop
@@ -208,10 +205,6 @@ public class Drives extends GenericSubsystem{
 	 */
 	private static final int STOP_MOTOR = 0;
 
-	/**
-	 * The distance the robot will dance
-	 */
-	private static final int DANCE_DISTANCE = 2;
 	/**
 	 * Use PID Debugger (DRIVES WILL NOT WORK WITH JOYSTICK INPUT)
 	 */
@@ -494,9 +487,9 @@ public class Drives extends GenericSubsystem{
 			}
 			break;
 		case AUTO_STEP_LINEUP:
-			boolean right = (pdp.getCurrent(14) + pdp.getCurrent(15))/2 > 9 ? true : false; //rightTouch.get();
-			boolean left = (pdp.getCurrent(12) + pdp.getCurrent(13))/2 > 9 ? true : false;//leftTouch.get();
-			System.out.println("Right: " + pdp.getCurrent(14) + " LEFt: " + pdp.getCurrent(12));
+			boolean right = (pdp.getCurrent(14) + pdp.getCurrent(15))/2 > 8 ? true : false; //rightTouch.get();
+			boolean left = (pdp.getCurrent(12) + pdp.getCurrent(13))/2 > 8 ? true : false;//leftTouch.get();
+//			System.out.println("Right: " + pdp.getCurrent(14) + " LEFt: " + pdp.getCurrent(12));
 			if(right){
 				//rightPower = -LINEUP_SPEED;
 //				rightPower = 0;
@@ -642,9 +635,9 @@ public class Drives extends GenericSubsystem{
 		//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
 		//		log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
 		//		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-				LOG.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
-						" Right Encoder: " +encoderDataRight.getSpeed());
-		//		log.logMessage("Gyro: " + gyro.getAngle());
+				LOG.logMessage("Left Encoder: " + encoderDataLeft.getDistance() +
+						" Right Encoder: " +encoderDataRight.getDistance());
+		LOG.logMessage("Gyro: " + gyro.getAngle());
 	}
 
 	/**
@@ -776,7 +769,7 @@ public class Drives extends GenericSubsystem{
 	private double gyroOffset(){
 		double currentAngle = gyro.getAngle();
 		double position = autoWantedTurn - currentAngle;
-		return position > 0 ? -(1.0/16)*(Math.sqrt(position)) : (1.0/16)*(Math.sqrt(-position));
+		return position < 0 ? -(1.0/16)*(Math.sqrt(position)) : (1.0/16)*(Math.sqrt(-position));
 	}
 
 	/**
@@ -834,8 +827,6 @@ public class Drives extends GenericSubsystem{
 		String subsytemName = getName();
 		LiveWindow.addActuator(subsytemName, "Shifting", shiftingPnu);
 		LiveWindow.addSensor(subsytemName, "Gyro", gyro);
-		LiveWindow.addSensor(subsytemName, "Right Step Touch", rightTouch);
-		LiveWindow.addSensor(subsytemName, "Left Step Touch", leftTouch);
 		LiveWindow.addActuator(subsytemName, "Right Encoder", encoderRight);
 		LiveWindow.addActuator(subsytemName, "Left Encoder", encoderLeft);
 		LiveWindow.addActuator(subsytemName, "Right Front Motor", rightFront);

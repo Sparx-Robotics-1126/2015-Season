@@ -62,8 +62,8 @@ public final class IO {
 	public static final int PNU_SHIFT					= 0;
 	public static final int PNU_ACQ_TOTE				= 1;
 	public static final int PNU_ACQ_TRAVEL				= 2;
-	public static final int PNU_ACQ_CAN_LEFT			= 5;
-	public static final int PNU_ACQ_CAN_RIGHT			= 4;
+	public static final int PNU_ACQ_CAN_LEFT			= 4;
+	public static final int PNU_ACQ_CAN_RIGHT			= 5;
 	public static final int PNU_DISENGAGE_DRIVES		= 3;
 	public static final int PNU_TOTE_STOP				= 6;
 	public static final int PNU_ACQ_CLUTCH				= 7;

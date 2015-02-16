@@ -61,6 +61,12 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 * Instance for Elevations
 	 */
 	private Elevations elevations;
+	
+	/**
+	 * Instance for CanAcqTele
+	 */
+	private CanAcqTele canAcqTele;
+	
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
 	//**************************************************************************
@@ -163,10 +169,14 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		//TRIMS
 		double hookOveride = -operatorJoy.getAxis(LOGI_RIGHT_X_AXIS);
 		double rotateOveride = -operatorJoy.getAxis(LOGI_RIGHT_Y_AXIS);
-		if(hookOveride > 0){
+		if(Math.abs(hookOveride) > 0 || Math.abs(rotateOveride) > 0){
+			canAcqTele.overriding(true);
 			canAcqTele.manualHookOverride(hookOveride);
+			canAcqTele.manualRotateOverride(rotateOveride);
+		}else{
+			canAcqTele.overriding(false);
 		}
-				
+		
 		//Driver vs Operator
 		if((left != 0 || right != 0) || !operatorWantsControl){
 			drives.setPower(left, right, true);
@@ -174,10 +184,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			drives.setPower(-0.6, 0, false);
 		}
 		
-		if(rotateOveride > 0){
-			canAcqTele.manualRotateOverride(rotateOveride);
-		}
-			return false;
+		return false;
 	}
 
 	/** 
@@ -239,24 +246,23 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case LOGI_A:
 					//Human Feed Mode
-//					canAcqTele.initalizedPositions();
-//					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
+					toteAcq.setClutch(ClutchState.ON);
+					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
 					toteAcq.setStopper(StopState.ON);
 					operatorWantsControl = true;
-				
 					break;
 				case LOGI_B:
 					//Floor Mode
+					toteAcq.setClutch(ClutchState.ON);
 					toteAcq.setRollerPos(RollerPosition.FLOOR);
 					toteAcq.setStopper(StopState.ON);
 					operatorWantsControl = true;
 					break;
 				case LOGI_Y:
 					//TODO: OFF Mode
-
-//					toteAcq.setClutch(ClutchState.OFF);
+					toteAcq.setClutch(ClutchState.OFF);
 					toteAcq.setStopper(StopState.ON);
-//					toteAcq.setRollerPos(RollerPosition.TRAVEL);
+					toteAcq.setRollerPos(RollerPosition.TRAVEL);
 					operatorWantsControl = false;
 					break;
 				case LOGI_X:

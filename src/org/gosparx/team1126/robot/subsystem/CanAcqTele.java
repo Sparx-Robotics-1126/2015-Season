@@ -135,16 +135,21 @@ public class CanAcqTele extends GenericSubsystem{
 	 * The current state rotate is in
 	 */
 	private RotateState currentRotateState;
-	
+
 	/**
 	 * The wanted speed of the hooks
 	 */
 	private double wantedHookSpeed = 0;
-	
+
 	/**
 	 * The wanted speed of rotation
 	 */
 	private double wantedRotateSpeed = 0;
+
+	/**
+	 * True if auto controls are used
+	 */
+	private boolean useAutoFunctions = true;
 
 	/**
 	 * @return a CanAcqTele
@@ -202,66 +207,68 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		switch(currentRotateState){
-		case STANDBY:
+		if(useAutoFunctions){
+			switch(currentRotateState){
+			case STANDBY:
+				break;
+			case ROTATING:
+				double calculatedRotateSpeed = -(wantedAngle - rotateEncData.getDistance()) / 490;
+				if(calculatedRotateSpeed > 0){
+					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_UP_SPEED) ? calculatedRotateSpeed : MIN_ROTATE_UP_SPEED);
+				}else{
+					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_DOWN_SPEED) ? calculatedRotateSpeed : -MIN_ROTATE_DOWN_SPEED);
+				}
 
-			break;
-		case ROTATING:
-			double calculatedRotateSpeed = -(wantedAngle - rotateEncData.getDistance()) / 490;
-			if(calculatedRotateSpeed > 0){
-				wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_UP_SPEED) ? calculatedRotateSpeed : MIN_ROTATE_UP_SPEED);
-			}else{
-				wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_DOWN_SPEED) ? calculatedRotateSpeed : -MIN_ROTATE_DOWN_SPEED);
+				if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  60){
+					elevations.moveElevator(15, 1);
+				}
+
+				if((rotateEncData.getDistance() >= wantedAngle - 2 && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle + 2 && calculatedRotateSpeed > 0)){
+					currentRotateState = RotateState.STANDBY;
+					wantedRotateSpeed = 0;
+					LOG.logMessage("Done rotating");
+				}
+				break;
+			case ROTATE_FINDING_HOME:
+				wantedRotateSpeed = 0.4;
+				if(!rotateHome.get()){
+					wantedRotateSpeed = 0;
+					currentRotateState = RotateState.STANDBY;
+					LOG.logMessage("Rotate has found home");
+					rotateEncData.reset();
+				}
+				break;
 			}
 
-			if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  60){
-				elevations.moveElevator(15, 1);
-			}
+			switch(currentHookState){
+			case STANDBY:
 
-			if((rotateEncData.getDistance() >= wantedAngle - 2 && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle + 2 && calculatedRotateSpeed > 0)){
-				currentRotateState = RotateState.STANDBY;
-				wantedRotateSpeed = 0;
-				LOG.logMessage("Done rotating");
+				break;
+			case MOVING:
+				double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 2)*0.75;
+				if(calculatedMovingSpeed > 0){
+					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : MIN_HOOK_SPEED; 
+				}else{
+					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : -MIN_HOOK_SPEED;
+				}
+				if((hookEncData.getDistance() >= wantedHookPos - 0.5 && calculatedMovingSpeed < 0) || (hookEncData.getDistance() <= wantedHookPos + 0.5 && calculatedMovingSpeed > 0)){
+					wantedHookSpeed = 0;
+					currentHookState = HookState.STANDBY;
+					LOG.logMessage("Done moving hook");
+				}
+				break;
+			case HOOK_FINDING_HOME:
+				wantedHookSpeed = 0.9;
+				if(!hookHome.get()){
+					hookEncData.reset();
+					currentHookState = HookState.STANDBY;
+					wantedHookSpeed = 0;
+					LOG.logMessage("Hook has found home");
+				}
+				break;
 			}
-			break;
-		case ROTATE_FINDING_HOME:
-			wantedRotateSpeed = 0.4;
-			if(!rotateHome.get()){
-				wantedRotateSpeed = 0;
-				currentRotateState = RotateState.STANDBY;
-				LOG.logMessage("Rotate has found home");
-				rotateEncData.reset();
-			}
-			break;
 		}
-
-		switch(currentHookState){
-		case STANDBY:
-
-			break;
-		case MOVING:
-			double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 2)*0.75;
-			if(calculatedMovingSpeed > 0){
-				wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : MIN_HOOK_SPEED; 
-			}else{
-				wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : -MIN_HOOK_SPEED;
-			}
-			if((hookEncData.getDistance() >= wantedHookPos - 0.5 && calculatedMovingSpeed < 0) || (hookEncData.getDistance() <= wantedHookPos + 0.5 && calculatedMovingSpeed > 0)){
-				wantedHookSpeed = 0;
-				currentHookState = HookState.STANDBY;
-				LOG.logMessage("Done moving hook");
-			}
-			break;
-		case HOOK_FINDING_HOME:
-			wantedHookSpeed = 0.9;
-			if(!hookHome.get()){
-				hookEncData.reset();
-				currentHookState = HookState.STANDBY;
-				wantedHookSpeed = 0;
-				LOG.logMessage("Hook has found home");
-			}
-			break;
-		}
+		
 		rotateMotor.set(wantedRotateSpeed);
 		hookMotor.set(wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor
 		return false;
@@ -281,6 +288,17 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	public void manualHookOverride(double speed){
 		wantedHookSpeed = speed;
+	}
+
+	/**
+	 * Used to set weather to use auto controls or manual
+	 * @param override - true if using manual controls
+	 */
+	public void overriding(boolean override){
+		if(!override != useAutoFunctions){
+			LOG.logMessage("Auto controls are being overrode");
+		}
+		useAutoFunctions = !override;
 	}
 
 	/**

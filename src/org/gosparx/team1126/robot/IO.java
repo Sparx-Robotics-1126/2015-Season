@@ -21,8 +21,9 @@ public final class IO {
 	public static final int PWM_ELEVATIONS_RIGHT 		= 5;
 	public static final int PWM_CAN_ROTATE				= 6;
 	public static final int PWM_CAN_HOOK				= 7;
-	public static final int PWM_ARM_DOWN				= 8;
-	public static final int PWM_ARM_UP					= 9;
+	public static final int PWM_ARM_DOWN				= 10;
+	public static final int PWM_RIGHT_ARM_UP			= 9;
+	public static final int PWM_LEFT_ARM_UP				= 8;
 	
 	//Analog
 	public static final int ANA_GYRO					= 0;
@@ -59,9 +60,9 @@ public final class IO {
 	public static final int PNU_SHIFT					= 0;
 	public static final int PNU_ACQ_TOTE				= 1;
 	public static final int PNU_ACQ_TRAVEL				= 2;
-	public static final int PNU_ACQ_CAN_LEFT			= 3;
-	public static final int PNU_ACQ_CAN_RIGHT			= 4;
-	public static final int PNU_DISENGAGE_DRIVES		= 5;
+	public static final int PNU_ACQ_CAN_LEFT			= 4;
+	public static final int PNU_ACQ_CAN_RIGHT			= 5;
+	public static final int PNU_DISENGAGE_DRIVES		= 3;
 	public static final int PNU_TOTE_STOP				= 6;
-	public static final int PNU_ACQ_CLUTCH				= 9;
+	public static final int PNU_ACQ_CLUTCH				= 7;
 }

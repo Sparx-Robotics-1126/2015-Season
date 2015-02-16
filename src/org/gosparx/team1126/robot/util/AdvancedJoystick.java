@@ -48,7 +48,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 	private static final double DEADBAND = .04;
 
 	/**
-	 * Creates a new advanced joystick
+	 * Creates a new advanced joystick - INSTABLE IF JOYSTICKS ARE NOT ALWAYS PLUGGED IN
 	 * @param name - The name of the thread
 	 * @param joyPort - the port the joystick is in
 	 */
@@ -60,6 +60,17 @@ public class AdvancedJoystick extends GenericSubsystem{
 		multibuttons = new ArrayList<Multibutton>();
 		listeners = new ArrayList<JoystickListener>();
 		prevValues = new boolean[joy.getButtonCount() + 1];
+	}
+	
+	/**
+	 * Creates a new advanced joystick
+	 * @param name - The name of the thread
+	 * @param joyPort - the port the joystick is in
+	 * @param numButtons - The number of buttons on the joystick
+	 */
+	public AdvancedJoystick(String name, int joyPort, int numButtons){
+		this(name, joyPort);
+		prevValues = new boolean[numButtons];
 	}
 
 	/**
@@ -130,7 +141,6 @@ public class AdvancedJoystick extends GenericSubsystem{
 		}
 		if(joy.getRawButton(button) != prevValues[button]){
 			notifyAllListeners(new ButtonEvent(button, joy.getRawButton(button)));
-			LOG.logMessage("ButtonEvent( " + port + ", " + button + ", " + joy.getRawButton(button) + ")");
 		}
 	}
 
@@ -261,7 +271,6 @@ public class AdvancedJoystick extends GenericSubsystem{
 			if(last != (joy.getRawButton(button1) && joy.getRawButton(button2))){
 				last = (joy.getRawButton(button1) && joy.getRawButton(button2));
 				notifyAllListeners(new MultibuttonEvent(button1, button2, last));
-				LOG.logMessage("MultibuttonEvent( " + port + ", " + button1 + ", " + button2 + ", " + last + ")");
 				updated = true;
 			}
 		}

@@ -2,7 +2,6 @@ package org.gosparx.team1126.robot.subsystem;
 
 import org.gosparx.team1126.robot.IO;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
@@ -119,8 +118,6 @@ public class ToteAcq extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		if(DriverStation.getInstance().isTest())
-			return true;
 		switch (currPos) {
 		case FLOOR:
 			longCylinder.set(OUT);

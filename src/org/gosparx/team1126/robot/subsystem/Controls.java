@@ -140,6 +140,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_Y);
 		operatorJoy.addButton(LOGI_X);
 		operatorJoy.addButton(LOGI_R1);
+		operatorJoy.addButton(LOGI_BACK);
 		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
@@ -214,9 +215,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					drives.setAutoFunction(Drives.State.AUTO_LIGHT_LINE_UP);
 					break;
 				case ATTACK3_TRIGGER:
-//					drives.autoDance();
-					drives.setPower(-0.6, -0.6, false);
-					LOG.logMessage("CONTORLS WANTS NUATRAL");
+
 					break;
 				}
 				break;
@@ -225,34 +224,40 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			
 				switch(e.getID()){
 				case LOGI_A:
-					//TODO: Floor Mode
+					//Human Feed Mode
 					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
 					toteAcq.setClutch(ClutchState.ON);
 					toteAcq.setStopper(StopState.ON);
 					operatorWantsControl = true;
 					break;
 				case LOGI_B:
-					//TODO: HP Mode
+					//Floor Mode
 					toteAcq.setRollerPos(RollerPosition.FLOOR);
 					toteAcq.setClutch(ClutchState.ON);
 					toteAcq.setStopper(StopState.ON);
 					operatorWantsControl = true;
 					break;
 				case LOGI_Y:
-					//TODO: Safe Mode
+					//TODO: OFF Mode
 					toteAcq.setClutch(ClutchState.OFF);
 					toteAcq.setRollerPos(RollerPosition.TRAVEL);
 					toteAcq.setStopper(StopState.ON);
 					operatorWantsControl = false;
 					break;
 				case LOGI_X:
+					//Lower Totes Mode
 					elevations.lowerTotes();
 					break;
 				case LOGI_R1:
+					//SCORE
 					elevations.scoreTotes();
 					toteAcq.setClutch(ClutchState.ON);
 					toteAcq.setStopper(StopState.OFF);
 					operatorWantsControl = true;
+					break;
+				case LOGI_BACK:
+					//STOP
+					elevations.stopElevator();
 					break;
 				}
 				break;

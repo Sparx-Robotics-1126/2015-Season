@@ -128,16 +128,6 @@ public class Drives extends GenericSubsystem{
 	private ColorSensor colorSensorRight;
 
 	/**
-	 * Right touch sensor
-	 */
-	private DigitalInput rightTouch;
-
-	/**
-	 * Left touch sensor
-	 */
-	private DigitalInput leftTouch;
-
-	/**
 	 * Allow for current heading of the robot
 	 */
 	private Gyro gyro;
@@ -339,7 +329,6 @@ public class Drives extends GenericSubsystem{
 		encoderDataLeft = new EncoderData(encoderLeft, DISTANCE_PER_TICK);
 		leftPID = new PID(P_LEFT, I_LEFT, 1, D_LEFT, true, false);
 		colorSensorLeft = new ColorSensor(IO.ANA_COLOR_LEFT_RED, IO.ANA_COLOR_LEFT_BLUE, IO.DIO_COLOR_LED_LEFT, getName(), "Left");
-		leftTouch = new DigitalInput(12);//REMOVE
 		leftPower = 0;
 
 		//RIGHT
@@ -349,7 +338,6 @@ public class Drives extends GenericSubsystem{
 		encoderDataRight = new EncoderData(encoderRight, DISTANCE_PER_TICK);
 		rightPID = new PID(P_RIGHT, I_RIGHT, 1, D_RIGHT, true, false);
 		colorSensorRight = new ColorSensor(IO.ANA_COLOR_RIGHT_RED, IO.ANA_COLOR_RIGHT_BLUE, IO.DIO_COLOR_LED_RIGHT, getName(), "Right");
-		rightTouch = new DigitalInput(13);//REMOVE
 		rightPower = 0;
 
 		//OTHER
@@ -376,9 +364,6 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		if(DriverStation.getInstance().isTest()){
-			return false;
-		}
 		encoderDataRight.calculateSpeed();
 		encoderDataLeft.calculateSpeed();
 		leftPower = 0;
@@ -579,7 +564,6 @@ public class Drives extends GenericSubsystem{
 						leftPower = 0.4;
 						rightPower = 0.0;
 					}else {
-						//						danceCycles++;
 						backwards = true;
 						leftPower = 0.0;
 						rightPower = 0.0;
@@ -623,12 +607,11 @@ public class Drives extends GenericSubsystem{
 			rightPower = rightPID.update(encoderDataRight.getSpeed());
 			leftPower = leftPID.update(encoderDataLeft.getSpeed());
 		}
-		if(!DriverStation.getInstance().isTest()){
+
 			leftFront.set(leftPower);
 			leftBack.set(leftPower);
 			rightFront.set(-rightPower);
 			rightBack.set(-rightPower);
-		}
 		return false;
 	}
 
@@ -655,7 +638,6 @@ public class Drives extends GenericSubsystem{
 		//		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
 		log.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
 				" Right Encoder: " +encoderDataRight.getSpeed());
-		//		log.logMessage("Left Touch: " + leftTouch.get() + " Right: " + rightTouch.get());
 		//		log.logMessage("Gyro: " + gyro.getAngle());
 	}
 

@@ -138,14 +138,35 @@ public class Elevations extends GenericSubsystem{
 	 */
 	private boolean goingUp = false;
 	
+	/**
+	 * Tells weather or not a new tote has been detected by the newToteSensor
+	 */
 	private boolean newToteDetected = false;
 	
+	/**
+	 * Time since the tote has entered the robot
+	 */
 	private double toteSenceTime = 0;
 
+	/**
+	 * True if elevations is activly scoring a tote
+	 */
 	private boolean scoreTotes = false;
+	
+	/**
+	 * True if right elevations is in correct position
+	 */
 	private boolean rightDone = false;
+	
+	/**
+	 * True if left elevations is in correct position 
+	 */
 	private boolean leftDone = false;
-	private int numOfTotes = -1;
+	
+	/**
+	 * Number of totes that the system has
+	 */
+	private int numOfTotes = 0;
 
 	/**
 	 * Returns the only instance of elevations
@@ -199,8 +220,9 @@ public class Elevations extends GenericSubsystem{
 		}else if(Timer.getFPGATimestamp() >= toteSenceTime + 0.5 && newToteDetected){
 			LOG.logMessage("New tote acquired, starting lifting sequence");
 			newToteDetected = false;
-			lowerTotes();
+			numOfTotes++;
 			scoreTotes = false;
+			lowerTotes();
 		}
 
 		switch(currState){
@@ -214,7 +236,7 @@ public class Elevations extends GenericSubsystem{
 			double rightSpeed = (wantedPosition - rightDistance)/4.0;
 			double leftSpeed = (wantedPosition - leftDistance)/4.0;
 
-			//MAX SPEEd
+			//MAX SPEED
 			if(rightSpeed < 0){
 				rightSpeed = Math.abs(rightSpeed) > maxPower ? -maxPower : rightSpeed;
 			}else{
@@ -268,11 +290,9 @@ public class Elevations extends GenericSubsystem{
 				rightDone = false;
 				if(goingUp){
 					currState = State.STANDBY;
-					numOfTotes++;
 				}else{
 					if(scoreTotes){
 						currState = State.STANDBY;
-						numOfTotes = -1;
 					}else{
 						liftTote();
 					}
@@ -346,12 +366,15 @@ public class Elevations extends GenericSubsystem{
 	public void setHome(){
 		currState = State.SETTING_HOME;
 	}
+	
+	public void stopElevator(){
+		currState = State.STANDBY;
+	}
 
 	/**
 	 * Used to lower the elevator to lower poisition
 	 */
 	public void lowerTotes(){
-		scoreTotes = false;
 		scoreTotes = false;
 		goingUp = false;
 		wantedPosition = 0;
@@ -371,6 +394,7 @@ public class Elevations extends GenericSubsystem{
 	}
 	
 	public void scoreTotes(){
+		numOfTotes = 0;
 		scoreTotes = true;
 		goingUp = false;
 		wantedPosition = 0;

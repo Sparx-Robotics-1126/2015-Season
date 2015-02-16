@@ -74,7 +74,7 @@ public class ToteAcq extends GenericSubsystem{
 	/**
 	 * The value of the solenoid when the stopper is engaged
 	 */
-	private static final boolean STOPPER_ENGAGED = true;
+	private static final boolean STOPPER_ENGAGED = false;
 
 	/**
 	 * the value of the solenoid when the stopper is disengaged 

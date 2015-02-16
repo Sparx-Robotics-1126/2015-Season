@@ -3,6 +3,7 @@ package org.gosparx.team1126.robot.subsystem;
 import org.gosparx.team1126.robot.IO;
 import org.gosparx.team1126.robot.subsystem.ToteAcq.ClutchState;
 import org.gosparx.team1126.robot.subsystem.ToteAcq.RollerPosition;
+import org.gosparx.team1126.robot.subsystem.ToteAcq.StopState;
 import org.gosparx.team1126.robot.util.AdvancedJoystick;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.ButtonEvent;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.JoystickListener;
@@ -39,7 +40,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 * declares a Drives object named drives
 	 */
 	private Drives drives;
-
+	
 	/**
 	 * instance for CanAcquisition
 	 */
@@ -52,7 +53,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	private ToteAcq toteAcq;
 	
-	private CanAcqTele canAcqTele;
+	private boolean manualShifting = false;
+	
+	private boolean operatorWantsControl = false;
 	
 	/**
 	 * Instance for Elevations
@@ -137,6 +140,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_Y);
+		operatorJoy.addButton(LOGI_R1);
+		operatorJoy.addButton(LOGI_BACK);
 		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
@@ -152,7 +157,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean execute() {
-		drives.setPower(driverJoyLeft.getAxis(ATTACK3_Y_AXIS), driverJoyRight.getAxis(ATTACK3_Y_AXIS));
+		double left = -driverJoyLeft.getAxis(ATTACK3_Y_AXIS);
+		double right = -driverJoyRight.getAxis(ATTACK3_Y_AXIS);
 		
 		//TRIMS
 		double hookOveride = -operatorJoy.getAxis(LOGI_RIGHT_X_AXIS);
@@ -160,10 +166,18 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		if(hookOveride > 0){
 			canAcqTele.manualHookOverride(hookOveride);
 		}
+				
+		//Driver vs Operator
+		if((left != 0 || right != 0) || !operatorWantsControl){
+			drives.setPower(left, right, true);
+		}else if(operatorWantsControl){
+			drives.setPower(-0.6, 0, false);
+		}
+		
 		if(rotateOveride > 0){
 			canAcqTele.manualRotateOverride(rotateOveride);
 		}
-		return false;
+			return false;
 	}
 
 	/** 
@@ -202,20 +216,20 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			case IO.DRIVER_JOYSTICK_LEFT:
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
-					//TODO: Up Shift
+					drives.setManualShifting(true);
 					break;
 				case ATTACK3_TRIGGER:
-					//TODO: Down Shift
+					drives.setManualShifting(false);
 					break;
 				}
 				break;
 			case IO.DRIVER_JOYSTICK_RIGHT:
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
-					//TODO: auto line up 
+					drives.setAutoFunction(Drives.State.AUTO_LIGHT_LINE_UP);
 					break;
 				case ATTACK3_TRIGGER:
-					//TODO: force low gear
+
 					break;
 				}
 				break;
@@ -224,30 +238,41 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			
 				switch(e.getID()){
 				case LOGI_A:
-					//TODO: Floor Mode
+					//Human Feed Mode
 //					canAcqTele.initalizedPositions();
 //					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
-//					toteAcq.setClutch(ClutchState.ON);
-					canAcqTele.initalizedPositions();
+					toteAcq.setStopper(StopState.ON);
+					operatorWantsControl = true;
 				
 					break;
 				case LOGI_B:
-					//TODO: HP Mode
-//					canAcqTele.goToAcquire();
-//					toteAcq.setRollerPos(RollerPosition.FLOOR);
-//					toteAcq.setClutch(ClutchState.ON);
-					canAcqTele.goToAcquire();
-					elevations.lowerTotes();
+					//Floor Mode
+					toteAcq.setRollerPos(RollerPosition.FLOOR);
+					toteAcq.setStopper(StopState.ON);
+					operatorWantsControl = true;
 					break;
 				case LOGI_Y:
-					canAcqTele.acquireCan();
-					//TODO: Safe Mode
-//					canAcqTele.acquireCan();
+					//TODO: OFF Mode
+
 //					toteAcq.setClutch(ClutchState.OFF);
+					toteAcq.setStopper(StopState.ON);
 //					toteAcq.setRollerPos(RollerPosition.TRAVEL);
+					operatorWantsControl = false;
 					break;
 				case LOGI_X:
-
+					//Lower Totes Mode
+					elevations.lowerTotes();
+					break;
+				case LOGI_R1:
+					//SCORE
+					elevations.scoreTotes();
+					toteAcq.setClutch(ClutchState.ON);
+					toteAcq.setStopper(StopState.OFF);
+					operatorWantsControl = true;
+					break;
+				case LOGI_BACK:
+					//STOP
+					elevations.stopElevator();
 					break;
 				}
 				break;
@@ -257,7 +282,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			switch (e.getPort()) {
 			case IO.DRIVER_JOYSTICK_LEFT:
 				if(e.isRising()){
-					//TODO trigger manual
+					manualShifting = !manualShifting;
+					drives.isManualShifting(manualShifting);
 				}
 				break;
 			}

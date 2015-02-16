@@ -199,9 +199,9 @@ public class Elevations extends GenericSubsystem{
 		elevationRightEncoderData.calculateSpeed();
 		elevationLeftEncoderData.calculateSpeed();
 
-		if(currState == State.STANDBY && newToteSensor.get()){
-//			lowerTotes();
-//			canAcqTele.acquiredTote();
+		if(currState == State.STANDBY && !newToteSensor.get()){
+			lowerTotes();
+			canAcqTele.acquiredTote();
 			LOG.logMessage("New tote acquired, starting lifting sequence");
 		}
 

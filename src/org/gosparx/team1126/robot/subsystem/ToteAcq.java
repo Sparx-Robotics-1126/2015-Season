@@ -106,6 +106,7 @@ public class ToteAcq extends GenericSubsystem{
 		longCylinder = new Solenoid(IO.PNU_ACQ_TRAVEL);
 		shortCylinder = new Solenoid(IO.PNU_ACQ_TOTE);
 		stopper = new Solenoid(IO.PNU_TOTE_STOP);
+		stopper.set(false);
 		clutch = new Solenoid(IO.PNU_ACQ_CLUTCH);
 		currPos = RollerPosition.TRAVEL;
 		currState = ClutchState.OFF;

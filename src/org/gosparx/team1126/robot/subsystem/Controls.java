@@ -61,10 +61,10 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
 	//**************************************************************************
-	private static final int LOGI_LEFT_X_AXIS = 1;
-	private static final int LOGI_LEFT_Y_AXIS = 2;
-	private static final int LOGI_RIGHT_X_AXIS = 3;
-	private static final int LOGI_RIGHT_Y_AXIS = 4;
+	private static final int LOGI_LEFT_X_AXIS = 0;
+	private static final int LOGI_LEFT_Y_AXIS = 1;
+	private static final int LOGI_RIGHT_X_AXIS = 2;
+	private static final int LOGI_RIGHT_Y_AXIS = 3;
 	/**
 	 * right = 1, left = -1
 	 */
@@ -155,8 +155,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		drives.setPower(driverJoyLeft.getAxis(ATTACK3_Y_AXIS), driverJoyRight.getAxis(ATTACK3_Y_AXIS));
 		
 		//TRIMS
-		double hookOveride = operatorJoy.getAxis(-LOGI_RIGHT_X_AXIS);
-		double rotateOveride = operatorJoy.getAxis(-LOGI_RIGHT_Y_AXIS);
+		double hookOveride = -operatorJoy.getAxis(LOGI_RIGHT_X_AXIS);
+		double rotateOveride = -operatorJoy.getAxis(LOGI_RIGHT_Y_AXIS);
 		if(hookOveride > 0){
 			canAcqTele.manualHookOverride(hookOveride);
 		}
@@ -229,6 +229,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 //					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
 //					toteAcq.setClutch(ClutchState.ON);
 					canAcqTele.initalizedPositions();
+				
 					break;
 				case LOGI_B:
 					//TODO: HP Mode

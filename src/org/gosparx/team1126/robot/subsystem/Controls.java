@@ -213,6 +213,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
 					drives.setAutoFunction(Drives.State.AUTO_LIGHT_LINE_UP);
+					canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
 					break;
 				case ATTACK3_TRIGGER:
 

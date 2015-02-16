@@ -117,8 +117,8 @@ public class CanAcquisition extends GenericSubsystem{
 	@Override
 	protected boolean init() {
 		// TODO get all IO from IO class
-		rightArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_RIGHT_GRAB);
-		leftArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_LEFT_GRAB);
+		rightArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_RIGHT);
+		leftArmInCan = new DigitalInput(IO.DIO_CAN_AUTO_LEFT);
 		arms = new Relay(0);
 		arms.set(RAISE_ARMS);
 		rightArm = new Solenoid(IO.PNU_ACQ_CAN_RIGHT);

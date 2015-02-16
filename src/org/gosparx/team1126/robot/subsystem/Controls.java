@@ -148,6 +148,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_Y);
 		operatorJoy.addButton(LOGI_R1);
 		operatorJoy.addButton(LOGI_BACK);
+		operatorJoy.addButton(LOGI_L1);
+		operatorJoy.addButton(LOGI_L2);
 		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
@@ -279,6 +281,13 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				case LOGI_BACK:
 					//STOP
 					elevations.stopElevator();
+					break;
+				case LOGI_L1:
+					elevations.scoreTotes();
+					canAcqTele.goToAcquire();;
+					break;
+				case LOGI_L2:
+					canAcqTele.acquireCan();
 					break;
 				}
 				break;

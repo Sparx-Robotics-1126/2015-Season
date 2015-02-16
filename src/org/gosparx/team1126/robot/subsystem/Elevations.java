@@ -205,6 +205,7 @@ public class Elevations extends GenericSubsystem{
 		newToteSensor = new DigitalInput(IO.DIO_TOTE_SENSOR);
 		currState = State.SETTING_HOME;
 		canAcqTele = CanAcqTele.getInstance();
+		numOfTotes = 0;
 		return false;
 	}
 

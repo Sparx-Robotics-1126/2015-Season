@@ -186,6 +186,8 @@ public class CanAcqTele extends GenericSubsystem{
 		currentRotateState = RotateState.STANDBY;
 		pdp = new PowerDistributionPanel();
 		elevations = Elevations.getInstance();
+		currentHookState = HookState.STANDBY;//HOOK_FINDING_HOME;
+		currentRotateState = RotateState.ROTATE_FINDING_HOME;
 		return true;
 	}
 
@@ -210,6 +212,7 @@ public class CanAcqTele extends GenericSubsystem{
 		if(useAutoFunctions){
 			switch(currentRotateState){
 			case STANDBY:
+				wantedRotateSpeed = 0;
 				break;
 			case ROTATING:
 				double calculatedRotateSpeed = -(wantedAngle - rotateEncData.getDistance()) / 490;
@@ -234,6 +237,7 @@ public class CanAcqTele extends GenericSubsystem{
 				if(!rotateHome.get()){
 					wantedRotateSpeed = 0;
 					currentRotateState = RotateState.STANDBY;
+					currentHookState = HookState.HOOK_FINDING_HOME;//Finding Home
 					LOG.logMessage("Rotate has found home");
 					rotateEncData.reset();
 				}
@@ -242,7 +246,7 @@ public class CanAcqTele extends GenericSubsystem{
 
 			switch(currentHookState){
 			case STANDBY:
-
+				wantedHookSpeed = 0;
 				break;
 			case MOVING:
 				double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 2)*0.75;
@@ -268,7 +272,7 @@ public class CanAcqTele extends GenericSubsystem{
 				break;
 			}
 		}
-		
+
 		rotateMotor.set(wantedRotateSpeed);
 		hookMotor.set(wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor
 		return false;

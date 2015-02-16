@@ -202,7 +202,7 @@ public class Elevations extends GenericSubsystem{
 		elevationRightEncoderData.calculateSpeed();
 		elevationLeftEncoderData.calculateSpeed();
 
-		if(currState == State.STANDBY && newToteSensor.get() && !newToteDetected){
+		if(currState == State.STANDBY && newToteSensor.get() && newToteDetected){
 			toteSenceTime = Timer.getFPGATimestamp();
 			newToteDetected = true;
 		}else if(Timer.getFPGATimestamp() >= toteSenceTime + 0.5 && newToteDetected){
@@ -325,8 +325,8 @@ public class Elevations extends GenericSubsystem{
 			break;
 		}
 
-		rightElevationMotor.set(rightWantedSpeed/1.75);
-		leftElevationMotor.set(leftWantedSpeed/1.75);
+		rightElevationMotor.set(rightWantedSpeed);
+		leftElevationMotor.set(leftWantedSpeed);
 		return false;
 	}
 

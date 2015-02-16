@@ -9,6 +9,8 @@ import org.gosparx.team1126.robot.util.AdvancedJoystick.ButtonEvent;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.JoystickListener;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.MultibuttonEvent;
 
+import edu.wpi.first.wpilibj.Timer;
+
 /**
  * This is how the controller is able to work with drives
  * @author Mike the camel
@@ -56,6 +58,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private boolean manualShifting = false;
 	
 	private boolean operatorWantsControl = false;
+	
+	private double operatorWantedPower = 0;
 	
 	/**
 	 * Instance for Elevations
@@ -145,11 +149,13 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addActionListener(this);
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
+		operatorJoy.addButton(LOGI_X);
 		operatorJoy.addButton(LOGI_Y);
 		operatorJoy.addButton(LOGI_R1);
 		operatorJoy.addButton(LOGI_BACK);
 		operatorJoy.addButton(LOGI_L1);
 		operatorJoy.addButton(LOGI_L2);
+		operatorJoy.addButton(LOGI_START);
 		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
@@ -171,19 +177,22 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		//TRIMS
 		double hookOveride = -operatorJoy.getAxis(LOGI_RIGHT_X_AXIS);
 		double rotateOveride = -operatorJoy.getAxis(LOGI_RIGHT_Y_AXIS);
-		if(Math.abs(hookOveride) > 0 || Math.abs(rotateOveride) > 0){
+		if(Math.abs(rotateOveride) > 0){
+			elevations.scoreTotes();
 			canAcqTele.overriding(true);
-			canAcqTele.manualHookOverride(hookOveride);
 			canAcqTele.manualRotateOverride(rotateOveride);
+		}else if(Math.abs(hookOveride) > 0 ){
+			canAcqTele.manualHookOverride(hookOveride);
 		}else{
 			canAcqTele.overriding(false);
 		}
+		
 		
 		//Driver vs Operator
 		if((left != 0 || right != 0) || !operatorWantsControl){
 			drives.setPower(left, right, true);
 		}else if(operatorWantsControl){
-			drives.setPower(-0.6, 0, false);
+			drives.setPower(operatorWantedPower, 0, false);
 		}
 		
 		return false;
@@ -235,10 +244,10 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			case IO.DRIVER_JOYSTICK_RIGHT:
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
-					drives.setAutoFunction(Drives.State.AUTO_LIGHT_LINE_UP);
+					drives.driveStraight(5, 100);
 					break;
 				case ATTACK3_TRIGGER:
-
+					
 					break;
 				}
 				break;
@@ -248,6 +257,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case LOGI_A:
 					//Human Feed Mode
+					elevations.notScoring();
 					toteAcq.setClutch(ClutchState.ON);
 					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
 					toteAcq.setStopper(StopState.ON);
@@ -255,13 +265,16 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				case LOGI_B:
 					//Floor Mode
+					elevations.notScoring();
 					toteAcq.setClutch(ClutchState.ON);
 					toteAcq.setRollerPos(RollerPosition.FLOOR);
 					toteAcq.setStopper(StopState.ON);
 					operatorWantsControl = true;
+					operatorWantedPower = -0.8;
 					break;
 				case LOGI_Y:
 					//TODO: OFF Mode
+					elevations.notScoring();
 					toteAcq.setClutch(ClutchState.OFF);
 					toteAcq.setStopper(StopState.ON);
 					toteAcq.setRollerPos(RollerPosition.TRAVEL);
@@ -269,6 +282,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				case LOGI_X:
 					//Lower Totes Mode
+					elevations.notScoring();
 					elevations.lowerTotes();
 					break;
 				case LOGI_R1:
@@ -277,16 +291,28 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					toteAcq.setClutch(ClutchState.ON);
 					toteAcq.setStopper(StopState.OFF);
 					operatorWantsControl = true;
+					operatorWantedPower = -0.8;
+					break;
+				case LOGI_START:
+					//EJECT
+					elevations.notScoring();
+					toteAcq.setClutch(ClutchState.ON);
+					toteAcq.setStopper(StopState.ON);
+					toteAcq.setRollerPos(RollerPosition.FLOOR);
+					operatorWantsControl = true;
+					operatorWantedPower = 0.8;
 					break;
 				case LOGI_BACK:
 					//STOP
+					elevations.notScoring();
 					elevations.stopElevator();
 					break;
 				case LOGI_L1:
 					elevations.scoreTotes();
-					canAcqTele.goToAcquire();;
+					canAcqTele.goToAcquire();
 					break;
 				case LOGI_L2:
+					elevations.notScoring();
 					canAcqTele.acquireCan();
 					break;
 				}

@@ -532,7 +532,7 @@ public class Drives extends GenericSubsystem{
 			break;
 		case AUTO_DRIVE:
 			double currentDistance = (encoderDataRight.getDistance() + encoderDataLeft.getDistance())/2;
-			double driveSpeed = (1.0/10)*(Math.sqrt(Math.abs(autoDistance - currentDistance)));
+			double driveSpeed = (1.0/5)*(Math.sqrt(Math.abs(autoDistance - currentDistance)));
 			driveSpeed = driveSpeed < Math.PI/16 ? Math.PI/16: driveSpeed;
 			driveSpeed = driveSpeed > maxSpeed ? maxSpeed : driveSpeed;
 			if(currentDistance < autoDistance){
@@ -812,6 +812,8 @@ public class Drives extends GenericSubsystem{
 				return "In auto light line up";
 			case AUTO_DANCE:
 				return "Dancing";
+			case AUTO_DRIVE:
+				return "Driving Stright";
 			case NEUTRAL_SETUP:
 				return "Neutral Setup";
 			default:

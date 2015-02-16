@@ -82,7 +82,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The distance the can must go up per tote
 	 */
-	private static final double DISTANCE_PER_TOTE = 13.0;
+	private static final double DISTANCE_PER_TOTE = 11.0;
 
 	/**
 	 * The minimum power for the motors to get when we are rotating up

@@ -263,7 +263,7 @@ public class CanAcqTele extends GenericSubsystem{
 			break;
 		}
 		rotateMotor.set(wantedRotateSpeed);
-		hookMotor.set(-wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor
+		hookMotor.set(wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor
 		return false;
 	}
 

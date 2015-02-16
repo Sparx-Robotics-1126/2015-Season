@@ -444,13 +444,13 @@ public class Drives extends GenericSubsystem{
 				shiftingPnu.set(!LOW_GEAR);
 			}
 			
-			if(Timer.getFPGATimestamp() >= shiftTime + 0.5){
+			if(Timer.getFPGATimestamp() >= shiftTime + 0.2){
 				leftPower = 0.2;
 			}else{
 				leftPower = -0.2;
 			}
 			
-			if(Timer.getFPGATimestamp() >= shiftTime + 1){
+			if(Timer.getFPGATimestamp() >= shiftTime + 0.4){
 				currentDriveState = finalDriveState;
 			}
 			break;

@@ -130,7 +130,6 @@ public class AdvancedJoystick extends GenericSubsystem{
 		}
 		if(joy.getRawButton(button) != prevValues[button]){
 			notifyAllListeners(new ButtonEvent(button, joy.getRawButton(button)));
-			LOG.logMessage("ButtonEvent( " + port + ", " + button + ", " + joy.getRawButton(button) + ")");
 		}
 	}
 
@@ -156,7 +155,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 	 * @return the modified axis value
 	 */
 	public double getAxis(int axis){
-		return (joy.getRawAxis(axis) > DEADBAND) ? joy.getRawAxis(axis) : 0;
+		return (Math.abs(joy.getRawAxis(axis)) > DEADBAND) ? joy.getRawAxis(axis) : 0;
 	}
 
 	/**
@@ -261,7 +260,6 @@ public class AdvancedJoystick extends GenericSubsystem{
 			if(last != (joy.getRawButton(button1) && joy.getRawButton(button2))){
 				last = (joy.getRawButton(button1) && joy.getRawButton(button2));
 				notifyAllListeners(new MultibuttonEvent(button1, button2, last));
-				LOG.logMessage("MultibuttonEvent( " + port + ", " + button1 + ", " + button2 + ", " + last + ")");
 				updated = true;
 			}
 		}

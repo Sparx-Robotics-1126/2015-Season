@@ -85,7 +85,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The distance the can must go up per tote
 	 */
-	private static final double DISTANCE_PER_TOTE = 11.0;
+	private static final double DISTANCE_PER_TOTE = 10.0;
 
 	/**
 	 * The minimum power for the motors to get when we are rotating up
@@ -116,6 +116,10 @@ public class CanAcqTele extends GenericSubsystem{
 	 * The max pos for the hook
 	 */
 	private static final double MAX_HOOK_POS = 44;
+	
+	private static final double ACQUIRE_SPEED = 490;
+	
+	private static final double ROTATION_SPEED = 200;
 
 	/***********************Variables*********************/
 
@@ -153,6 +157,8 @@ public class CanAcqTele extends GenericSubsystem{
 	 * True if auto controls are used
 	 */
 	private boolean useAutoFunctions = true;
+	
+	private double rotationDivider;
 
 	/**
 	 * @return a CanAcqTele
@@ -218,7 +224,7 @@ public class CanAcqTele extends GenericSubsystem{
 				wantedRotateSpeed = 0;
 				break;
 			case ROTATING:
-				double calculatedRotateSpeed = -(wantedAngle - rotateEncData.getDistance()) / 490;
+				double calculatedRotateSpeed = -(wantedAngle - rotateEncData.getDistance()) / rotationDivider;
 				if(calculatedRotateSpeed > 0){
 					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_UP_SPEED) ? calculatedRotateSpeed : MIN_ROTATE_UP_SPEED);
 				}else{
@@ -249,7 +255,7 @@ public class CanAcqTele extends GenericSubsystem{
 
 			switch(currentHookState){
 			case STANDBY:
-				wantedHookSpeed = 0;
+				wantedHookSpeed= 0;
 				break;
 			case MOVING:
 				double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 2)*0.75;
@@ -265,7 +271,7 @@ public class CanAcqTele extends GenericSubsystem{
 				}
 				break;
 			case HOOK_FINDING_HOME:
-				wantedHookSpeed = 0.9;
+				wantedHookSpeed = 1;
 				if(!hookHome.get()){
 					hookEncData.reset();
 					currentHookState = HookState.STANDBY;
@@ -286,7 +292,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 * @param speed - (-1 - 1)
 	 */
 	public void manualRotateOverride(double speed){
-		wantedRotateSpeed = speed;
+		wantedRotateSpeed = speed/2;
 	}
 
 	/**
@@ -314,6 +320,7 @@ public class CanAcqTele extends GenericSubsystem{
 	public void goToAcquire(){
 		wantedHookPos = ACQ_CAN_DIST;
 		wantedAngle = MAX_ROTATION;
+		rotationDivider = ROTATION_SPEED;
 		currentHookState = HookState.MOVING;
 		currentRotateState = RotateState.ROTATING;
 	}
@@ -330,6 +337,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 * Brings the can in
 	 */
 	public void acquireCan(){
+		rotationDivider = ACQUIRE_SPEED;
 		wantedHookPos = 0;
 		wantedAngle = 0;
 		currentHookState = HookState.MOVING;

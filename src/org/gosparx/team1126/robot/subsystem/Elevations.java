@@ -223,6 +223,10 @@ public class Elevations extends GenericSubsystem{
 		boolean leftHome = !leftHomeSwitch.get();
 		boolean newTote = !newToteSensor.get();
 
+		if(initalSetup){
+			currState = State.SETTING_HOME;
+		}
+		
 		if(currState == State.STANDBY && newTote && !newToteDetected && !scoreTotes){
 			toteSenceTime = Timer.getFPGATimestamp();
 			newToteDetected = true;
@@ -230,17 +234,11 @@ public class Elevations extends GenericSubsystem{
 			LOG.logMessage("New tote acquired, starting lifting sequence");
 			newToteDetected = false;
 			numOfTotes++;
-			scoreTotes = false;
 			lowerTotes();
-			leftDone = false;
-			rightDone = false;
 		}else if(currState == State.STANDBY && Timer.getFPGATimestamp() >= toteSenceTime + 0.3 && newToteDetected){
-			LOG.logMessage("New tote acquired, starting lifting sequence");
+			LOG.logMessage("6th Tote Acquire");
 			newToteDetected = false;
-			scoreTotes = true;
 			scoreTotes();
-			leftDone = false;
-			rightDone = false;
 		}
 
 		switch(currState){
@@ -371,8 +369,8 @@ public class Elevations extends GenericSubsystem{
 			break;
 		}
 
-		rightElevationMotor.set(rightWantedSpeed*0.9);
-		leftElevationMotor.set(leftWantedSpeed*0.9);
+		rightElevationMotor.set(rightWantedSpeed);
+		leftElevationMotor.set(leftWantedSpeed);
 		return false;
 	}
 
@@ -436,10 +434,6 @@ public class Elevations extends GenericSubsystem{
 		wantedPosition = 0;
 		currState = State.COMPLEX_MOVE;
 		maxPower = 1;
-	}
-
-	public void setScoring(boolean isScoring){
-		scoreTotes = isScoring;
 	}
 
 	/**

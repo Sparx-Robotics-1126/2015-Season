@@ -50,17 +50,28 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	
 	/**
 	 * Instance for ToteAcq
-	private CanAcqTele canAcqTele;
-	
+	private CanAcqTele canAcqTele
 	 */
 	private ToteAcq toteAcq;
 	
+	/**
+	 * Manual shifting on or off
+	 */
 	private boolean manualShifting = false;
 	
+	/**
+	 * The operator wants controls over the PTO
+	 */
 	private boolean operatorWantsControl = false;
 	
+	/**
+	 * The speed at which the operator wants to power the PTO
+	 */
 	private double operatorWantedPower = 0;
 	
+	/**
+	 * The wait for the tote stop to remove and the totes to score
+	 */
 	private double scoreWait = 0;
 	
 	/**

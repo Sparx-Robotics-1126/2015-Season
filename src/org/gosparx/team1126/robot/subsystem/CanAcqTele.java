@@ -68,6 +68,9 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	private DigitalInput hookHome;
 
+	/**
+	 * The power distribution board instance
+	 */
 	private PowerDistributionPanel pdp;
 
 	/***********************Constants*********************/
@@ -117,8 +120,14 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	private static final double MAX_HOOK_POS = 44;
 	
+	/**
+	 * Acquire speed for grabbing a RC
+	 */
 	private static final double ACQUIRE_SPEED = 490;
 	
+	/**
+	 * Rotation speed for rotating down
+	 */
 	private static final double ROTATION_SPEED = 200;
 
 	/***********************Variables*********************/
@@ -158,6 +167,9 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	private boolean useAutoFunctions = true;
 	
+	/**
+	 * The divider for the rotation speed
+	 */
 	private double rotationDivider;
 
 	/**

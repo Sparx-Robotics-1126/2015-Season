@@ -449,8 +449,6 @@ public class Elevations extends GenericSubsystem{
 		}else{
 			goingUp = true;
 		}
-		rightDone = false;
-		leftDone = false;
 		scoreTotes = false;
 		currState = State.COMPLEX_MOVE;
 		wantedPosition = position;

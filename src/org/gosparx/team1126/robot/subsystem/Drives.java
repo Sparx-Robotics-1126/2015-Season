@@ -531,8 +531,15 @@ public class Drives extends GenericSubsystem{
 		case AUTO_DRIVE:
 			double currentDistance = (encoderDataRight.getDistance() + encoderDataLeft.getDistance())/2;
 			double driveSpeed = (1.0/10)*(Math.sqrt(Math.abs(autoDistance - currentDistance)));
-			driveSpeed = driveSpeed < 0.5 ? 0.5: driveSpeed;
-			driveSpeed = driveSpeed > maxSpeed ? maxSpeed : driveSpeed;
+			if(autoDistance > 0){
+				driveSpeed = driveSpeed < 0.5 ? 0.5: driveSpeed;
+				driveSpeed = driveSpeed > maxSpeed ? maxSpeed : driveSpeed;
+			}else {
+				driveSpeed = driveSpeed > -0.5 ? -0.5: driveSpeed;
+				driveSpeed = driveSpeed > -maxSpeed ? -maxSpeed : driveSpeed;
+				driveSpeed = -driveSpeed;
+			}
+			
 			
 			if(currentDistance < autoDistance){
 				rightPower = driveSpeed + gyroOffset();

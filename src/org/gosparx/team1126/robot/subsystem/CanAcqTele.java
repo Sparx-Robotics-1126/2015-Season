@@ -23,6 +23,9 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	private static CanAcqTele canAcq;
 
+	/**
+	 * Instance of elevations
+	 */
 	private Elevations elevations;
 
 	/**
@@ -341,6 +344,14 @@ public class CanAcqTele extends GenericSubsystem{
 		currentHookState = HookState.MOVING;
 	}
 
+	public void setState(RotateState state){
+		currentRotateState = state;
+	}
+	
+	public void setState(HookState state){
+		currentHookState = state;
+	}
+	
 	/**
 	 * How long to sleep between loops
 	 */

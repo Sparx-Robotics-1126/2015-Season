@@ -179,9 +179,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		double rotateOveride = -operatorJoy.getAxis(LOGI_RIGHT_Y_AXIS);
 		if(Math.abs(rotateOveride) > 0){
 			elevations.scoreTotes();
+			canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
 			canAcqTele.overriding(true);
 			canAcqTele.manualRotateOverride(rotateOveride);
-		}else if(Math.abs(hookOveride) > 0 ){
+		}else if(Math.abs(hookOveride) > 0){
+			canAcqTele.setState(CanAcqTele.HookState.STANDBY);
 			canAcqTele.manualHookOverride(hookOveride);
 		}else{
 			canAcqTele.overriding(false);
@@ -257,7 +259,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case LOGI_A:
 					//Human Feed Mode
-					elevations.notScoring();
+					elevations.setScoring(false);
 					toteAcq.setClutch(ClutchState.ON);
 					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
 					toteAcq.setStopper(StopState.ON);
@@ -265,7 +267,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				case LOGI_B:
 					//Floor Mode
-					elevations.notScoring();
+					elevations.setScoring(false);
 					toteAcq.setClutch(ClutchState.ON);
 					toteAcq.setRollerPos(RollerPosition.FLOOR);
 					toteAcq.setStopper(StopState.ON);
@@ -274,7 +276,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				case LOGI_Y:
 					//TODO: OFF Mode
-					elevations.notScoring();
+					elevations.setScoring(false);
 					toteAcq.setClutch(ClutchState.OFF);
 					toteAcq.setStopper(StopState.ON);
 					toteAcq.setRollerPos(RollerPosition.TRAVEL);
@@ -282,7 +284,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				case LOGI_X:
 					//Lower Totes Mode
-					elevations.notScoring();
+					elevations.setScoring(false);
 					elevations.lowerTotes();
 					break;
 				case LOGI_R1:
@@ -295,7 +297,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				case LOGI_START:
 					//EJECT
-					elevations.notScoring();
+					elevations.setScoring(false);
 					toteAcq.setClutch(ClutchState.ON);
 					toteAcq.setStopper(StopState.ON);
 					toteAcq.setRollerPos(RollerPosition.FLOOR);
@@ -304,7 +306,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				case LOGI_BACK:
 					//STOP
-					elevations.notScoring();
+					elevations.setScoring(false);
 					elevations.stopElevator();
 					break;
 				case LOGI_L1:
@@ -312,7 +314,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					canAcqTele.goToAcquire();
 					break;
 				case LOGI_L2:
-					elevations.notScoring();
+					elevations.setScoring(false);
 					canAcqTele.acquireCan();
 					break;
 				}

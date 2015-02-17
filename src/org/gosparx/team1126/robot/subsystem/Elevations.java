@@ -219,17 +219,20 @@ public class Elevations extends GenericSubsystem{
 		wantedSpeed = 0;
 		elevationRightEncoderData.calculateSpeed();
 		elevationLeftEncoderData.calculateSpeed();
+		boolean rightHome = !rightHomeSwitch.get();
+		boolean leftHome = !leftHomeSwitch.get();
+		boolean newTote = !newToteSensor.get();
 
-		if(currState == State.STANDBY && !newToteSensor.get() && !newToteDetected && !scoreTotes){
+		if(currState == State.STANDBY && newTote && !newToteDetected && !scoreTotes){
 			toteSenceTime = Timer.getFPGATimestamp();
 			newToteDetected = true;
-		}else if(Timer.getFPGATimestamp() >= toteSenceTime + 0.3 && newToteDetected && numOfTotes < 5){
+		}else if(currState == State.STANDBY && Timer.getFPGATimestamp() >= toteSenceTime + 0.3 && newToteDetected && numOfTotes < 5){
 			LOG.logMessage("New tote acquired, starting lifting sequence");
 			newToteDetected = false;
 			numOfTotes++;
 			scoreTotes = false;
 			lowerTotes();
-		}else if(Timer.getFPGATimestamp() >= toteSenceTime + 0.3 && newToteDetected){
+		}else if(currState == State.STANDBY && Timer.getFPGATimestamp() >= toteSenceTime + 0.3 && newToteDetected){
 			LOG.logMessage("New tote acquired, starting lifting sequence");
 			newToteDetected = false;
 			scoreTotes = true;
@@ -311,16 +314,16 @@ public class Elevations extends GenericSubsystem{
 			}
 
 			//BOTTOM LIMIT
-			if(!rightHomeSwitch.get() && !goingUp){
+			if(rightHome && !goingUp){
 				rightWantedSpeed = 0;
 				rightDone = true;
 			}
-			if(!leftHomeSwitch.get() && !goingUp){
+			if(leftHome && !goingUp){
 				leftWantedSpeed = 0;
 				leftDone = true;
 			}
 
-			if(!rightHomeSwitch.get() && !leftHomeSwitch.get() && !goingUp){
+			if(rightHome && leftHome && !goingUp){
 				LOG.logMessage("LIMIT SWITCHES HAVE BEEN TRIGGERED***");
 				elevationLeftEncoderData.reset();
 				elevationRightEncoderData.reset();
@@ -335,8 +338,7 @@ public class Elevations extends GenericSubsystem{
 
 			break;
 		case SETTING_HOME:
-			System.out.println("I HAVE GONE HERE");
-			if(!rightHomeSwitch.get()){
+			if(rightHome){
 				LOG.logMessage("Right Home set");	
 				elevationRightEncoderData.reset();
 				rightWantedSpeed = 0;
@@ -345,7 +347,7 @@ public class Elevations extends GenericSubsystem{
 				rightWantedSpeed = -0.2;
 			}
 
-			if(!leftHomeSwitch.get()){
+			if(leftHome){
 				LOG.logMessage("Left Home set");
 				elevationLeftEncoderData.reset();
 				leftWantedSpeed = 0;
@@ -424,8 +426,8 @@ public class Elevations extends GenericSubsystem{
 		maxPower = 1;
 	}
 
-	public void notScoring(){
-		scoreTotes = false;
+	public void setScoring(boolean isScoring){
+		scoreTotes = isScoring;
 	}
 
 	/**
@@ -459,8 +461,9 @@ public class Elevations extends GenericSubsystem{
 	protected void writeLog() {
 		LOG.logMessage("Current State: " + currState.toString(currState));
 		LOG.logMessage("Wanted Position: " + wantedPosition);
-		LOG.logMessage("Current Posit"
-				+ "ion: Right: " + elevationRightEncoderData.getDistance() + " Left: " + elevationLeftEncoderData.getDistance());
+		LOG.logMessage("Current Position: Right: " + elevationRightEncoderData.getDistance() + 
+				" Left: " + elevationLeftEncoderData.getDistance());
+		LOG.logMessage("Current Power:  Right: " + rightWantedSpeed + " Left: " + leftWantedSpeed);
 		LOG.logMessage("Right Sensor: " + !rightHomeSwitch.get() + " Left: " + !leftHomeSwitch.get());
 		LOG.logMessage("New Tote: " + !newToteSensor.get());
 		LOG.logMessage("Number of Totes: " + numOfTotes);

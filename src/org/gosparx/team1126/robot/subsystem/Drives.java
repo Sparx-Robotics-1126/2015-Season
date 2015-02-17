@@ -531,7 +531,7 @@ public class Drives extends GenericSubsystem{
 		case AUTO_DRIVE:
 			double currentDistance = (encoderDataRight.getDistance() + encoderDataLeft.getDistance())/2;
 			double driveSpeed = (1.0/10)*(Math.sqrt(Math.abs(autoDistance - currentDistance)));
-			driveSpeed = driveSpeed < 0.25 ? 0.25: driveSpeed;
+			driveSpeed = driveSpeed < 0.5 ? 0.5: driveSpeed;
 			driveSpeed = driveSpeed > maxSpeed ? maxSpeed : driveSpeed;
 			
 			if(currentDistance < autoDistance){
@@ -637,6 +637,7 @@ public class Drives extends GenericSubsystem{
 		//		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
 				LOG.logMessage("Left Encoder: " + encoderDataLeft.getDistance() +
 						" Right Encoder: " +encoderDataRight.getDistance());
+				LOG.logMessage("POWER right: " + rightPower + " left: "+ leftPower);
 		LOG.logMessage("Gyro: " + gyro.getAngle());
 	}
 
@@ -769,7 +770,7 @@ public class Drives extends GenericSubsystem{
 	private double gyroOffset(){
 		double currentAngle = gyro.getAngle();
 		double position = autoWantedTurn - currentAngle;
-		return position < 0 ? -(1.0/16)*(Math.sqrt(position)) : (1.0/16)*(Math.sqrt(-position));
+		return position < 0 ? -(1.0/16)*(Math.sqrt(-position)) : (1.0/16)*(Math.sqrt(position));
 	}
 
 	/**

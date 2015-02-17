@@ -442,18 +442,23 @@ public class Autonomous extends GenericSubsystem{
 	};
 
 	private static final int[][] TEST_AUTO = {
-		{AutoCommands.DRIVES_GO_FORWARD.toId(), 58, 100},
+		{AutoCommands.DRIVES_GO_FORWARD.toId(), 73, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
 		//{AutoCommands.DRIVES_STEP_LINUP.toId()},
 		//{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.ARMS_DROP.toId()},
-		{AutoCommands.CHECK_TIME.toId(), 5, 8},
+		{AutoCommands.CHECK_TIME.toId(), 10, 6},
 		{AutoCommands.DRIVES_DANCE.toId()},
 		{AutoCommands.ARMS_DONE.toId()},
 		//{AutoCommands.DRIVES_STEP_LINUP.toId()},
 		//{AutoCommands.DRIVES_DONE.toId()},
-		{AutoCommands.DRIVES_GO_REVERSE.toId(), 140, 100},
+		{AutoCommands.DRIVES_GO_REVERSE.toId(), 160, 60},
 		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.ARMS_RELEASE.toId()},
+		{AutoCommands.ARMS_RAISE.toId()},
+		{AutoCommands.DRIVES_GO_FORWARD.toId(), 25, 100},
+		{AutoCommands.DRIVES_DONE.toId()},
+		{AutoCommands.END.toId()}
 	};
 
 

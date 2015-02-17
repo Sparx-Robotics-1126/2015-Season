@@ -252,6 +252,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
 					drives.driveStraight(5, 100);
+					canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
 					break;
 				case ATTACK3_TRIGGER:
 					

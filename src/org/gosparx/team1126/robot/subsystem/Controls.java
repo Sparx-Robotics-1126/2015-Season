@@ -9,6 +9,8 @@ import org.gosparx.team1126.robot.util.AdvancedJoystick.ButtonEvent;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.JoystickListener;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.MultibuttonEvent;
 
+import edu.wpi.first.wpilibj.Timer;
+
 /**
  * This is how the controller is able to work with drives
  * @author Mike the camel
@@ -48,24 +50,47 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	
 	/**
 	 * Instance for ToteAcq
+	private CanAcqTele canAcqTele
 	 */
 	private ToteAcq toteAcq;
 	
+	/**
+	 * Manual shifting on or off
+	 */
 	private boolean manualShifting = false;
 	
+	/**
+	 * The operator wants controls over the PTO
+	 */
 	private boolean operatorWantsControl = false;
+	
+	/**
+	 * The speed at which the operator wants to power the PTO
+	 */
+	private double operatorWantedPower = 0;
+	
+	/**
+	 * The wait for the tote stop to remove and the totes to score
+	 */
+	private double scoreWait = 0;
 	
 	/**
 	 * Instance for Elevations
 	 */
 	private Elevations elevations;
+	
+	/**
+	 * Instance for CanAcqTele
+	 */
+	private CanAcqTele canAcqTele;
+	
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
 	//**************************************************************************
-	private static final int LOGI_LEFT_X_AXIS = 1;
-	private static final int LOGI_LEFT_Y_AXIS = 2;
-	private static final int LOGI_RIGHT_X_AXIS = 3;
-	private static final int LOGI_RIGHT_Y_AXIS = 4;
+	private static final int LOGI_LEFT_X_AXIS = 0;
+	private static final int LOGI_LEFT_Y_AXIS = 1;
+	private static final int LOGI_RIGHT_X_AXIS = 2;
+	private static final int LOGI_RIGHT_Y_AXIS = 3;
 	/**
 	 * right = 1, left = -1
 	 */
@@ -137,13 +162,17 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addActionListener(this);
 		operatorJoy.addButton(LOGI_A);
 		operatorJoy.addButton(LOGI_B);
-		operatorJoy.addButton(LOGI_Y);
 		operatorJoy.addButton(LOGI_X);
+		operatorJoy.addButton(LOGI_Y);
 		operatorJoy.addButton(LOGI_R1);
 		operatorJoy.addButton(LOGI_BACK);
+		operatorJoy.addButton(LOGI_L1);
+		operatorJoy.addButton(LOGI_L2);
+		operatorJoy.addButton(LOGI_START);
 		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
+		canAcqTele = CanAcqTele.getInstance();
 		toteAcq = ToteAcq.getInstance();
 		elevations = Elevations.getInstance();
 		return true;
@@ -157,12 +186,33 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	protected boolean execute() {
 		double left = -driverJoyLeft.getAxis(ATTACK3_Y_AXIS);
 		double right = -driverJoyRight.getAxis(ATTACK3_Y_AXIS);
+		//TRIMS
+		double hookOveride = -operatorJoy.getAxis(LOGI_RIGHT_X_AXIS);
+		double rotateOveride = -operatorJoy.getAxis(LOGI_RIGHT_Y_AXIS);
+		if(Math.abs(rotateOveride) > 0){
+			elevations.scoreTotes();
+			canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
+			canAcqTele.overriding(true);
+			canAcqTele.manualRotateOverride(rotateOveride);
+		}else if(Math.abs(hookOveride) > 0){
+			canAcqTele.setState(CanAcqTele.HookState.STANDBY);
+			canAcqTele.overriding(true);
+			canAcqTele.manualHookOverride(hookOveride);
+		}else{
+			canAcqTele.overriding(false);
+		}
+		
+		
+		//Driver vs Operator
 		if((left != 0 || right != 0) || !operatorWantsControl){
 			drives.setPower(left, right, true);
 		}else if(operatorWantsControl){
-			drives.setPower(-0.6, 0, false);
+			if(scoreWait == 0 || Timer.getFPGATimestamp() > scoreWait + 0.25){
+				drives.setPower(operatorWantedPower, 0, false);
+			}
 		}
-			return false;
+		
+		return false;
 	}
 
 	/** 
@@ -212,11 +262,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			case IO.DRIVER_JOYSTICK_RIGHT:
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
-					drives.setAutoFunction(Drives.State.AUTO_LIGHT_LINE_UP);
+					drives.driveStraight(5, 100);
 					canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
 					break;
 				case ATTACK3_TRIGGER:
-
+					
 					canAcq.setAutoFunction(CanAcquisition.State.DROP_ARMS);
 					break;
 				}
@@ -225,41 +275,64 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			case IO.OPERATOR_JOYSTICK:
 			
 				switch(e.getID()){
-				case LOGI_A:
-					//Human Feed Mode
-					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
-					toteAcq.setClutch(ClutchState.ON);
-					toteAcq.setStopper(StopState.ON);
-					operatorWantsControl = true;
-					break;
 				case LOGI_B:
-					//Floor Mode
-					toteAcq.setRollerPos(RollerPosition.FLOOR);
+					//Human Feed Mode
+					elevations.liftTote();
 					toteAcq.setClutch(ClutchState.ON);
+					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
 					toteAcq.setStopper(StopState.ON);
 					operatorWantsControl = true;
+					operatorWantedPower = -0.8;
+					break;
+				case LOGI_A:
+					//Floor Mode
+					elevations.liftTote();
+					toteAcq.setClutch(ClutchState.ON);
+					toteAcq.setRollerPos(RollerPosition.FLOOR);
+					toteAcq.setStopper(StopState.ON);
+					operatorWantsControl = true;
+					operatorWantedPower = -0.8;
 					break;
 				case LOGI_Y:
 					//TODO: OFF Mode
 					toteAcq.setClutch(ClutchState.OFF);
-					toteAcq.setRollerPos(RollerPosition.TRAVEL);
 					toteAcq.setStopper(StopState.ON);
+					toteAcq.setRollerPos(RollerPosition.TRAVEL);
+					scoreWait = 0;
 					operatorWantsControl = false;
 					break;
 				case LOGI_X:
 					//Lower Totes Mode
-					elevations.lowerTotes();
 					break;
 				case LOGI_R1:
 					//SCORE
 					elevations.scoreTotes();
 					toteAcq.setClutch(ClutchState.ON);
 					toteAcq.setStopper(StopState.OFF);
+					scoreWait = Timer.getFPGATimestamp();
 					operatorWantsControl = true;
+					operatorWantedPower = -0.8;
+					break;
+				case LOGI_START:
+					//EJECT
+					toteAcq.setClutch(ClutchState.ON);
+					toteAcq.setStopper(StopState.ON);
+					toteAcq.setRollerPos(RollerPosition.FLOOR);
+					operatorWantsControl = true;
+					operatorWantedPower = 0.8;
 					break;
 				case LOGI_BACK:
 					//STOP
 					elevations.stopElevator();
+					break;
+				case LOGI_L1:
+					LOG.logMessage("Grabbing Can");
+					elevations.scoreTotes();
+					canAcqTele.goToAcquire();
+					break;
+				case LOGI_L2:
+					LOG.logMessage("Acquring Can");
+					canAcqTele.acquireCan();
 					break;
 				}
 				break;

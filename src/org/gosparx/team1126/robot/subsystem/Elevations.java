@@ -23,6 +23,8 @@ public class Elevations extends GenericSubsystem{
 	 */
 	private static Elevations elevations;
 
+	private CanAcqTele canAcqTele;
+
 	/**
 	 * Right Elevations motor
 	 */
@@ -53,7 +55,7 @@ public class Elevations extends GenericSubsystem{
 	 */
 	private EncoderData elevationLeftEncoderData;
 
-	/**
+	/**d
 	 * The home position for the right side
 	 */
 	private DigitalInput rightHomeSwitch;
@@ -94,7 +96,7 @@ public class Elevations extends GenericSubsystem{
 	/**
 	 * The minimum speed the elevator can travel while moving up
 	 */
-	private static final double MIN_UP_SPEED = 0.4;
+	private static final double MIN_UP_SPEED = 0.45;
 
 	/**
 	 * The minimum speed the elevator can travel while moving down
@@ -126,7 +128,7 @@ public class Elevations extends GenericSubsystem{
 	/**
 	 * A value between 0 - 1 which is the max speed the motors will go
 	 */
-	private double maxPower;
+	private double maxPower = 1;
 
 	/**
 	 * The current state of the system
@@ -137,32 +139,34 @@ public class Elevations extends GenericSubsystem{
 	 * Are we going up or down?
 	 */
 	private boolean goingUp = false;
-	
+
 	/**
 	 * Tells weather or not a new tote has been detected by the newToteSensor
 	 */
 	private boolean newToteDetected = false;
-	
+
 	/**
 	 * Time since the tote has entered the robot
 	 */
 	private double toteSenceTime = 0;
 
+	private boolean initalSetup = true;
+
 	/**
 	 * True if elevations is activly scoring a tote
 	 */
 	private boolean scoreTotes = false;
-	
+
 	/**
 	 * True if right elevations is in correct position
 	 */
 	private boolean rightDone = false;
-	
+
 	/**
 	 * True if left elevations is in correct position 
 	 */
 	private boolean leftDone = false;
-	
+
 	/**
 	 * Number of totes that the system has
 	 */
@@ -202,6 +206,8 @@ public class Elevations extends GenericSubsystem{
 		leftHomeSwitch = new DigitalInput(IO.DIO_ELEVATIONS_LEFT_ORIGIN);
 		newToteSensor = new DigitalInput(IO.DIO_TOTE_SENSOR);
 		currState = State.SETTING_HOME;
+		canAcqTele = CanAcqTele.getInstance();
+		numOfTotes = 0;
 		return false;
 	}
 
@@ -213,16 +219,26 @@ public class Elevations extends GenericSubsystem{
 		wantedSpeed = 0;
 		elevationRightEncoderData.calculateSpeed();
 		elevationLeftEncoderData.calculateSpeed();
+		boolean rightHome = !rightHomeSwitch.get();
+		boolean leftHome = !leftHomeSwitch.get();
+		boolean newTote = !newToteSensor.get();
 
-		if(currState == State.STANDBY && !newToteSensor.get() && !newToteDetected && !scoreTotes && numOfTotes < 6){
+		if(initalSetup){
+			currState = State.SETTING_HOME;
+		}
+		
+		if(currState == State.STANDBY && newTote && !newToteDetected && !scoreTotes){
 			toteSenceTime = Timer.getFPGATimestamp();
 			newToteDetected = true;
-		}else if(Timer.getFPGATimestamp() >= toteSenceTime + 0.5 && newToteDetected){
+		}else if(currState == State.STANDBY && Timer.getFPGATimestamp() >= toteSenceTime + 0.3 && newToteDetected && numOfTotes < 5){
 			LOG.logMessage("New tote acquired, starting lifting sequence");
 			newToteDetected = false;
 			numOfTotes++;
-			scoreTotes = false;
 			lowerTotes();
+		}else if(currState == State.STANDBY && Timer.getFPGATimestamp() >= toteSenceTime + 0.3 && newToteDetected){
+			LOG.logMessage("6th Tote Acquire");
+			newToteDetected = false;
+			scoreTotes();
 		}
 
 		switch(currState){
@@ -266,13 +282,13 @@ public class Elevations extends GenericSubsystem{
 			}
 
 			//DONE
-			if(((rightDistance >= wantedPosition - 0.05 && goingUp) || (rightDistance <= wantedPosition + 0.05 && !goingUp)) && !rightDone){
+			if(((rightDistance >= wantedPosition - 0.15 && goingUp) || (rightDistance <= wantedPosition + 0.15 && !goingUp)) && !rightDone){
 				LOG.logMessage("RIGHT POSITION HAS BEEN FOUND at: " + wantedPosition);
 				rightDone = true;
 				rightWantedSpeed = 0;
 			}
 
-			if(((leftDistance >= wantedPosition - 0.05 && goingUp) || (leftDistance <= wantedPosition + 0.05 && !goingUp)) && !leftDone){
+			if(((leftDistance >= wantedPosition - 0.15 && goingUp) || (leftDistance <= wantedPosition + 0.15 && !goingUp)) && !leftDone){
 				LOG.logMessage("LEFT POSITION HAS BEEN FOUND at: " + wantedPosition);
 				leftDone = true;
 				leftWantedSpeed = 0;
@@ -294,62 +310,67 @@ public class Elevations extends GenericSubsystem{
 					if(scoreTotes){
 						currState = State.STANDBY;
 					}else{
-						liftTote();
+						currState = State.SETTING_HOME;
 					}
 				}
 			}
 
 			//BOTTOM LIMIT
-			if(!rightHomeSwitch.get() && !goingUp){
+			if(rightHome && !goingUp && !rightDone){
 				rightWantedSpeed = 0;
+				rightDone = true;
+				LOG.logMessage("RIGHT LIMIT****************");
 			}
-			if(!leftHomeSwitch.get() && !goingUp){
+			if(leftHome && !goingUp && !leftDone){
 				leftWantedSpeed = 0;
+				leftDone = true;
+				LOG.logMessage("LEFT LIMIT***************");
 			}
 
-			if(!rightHomeSwitch.get() && !leftHomeSwitch.get() && !goingUp){
+			if(rightHome && leftHome && !goingUp){
 				LOG.logMessage("LIMIT SWITCHES HAVE BEEN TRIGGERED***");
 				elevationLeftEncoderData.reset();
 				elevationRightEncoderData.reset();
-				if(goingUp){
+				rightDone = false;
+				leftDone = false;
+				if(scoreTotes){
 					currState = State.STANDBY;
 				}else{
-					if(scoreTotes){
-						currState = State.STANDBY;
-					}else{
-						liftTote();
-					}
+					currState = State.SETTING_HOME;
 				}
 			}
-
 			break;
 		case SETTING_HOME:
-			if(!rightHomeSwitch.get()){
+			if(rightHome){
 //				LOG.logMessage("Right Home set");	
 				elevationRightEncoderData.reset();
 				rightWantedSpeed = 0;
+				rightDone = true;
 			}else{
 				rightWantedSpeed = -0.2;
 			}
 
-			if(!leftHomeSwitch.get()){
+			if(leftHome){
 //				LOG.logMessage("Left Home set");
 				elevationLeftEncoderData.reset();
 				leftWantedSpeed = 0;
+				leftDone = true;
 			}else{
 				leftWantedSpeed = -0.2;
 			}
 
-			if(!rightHomeSwitch.get() && !leftHomeSwitch.get()){
-				liftTote();
+			if(rightDone && leftDone){
+				rightDone = false;
+				leftDone = false;
 				goingUp = true;
 				wantedPosition = TOTE_LIFT_DIST;
+				liftTote();
 			}
 			break;
 		}
 
-		rightElevationMotor.set(rightWantedSpeed*0.9);
-		leftElevationMotor.set(leftWantedSpeed*0.9);
+		rightElevationMotor.set(rightWantedSpeed);
+		leftElevationMotor.set(leftWantedSpeed);
 		return false;
 	}
 
@@ -366,15 +387,18 @@ public class Elevations extends GenericSubsystem{
 	public void setHome(){
 		currState = State.SETTING_HOME;
 	}
-	
+
 	public void stopElevator(){
 		currState = State.STANDBY;
+		LOG.logMessage("Elavator Forced Stopped");
 	}
 
 	/**
 	 * Used to lower the elevator to lower poisition
 	 */
 	public void lowerTotes(){
+		leftDone = false;
+		rightDone = false;
 		scoreTotes = false;
 		goingUp = false;
 		wantedPosition = 0;
@@ -386,14 +410,24 @@ public class Elevations extends GenericSubsystem{
 	 * Lifts the tote;
 	 */
 	public void liftTote(){
+		if(initalSetup){
+//			canAcqTele.acquiredTote(true);
+			initalSetup = false;	
+		}else{
+			canAcqTele.acquiredTote(false);
+		}
+		rightDone = false;
+		leftDone = false;
 		scoreTotes = false;
 		goingUp = true;
 		wantedPosition = TOTE_LIFT_DIST;
 		currState = State.COMPLEX_MOVE;
 		maxPower = 1;
 	}
-	
+
 	public void scoreTotes(){
+		rightDone = false;
+		leftDone = false;
 		numOfTotes = 0;
 		scoreTotes = true;
 		goingUp = false;
@@ -408,14 +442,18 @@ public class Elevations extends GenericSubsystem{
 	 * @param maxPower - (0 - 1) the max power of the robot
 	 */
 	public void moveElevator(double position, double power){
+		leftDone = false;
+		rightDone = false;
 		if(elevationRightEncoderData.getDistance() > position){
 			goingUp = false;
 		}else{
 			goingUp = true;
 		}
+		scoreTotes = false;
 		currState = State.COMPLEX_MOVE;
 		wantedPosition = position;
 		maxPower = power;
+		LOG.logMessage("CAN ACQUIRE: going to " + wantedPosition);
 	}
 
 	/**
@@ -433,11 +471,13 @@ public class Elevations extends GenericSubsystem{
 	protected void writeLog() {
 		LOG.logMessage("Current State: " + currState.toString(currState));
 		LOG.logMessage("Wanted Position: " + wantedPosition);
-		LOG.logMessage("Current Posit"
-				+ "ion: Right: " + elevationRightEncoderData.getDistance() + " Left: " + elevationLeftEncoderData.getDistance());
+		LOG.logMessage("Current Position: Right: " + elevationRightEncoderData.getDistance() + 
+				" Left: " + elevationLeftEncoderData.getDistance());
+		LOG.logMessage("Current Power:  Right: " + rightWantedSpeed + " Left: " + leftWantedSpeed);
 		LOG.logMessage("Right Sensor: " + !rightHomeSwitch.get() + " Left: " + !leftHomeSwitch.get());
 		LOG.logMessage("New Tote: " + !newToteSensor.get());
 		LOG.logMessage("Number of Totes: " + numOfTotes);
+		LOG.logMessage("RIGHT DONE: " + rightDone + " LEFT DONE: " + leftDone);
 	}
 
 	/**

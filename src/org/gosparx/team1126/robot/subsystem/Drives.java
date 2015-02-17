@@ -364,7 +364,7 @@ public class Drives extends GenericSubsystem{
 		leftPower = 0;
 		rightPower = 0;
 		currentSpeed = (encoderDataRight.getSpeed() + encoderDataLeft.getSpeed()) / 2;
-		if(!ds.isAutonomous()){
+		if(!DriverStation.getInstance().isAutonomous()){
 			switch(currentDriveState){
 			case IN_LOW_GEAR:
 			if(Math.abs(currentSpeed) >= UPPERSHIFTSPEED &&  isAutoShifting){
@@ -534,7 +534,7 @@ public class Drives extends GenericSubsystem{
 			if(autoDistance > 0){
 				driveSpeed = driveSpeed < 0.5 ? 0.5: driveSpeed;
 				driveSpeed = driveSpeed > maxSpeed ? maxSpeed : driveSpeed;
-			}else {
+			}else{
 				driveSpeed = driveSpeed > -0.5 ? -0.5: driveSpeed;
 				driveSpeed = driveSpeed > -maxSpeed ? -maxSpeed : driveSpeed;
 				driveSpeed = -driveSpeed;

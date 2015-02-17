@@ -429,13 +429,13 @@ public class Drives extends GenericSubsystem{
 				shiftingPnu.set(!LOW_GEAR);
 			}
 			
-			if(Timer.getFPGATimestamp() >= shiftTime + 0.2){
+			if(Timer.getFPGATimestamp() >= shiftTime + 0.1){
 				leftPower = 0.2;
 			}else{
 				leftPower = -0.2;
 			}
 			
-			if(Timer.getFPGATimestamp() >= shiftTime + 0.4){
+			if(Timer.getFPGATimestamp() >= shiftTime + 0.2){
 				currentDriveState = finalDriveState;
 			}
 			break;
@@ -443,11 +443,11 @@ public class Drives extends GenericSubsystem{
 			//WANT TO GO TO NEUTRAL
 			shiftTime = Timer.getFPGATimestamp();
 			if(!isDriverControlled){
-				if(lastShiftState == State.SHIFTING_LOW){
+				if(lastShiftState == State.SHIFTING_HIGH){
 					LOG.logMessage("NEUTRAL SETUP TO HIGH");
-					currentDriveState = State.SHIFTING_HIGH;
+					currentDriveState = State.SHIFTING_LOW;
 					finalDriveState = State.NEUTRAL_SETUP;
-				}else if(lastShiftState == State.SHIFTING_HIGH){
+				}else if(lastShiftState == State.SHIFTING_LOW){
 					LOG.logMessage("NEUTRAL SETUP TO NEUTRAL");
 					currentDriveState = State.SHIFTING_NEUTRAL;
 					finalDriveState = State.IN_NEUTRAL_GEAR;
@@ -806,6 +806,10 @@ public class Drives extends GenericSubsystem{
 				return "In high gear";
 			case SHIFTING_HIGH:
 				return "Shifting high";
+			case IN_NEUTRAL_GEAR:
+				return "Neutral Gear";
+			case NEUTRAL_SETUP:
+				return "Setting up Neutral";
 			case AUTO_STAND_BY:
 				return "In auto stand by";
 			case AUTO_LIGHT_LINE_UP:
@@ -814,8 +818,6 @@ public class Drives extends GenericSubsystem{
 				return "Dancing";
 			case AUTO_DRIVE:
 				return "Driving Stright";
-			case NEUTRAL_SETUP:
-				return "Neutral Setup";
 			default:
 				return "Error";
 			}

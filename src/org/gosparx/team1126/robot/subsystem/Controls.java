@@ -61,6 +61,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	
 	private double operatorWantedPower = 0;
 	
+	private double scoreWait = 0;
+	
 	/**
 	 * Instance for Elevations
 	 */
@@ -194,7 +196,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		if((left != 0 || right != 0) || !operatorWantsControl){
 			drives.setPower(left, right, true);
 		}else if(operatorWantsControl){
-			drives.setPower(operatorWantedPower, 0, false);
+			if(scoreWait == 0 || Timer.getFPGATimestamp() > scoreWait + 0.25){
+				drives.setPower(operatorWantedPower, 0, false);
+			}
 		}
 		
 		return false;
@@ -264,6 +268,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
 					toteAcq.setStopper(StopState.ON);
 					operatorWantsControl = true;
+					operatorWantedPower = -0.8;
 					break;
 				case LOGI_B:
 					//Floor Mode
@@ -276,10 +281,10 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				case LOGI_Y:
 					//TODO: OFF Mode
-					elevations.setScoring(false);
 					toteAcq.setClutch(ClutchState.OFF);
 					toteAcq.setStopper(StopState.ON);
 					toteAcq.setRollerPos(RollerPosition.TRAVEL);
+					scoreWait = 0;
 					operatorWantsControl = false;
 					break;
 				case LOGI_X:
@@ -292,6 +297,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					elevations.scoreTotes();
 					toteAcq.setClutch(ClutchState.ON);
 					toteAcq.setStopper(StopState.OFF);
+					scoreWait = Timer.getFPGATimestamp();
 					operatorWantsControl = true;
 					operatorWantedPower = -0.8;
 					break;
@@ -306,14 +312,16 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				case LOGI_BACK:
 					//STOP
-					elevations.setScoring(false);
+					elevations.setScoring(true);
 					elevations.stopElevator();
 					break;
 				case LOGI_L1:
+					LOG.logMessage("Grabbing Can");
 					elevations.scoreTotes();
 					canAcqTele.goToAcquire();
 					break;
 				case LOGI_L2:
+					LOG.logMessage("Acquring Can");
 					elevations.setScoring(false);
 					canAcqTele.acquireCan();
 					break;

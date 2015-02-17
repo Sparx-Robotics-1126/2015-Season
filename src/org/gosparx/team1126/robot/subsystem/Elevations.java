@@ -405,10 +405,11 @@ public class Elevations extends GenericSubsystem{
 	 * Lifts the tote;
 	 */
 	public void liftTote(){
-		if(!initalSetup){
-			canAcqTele.acquiredTote();	
+		if(initalSetup){
+			canAcqTele.acquiredTote(true);
+			initalSetup = false;	
 		}else{
-			initalSetup = false;
+			canAcqTele.acquiredTote(false);
 		}
 		scoreTotes = false;
 		goingUp = true;

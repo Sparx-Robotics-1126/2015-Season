@@ -339,19 +339,31 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * Moves the can up DISTANCE_PER_TOTE
 	 */
-	public void acquiredTote(){
-		wantedHookPos = Math.min(hookEncData.getDistance() + DISTANCE_PER_TOTE, MAX_HOOK_POS);
+	public void acquiredTote(boolean initalValue){
 		currentHookState = HookState.MOVING;
+		if(initalValue){
+			wantedHookPos = 5;
+		}else{
+			wantedHookPos = Math.min(hookEncData.getDistance() + DISTANCE_PER_TOTE, MAX_HOOK_POS);	
+		}
 	}
 
+	/**
+	 * The desired new state of Rotate
+	 * @param state
+	 */
 	public void setState(RotateState state){
 		currentRotateState = state;
 	}
-	
+
+	/**
+	 * The desired new state of Hook
+	 * @param state
+	 */
 	public void setState(HookState state){
 		currentHookState = state;
 	}
-	
+
 	/**
 	 * How long to sleep between loops
 	 */

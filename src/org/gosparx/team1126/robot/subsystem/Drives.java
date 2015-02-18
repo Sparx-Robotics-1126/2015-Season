@@ -536,8 +536,7 @@ public class Drives extends GenericSubsystem{
 				driveSpeed = driveSpeed > maxSpeed ? maxSpeed : driveSpeed;
 			}else{
 				driveSpeed = driveSpeed > -0.5 ? -0.5: driveSpeed;
-				driveSpeed = driveSpeed > -maxSpeed ? -maxSpeed : driveSpeed;
-				driveSpeed = -driveSpeed;
+				driveSpeed = driveSpeed < -maxSpeed ? -maxSpeed : driveSpeed;
 			}
 			
 			

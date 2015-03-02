@@ -178,6 +178,8 @@ public class CanAcquisition extends GenericSubsystem{
 			currentState = State.STANDBY;
 			break;
 		case DISABLE:
+			rightArm.set(!GRAB);
+			leftArm.set(!GRAB);
 			arms.set(RAISE_ARMS);
 			currentState = State.STANDBY;
 			break;

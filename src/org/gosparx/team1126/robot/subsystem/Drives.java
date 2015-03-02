@@ -198,7 +198,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * determines if it's in high or low gear
 	 */
-	private static final boolean LOW_GEAR = true;
+	private static final boolean LOW_GEAR = false;
 
 	/**
 	 * stops the motors for auto
@@ -364,54 +364,53 @@ public class Drives extends GenericSubsystem{
 		leftPower = 0;
 		rightPower = 0;
 		currentSpeed = (encoderDataRight.getSpeed() + encoderDataLeft.getSpeed()) / 2;
-		if(!DriverStation.getInstance().isAutonomous()){
-			switch(currentDriveState){
-			case IN_LOW_GEAR:
+		switch(currentDriveState){
+		case IN_LOW_GEAR:
 			if(Math.abs(currentSpeed) >= UPPERSHIFTSPEED &&  isAutoShifting){
 				LOG.logMessage("SHIFTING HIGH");
-					shiftTime = Timer.getFPGATimestamp();
-					currentDriveState = State.SHIFTING_HIGH;
+				shiftTime = Timer.getFPGATimestamp();
+				currentDriveState = State.SHIFTING_HIGH;
 				finalDriveState = State.IN_HIGH_GEAR;
-				}
-				break;
-			case SHIFTING_LOW:
+			}
+			break;
+		case SHIFTING_LOW:
 			lastShiftState = State.SHIFTING_LOW;
 			neutralPnu.set(!ENABLE_NEUTRAL_SELECT);
 			shiftingPnu.set(LOW_GEAR);
-				if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
+			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
 				currentDriveState = finalDriveState;
-				}
-				if(currentSpeed < 0){
-					rightPower = SHIFTINGSPEED * - 1;
-					leftPower = SHIFTINGSPEED * - 1;
-				}else{
-					rightPower = SHIFTINGSPEED;
+			}
+			if(currentSpeed < 0){
+				rightPower = SHIFTINGSPEED * - 1;
+				leftPower = SHIFTINGSPEED * - 1;
+			}else{
+				rightPower = SHIFTINGSPEED;
 
-					leftPower = SHIFTINGSPEED;
-				}
-				break;
-			case IN_HIGH_GEAR:
+				leftPower = SHIFTINGSPEED;
+			}
+			break;
+		case IN_HIGH_GEAR:
 			if(Math.abs(currentSpeed) <= LOWERSHIFTSPEED && isAutoShifting){
 				LOG.logMessage("SHIFTING LOW");
-					shiftTime = Timer.getFPGATimestamp();
-					currentDriveState = State.SHIFTING_LOW;
+				shiftTime = Timer.getFPGATimestamp();
+				currentDriveState = State.SHIFTING_LOW;
 				finalDriveState = State.IN_LOW_GEAR;
-				}
-				break;
-			case SHIFTING_HIGH:
+			}
+			break;
+		case SHIFTING_HIGH:
 			lastShiftState = State.SHIFTING_HIGH;
 			shiftingPnu.set(!LOW_GEAR);
-				if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
+			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
 				currentDriveState = finalDriveState;
-				}
-				if(currentSpeed < 0){
-					rightPower = SHIFTINGSPEED * - 1;
-					leftPower = SHIFTINGSPEED * - 1;
-				}else{
-					rightPower = SHIFTINGSPEED;
-					leftPower = SHIFTINGSPEED;
-				}
-				break;
+			}
+			if(currentSpeed < 0){
+				rightPower = SHIFTINGSPEED * - 1;
+				leftPower = SHIFTINGSPEED * - 1;
+			}else{
+				rightPower = SHIFTINGSPEED;
+				leftPower = SHIFTINGSPEED;
+			}
+			break;
 		case IN_NEUTRAL_GEAR:
 			if(isDriverControlled){
 				currentDriveState = State.NEUTRAL_SETUP;
@@ -439,11 +438,11 @@ public class Drives extends GenericSubsystem{
 			//WANT TO GO TO NEUTRAL
 			shiftTime = Timer.getFPGATimestamp();
 			if(!isDriverControlled){
-				if(lastShiftState == State.SHIFTING_LOW){
+				if(lastShiftState == State.SHIFTING_HIGH){
 					LOG.logMessage("NEUTRAL SETUP TO HIGH");
-					currentDriveState = State.SHIFTING_HIGH;
+					currentDriveState = State.SHIFTING_LOW;
 					finalDriveState = State.NEUTRAL_SETUP;
-				}else if(lastShiftState == State.SHIFTING_HIGH){
+				}else if(lastShiftState == State.SHIFTING_LOW){
 					LOG.logMessage("NEUTRAL SETUP TO NEUTRAL");
 					currentDriveState = State.SHIFTING_NEUTRAL;
 					finalDriveState = State.IN_NEUTRAL_GEAR;
@@ -456,10 +455,10 @@ public class Drives extends GenericSubsystem{
 				finalDriveState = State.IN_LOW_GEAR;
 			}
 			break;
-			default:
+		default:
 			LOG.logMessage("Error currentDriveState = " + currentDriveState);
-			}
 		}
+		
 		switch(autoFunctions){
 		case AUTO_STAND_BY:
 			if(currentDriveState == State.IN_HIGH_GEAR || currentDriveState == State.IN_LOW_GEAR || currentDriveState == State.IN_NEUTRAL_GEAR){
@@ -539,19 +538,20 @@ public class Drives extends GenericSubsystem{
 				driveSpeed = driveSpeed < -maxSpeed ? -maxSpeed : driveSpeed;
 			}
 			
-			
-			if(currentDistance < autoDistance){
-				rightPower = driveSpeed + gyroOffset();
-				leftPower = driveSpeed - gyroOffset();
-			}else{
-				rightPower = -driveSpeed + gyroOffset();
-				leftPower = -driveSpeed - gyroOffset();
-			}
+			//NEED GYRO
+//			if(currentDistance < autoDistance){
+//				rightPower = driveSpeed + gyroOffset();
+//				leftPower = driveSpeed - gyroOffset();
+//			}else{
+//				rightPower = -driveSpeed + gyroOffset();
+//				leftPower = -driveSpeed - gyroOffset();
+//			}
 			if(autoDistance - currentDistance < 0.5 && autoDistance - currentDistance > -0.5){
 				rightPower = 0;
 				leftPower = 0;
 				autoFunctions = State.AUTO_STAND_BY;
 			}
+			
 			break;
 		case AUTO_DANCE:
 			if(danceLeft){

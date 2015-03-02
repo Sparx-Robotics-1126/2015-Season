@@ -108,12 +108,12 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The max position for the rotation
 	 */
-	private static final double MAX_ROTATION = 85;
+	private static final double MAX_ROTATION = 80;
 
 	/**
 	 * The position for the hook to acq
 	 */
-	private static final double ACQ_CAN_DIST = 22.5;
+	private static final double ACQ_CAN_DIST = 31.5;//29.5;
 
 	/**
 	 * The max pos for the hook
@@ -244,7 +244,11 @@ public class CanAcqTele extends GenericSubsystem{
 				}
 
 				if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  60){
-					elevations.moveElevator(15, 1);
+					elevations.moveElevator(16, 1);
+				}
+				
+				if(hookEncData.getDistance() > 24 && wantedRotateSpeed > 0){
+					wantedRotateSpeed = 0;
 				}
 
 				if((rotateEncData.getDistance() >= wantedAngle - 2 && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle + 2 && calculatedRotateSpeed > 0)){
@@ -272,7 +276,10 @@ public class CanAcqTele extends GenericSubsystem{
 			case MOVING:
 				double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 2)*0.75;
 				if(calculatedMovingSpeed > 0){
-					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : MIN_HOOK_SPEED; 
+					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : MIN_HOOK_SPEED;
+					if(hookEncData.getDistance() > 24){
+						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 0.8 ) ? 0.8 : calculatedMovingSpeed;
+					} 
 				}else{
 					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : -MIN_HOOK_SPEED;
 				}

@@ -475,7 +475,7 @@ public class Elevations extends GenericSubsystem{
 				" Left: " + elevationLeftEncoderData.getDistance());
 		LOG.logMessage("Current Power:  Right: " + rightWantedSpeed + " Left: " + leftWantedSpeed);
 		LOG.logMessage("Right Sensor: " + !rightHomeSwitch.get() + " Left: " + !leftHomeSwitch.get());
-		LOG.logMessage("New Tote: " + !newToteSensor.get());
+		LOG.logMessage("New Tote: " + newToteSensor.get());
 		LOG.logMessage("Number of Totes: " + numOfTotes);
 		LOG.logMessage("RIGHT DONE: " + rightDone + " LEFT DONE: " + leftDone);
 	}

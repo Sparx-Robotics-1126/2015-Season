@@ -534,6 +534,7 @@ public class Autonomous extends GenericSubsystem{
 	@Override
 	protected void writeLog() {
 		LOG.logMessage("Current Auto Selected: " + currentAutoName);
+		LOG.logMessage("Current Auto: " + currentAutoName);
 	}
 
 	/**
@@ -714,6 +715,10 @@ public class Autonomous extends GenericSubsystem{
 
 	public void runAuto(boolean run){
 		runAuto = run;
+		if(!runAuto){
+			drives.autoForceStop();
+			canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
+		}
 		LOG.logMessage("****************Auto has been switch to: " + run + "********************");
 	}
 }

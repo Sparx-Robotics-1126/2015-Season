@@ -32,7 +32,7 @@ public class Robot extends SampleRobot{
 		subsystems = new GenericSubsystem[]{	
 			LogWriter.getInstance(),
 			auto,
-        	Elevations.getInstance(),
+//        	Elevations.getInstance(),
         	Controls.getInstance(),
         	Drives.getInstance(),
         	CanAcquisition.getInstance(),

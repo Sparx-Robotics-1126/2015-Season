@@ -221,7 +221,7 @@ public class Elevations extends GenericSubsystem{
 		elevationLeftEncoderData.calculateSpeed();
 		boolean rightHome = !rightHomeSwitch.get();
 		boolean leftHome = !leftHomeSwitch.get();
-		boolean newTote = !newToteSensor.get();
+		boolean newTote = newToteSensor.get();
 
 		if(initalSetup){
 			currState = State.SETTING_HOME;

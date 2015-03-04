@@ -86,11 +86,6 @@ public class CanAcqTele extends GenericSubsystem{
 	private static final double DISTANCE_PER_TICK_ROTATE = 75/256.0;
 
 	/**
-	 * The distance the can must go up per tote
-	 */
-	private static final double DISTANCE_PER_TOTE = 10.0;
-
-	/**
 	 * The minimum power for the motors to get when we are rotating up
 	 */
 	private static final double MIN_ROTATE_UP_SPEED = 0.4;
@@ -113,7 +108,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The position for the hook to acq
 	 */
-	private static final double ACQ_CAN_DIST = 31.5;//29.5;
+	private static final double ACQ_CAN_DIST = 35;//29.5;
 
 	/**
 	 * The max pos for the hook
@@ -277,8 +272,8 @@ public class CanAcqTele extends GenericSubsystem{
 				double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 2)*0.75;
 				if(calculatedMovingSpeed > 0){
 					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : MIN_HOOK_SPEED;
-					if(hookEncData.getDistance() > 24){
-						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 0.8 ) ? 0.8 : calculatedMovingSpeed;
+					if(hookEncData.getDistance() > 27){
+						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 0.9 ) ? 0.9 : calculatedMovingSpeed;
 					} 
 				}else{
 					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : -MIN_HOOK_SPEED;
@@ -366,13 +361,9 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * Moves the can up DISTANCE_PER_TOTE
 	 */
-	public void acquiredTote(boolean initalValue){
+	public void acquiredTote(double distance){
 		currentHookState = HookState.MOVING;
-		if(initalValue){
-			wantedHookPos = 5;
-		}else{
-			wantedHookPos = Math.min(hookEncData.getDistance() + DISTANCE_PER_TOTE, MAX_HOOK_POS);	
-		}
+			wantedHookPos = Math.min(hookEncData.getDistance() + distance, MAX_HOOK_POS);	
 	}
 
 	/**

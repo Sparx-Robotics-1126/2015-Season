@@ -70,7 +70,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 	 */
 	public AdvancedJoystick(String name, int joyPort, int numButtons){
 		this(name, joyPort);
-		prevValues = new boolean[numButtons];
+		prevValues = new boolean[numButtons+1];
 	}
 
 	/**
@@ -167,6 +167,10 @@ public class AdvancedJoystick extends GenericSubsystem{
 	 */
 	public double getAxis(int axis){
 		return (Math.abs(joy.getRawAxis(axis)) > DEADBAND) ? joy.getRawAxis(axis) : 0;
+	}
+	
+	public double getPOV(int axis){
+		return joy.getPOV(axis);
 	}
 
 	/**

@@ -529,23 +529,23 @@ public class Drives extends GenericSubsystem{
 			break;
 		case AUTO_DRIVE:
 			double currentDistance = (encoderDataRight.getDistance() + encoderDataLeft.getDistance())/2;
-			double driveSpeed = (1.0/10)*(Math.sqrt(Math.abs(autoDistance - currentDistance)));
+			double driveSpeed = (1.0/8)*(Math.sqrt(Math.abs(autoDistance - currentDistance)));
 			if(autoDistance > 0){
 				driveSpeed = driveSpeed < 0.5 ? 0.5: driveSpeed;
 				driveSpeed = driveSpeed > maxSpeed ? maxSpeed : driveSpeed;
 			}else{
-				driveSpeed = driveSpeed > -0.5 ? -0.5: driveSpeed;
-				driveSpeed = driveSpeed < -maxSpeed ? -maxSpeed : driveSpeed;
+				driveSpeed = driveSpeed > -0.5 ? -0.5: -driveSpeed;
+				driveSpeed = driveSpeed < -maxSpeed ? -maxSpeed : -driveSpeed;
 			}
 			
 			//NEED GYRO
-//			if(currentDistance < autoDistance){
-//				rightPower = driveSpeed + gyroOffset();
-//				leftPower = driveSpeed - gyroOffset();
-//			}else{
-//				rightPower = -driveSpeed + gyroOffset();
-//				leftPower = -driveSpeed - gyroOffset();
-//			}
+			if(currentDistance < autoDistance){
+				rightPower = driveSpeed + gyroOffset();
+				leftPower = driveSpeed - gyroOffset();
+			}else{
+				rightPower = -driveSpeed + gyroOffset();
+				leftPower = -driveSpeed - gyroOffset();
+			}
 			if(autoDistance - currentDistance < 0.5 && autoDistance - currentDistance > -0.5){
 				rightPower = 0;
 				leftPower = 0;
@@ -644,6 +644,7 @@ public class Drives extends GenericSubsystem{
 				LOG.logMessage("Left Encoder: " + encoderDataLeft.getDistance() +
 						" Right Encoder: " +encoderDataRight.getDistance());
 				LOG.logMessage("POWER right: " + rightPower + " left: "+ leftPower);
+				LOG.logMessage("Auto Distance: " + autoDistance + " Auto Turn: " + autoWantedTurn);
 		LOG.logMessage("Gyro: " + gyro.getAngle());
 	}
 

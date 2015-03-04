@@ -96,7 +96,7 @@ public class Elevations extends GenericSubsystem{
 	/**
 	 * The minimum speed the elevator can travel while moving up
 	 */
-	private static final double MIN_UP_SPEED = 0.45;
+	private static final double MIN_UP_SPEED = 0.55;
 
 	/**
 	 * The minimum speed the elevator can travel while moving down
@@ -150,8 +150,6 @@ public class Elevations extends GenericSubsystem{
 	 */
 	private double toteSenceTime = 0;
 
-	private boolean initalSetup = true;
-
 	/**
 	 * True if elevations is activly scoring a tote
 	 */
@@ -171,6 +169,8 @@ public class Elevations extends GenericSubsystem{
 	 * Number of totes that the system has
 	 */
 	private int numOfTotes = 0;
+	
+	private boolean initalSetup = true;
 
 	/**
 	 * Returns the only instance of elevations
@@ -233,11 +233,13 @@ public class Elevations extends GenericSubsystem{
 		}else if(currState == State.STANDBY && Timer.getFPGATimestamp() >= toteSenceTime + 0.3 && newToteDetected && numOfTotes < 5){
 			LOG.logMessage("New tote acquired, starting lifting sequence");
 			newToteDetected = false;
-			numOfTotes++;
 			lowerTotes();
+			canAcqTele.acquiredTote(44);
+			numOfTotes++;
 		}else if(currState == State.STANDBY && Timer.getFPGATimestamp() >= toteSenceTime + 0.3 && newToteDetected){
 			LOG.logMessage("6th Tote Acquire");
 			newToteDetected = false;
+			canAcqTele.acquiredTote(-2);
 			scoreTotes();
 		}
 
@@ -365,6 +367,7 @@ public class Elevations extends GenericSubsystem{
 				goingUp = true;
 				wantedPosition = TOTE_LIFT_DIST;
 				liftTote();
+				initalSetup = false;//ONLY USED FOR INITAL SETUP
 			}
 			break;
 		}
@@ -410,12 +413,6 @@ public class Elevations extends GenericSubsystem{
 	 * Lifts the tote;
 	 */
 	public void liftTote(){
-		if(initalSetup){
-//			canAcqTele.acquiredTote(true);
-			initalSetup = false;	
-		}else{
-			canAcqTele.acquiredTote(false);
-		}
 		rightDone = false;
 		leftDone = false;
 		scoreTotes = false;

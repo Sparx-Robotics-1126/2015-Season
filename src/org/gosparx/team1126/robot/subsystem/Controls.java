@@ -27,12 +27,12 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 * declares a Joystick object named driverJoyRight
 	 */
 	private AdvancedJoystick driverJoyRight;
-	
+
 	/**
 	 * The Advanced joystick for the operator
 	 */
 	private AdvancedJoystick operatorJoy;
-	
+
 	/**
 	 * declares a Controls object named controls
 	 */
@@ -42,48 +42,48 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 * declares a Drives object named drives
 	 */
 	private Drives drives;
-	
+
 	/**
 	 * instance for CanAcquisition
 	 */
 	private CanAcquisition canAcq;
-	
+
 	/**
 	 * Instance for ToteAcq
 	private CanAcqTele canAcqTele
 	 */
 	private ToteAcq toteAcq;
-	
+
 	/**
 	 * Manual shifting on or off
 	 */
 	private boolean manualShifting = false;
-	
+
 	/**
 	 * The operator wants controls over the PTO
 	 */
 	private boolean operatorWantsControl = false;
-	
+
 	/**
 	 * The speed at which the operator wants to power the PTO
 	 */
 	private double operatorWantedPower = 0;
-	
+
 	/**
 	 * The wait for the tote stop to remove and the totes to score
 	 */
 	private double scoreWait = 0;
-	
+
 	/**
 	 * Instance for Elevations
 	 */
 	private Elevations elevations;
-	
+
 	/**
 	 * Instance for CanAcqTele
 	 */
 	private CanAcqTele canAcqTele;
-	
+
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
 	//**************************************************************************
@@ -91,14 +91,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private static final int LOGI_LEFT_Y_AXIS = 1;
 	private static final int LOGI_RIGHT_X_AXIS = 2;
 	private static final int LOGI_RIGHT_Y_AXIS = 3;
-	/**
-	 * right = 1, left = -1
-	 */
-	private static final int LOGI_DPAD_X_AXIS = 5;
-	/**
-	 * up = -1, down = 1
-	 */
-	private static final int LOGI_DPAD_Y_AXIS = 6;
+	private static final int LOGI_POV = 0;
 	private static final int LOGI_X = 1;
 	private static final int LOGI_A = 2;
 	private static final int LOGI_B = 3;
@@ -140,30 +133,27 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private Controls() {
 		super("controls", Thread.NORM_PRIORITY);
 	}
-	
+
 	/**
 	 * instantiates a Joystick and Drives
 	 * @return false ~ keeps looping true ~ stops loop
 	 */
 	@Override
 	protected boolean init() {
-		driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT);
+		driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT, 2);
 		driverJoyLeft.addActionListener(this);
 		driverJoyLeft.addButton(ATTACK3_TOP_BUTTON);
 		driverJoyLeft.addButton(ATTACK3_TRIGGER);
 		driverJoyLeft.addMultibutton(ATTACK3_TRIGGER, ATTACK3_TOP_BUTTON);
 		driverJoyLeft.start();
-		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT);
+		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT, 2);
 		driverJoyRight.addActionListener(this);
 		driverJoyRight.addButton(ATTACK3_TOP_BUTTON);
 		driverJoyRight.addButton(ATTACK3_TRIGGER);
 		driverJoyRight.start();
-		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK);
+		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK, 12);
 		operatorJoy.addActionListener(this);
-		operatorJoy.addButton(LOGI_A);
-		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_X);
-		operatorJoy.addButton(LOGI_Y);
 		operatorJoy.addButton(LOGI_R1);
 		operatorJoy.addButton(LOGI_BACK);
 		operatorJoy.addButton(LOGI_L1);
@@ -201,8 +191,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		}else{
 			canAcqTele.overriding(false);
 		}
-		
-		
+
+
 		//Driver vs Operator
 		if((left != 0 || right != 0) || !operatorWantsControl){
 			drives.setPower(left, right, true);
@@ -211,7 +201,39 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				drives.setPower(operatorWantedPower, 0, false);
 			}
 		}
-		
+
+		//OPERATOR CONTORLS
+		if(operatorJoy.getPOV(LOGI_POV) == 90){
+			//Human Feed Mode
+			elevations.liftTote();
+			toteAcq.setClutch(ClutchState.ON);
+			toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
+			toteAcq.setStopper(StopState.ON);
+			operatorWantsControl = true;
+			operatorWantedPower = -0.8;
+		}else if(operatorJoy.getPOV(LOGI_POV) == 180){
+			//Floor Mode
+			elevations.liftTote();
+			toteAcq.setClutch(ClutchState.ON);
+			toteAcq.setRollerPos(RollerPosition.FLOOR);
+			toteAcq.setStopper(StopState.ON);
+			operatorWantsControl = true;
+			operatorWantedPower = -0.8;
+		}else if(operatorJoy.getPOV(LOGI_POV) == 0){
+			//TODO: OFF Mode
+			toteAcq.setClutch(ClutchState.OFF);
+			toteAcq.setStopper(StopState.ON);
+			toteAcq.setRollerPos(RollerPosition.TRAVEL);
+			scoreWait = 0;
+			operatorWantsControl = false;
+		}else if(operatorJoy.getPOV(LOGI_POV) == 270){
+			//EJECT
+			toteAcq.setClutch(ClutchState.ON);
+			toteAcq.setStopper(StopState.ON);
+			toteAcq.setRollerPos(RollerPosition.FLOOR);
+			operatorWantsControl = true;
+			operatorWantedPower = 0.8;
+		}	
 		return false;
 	}
 
@@ -229,7 +251,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected void writeLog() {
-	
+
 	}
 
 	/**
@@ -237,7 +259,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected void liveWindow() {
-		
+
 	}
 
 	/**
@@ -258,7 +280,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				}
 				break;
-				
+
 			case IO.DRIVER_JOYSTICK_RIGHT:
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
@@ -268,38 +290,13 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					break;
 				}
 				break;
-				
+
 			case IO.OPERATOR_JOYSTICK:
-			
+
 				switch(e.getID()){
-				case LOGI_B:
-					//Human Feed Mode
-					elevations.liftTote();
-					toteAcq.setClutch(ClutchState.ON);
-					toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
-					toteAcq.setStopper(StopState.ON);
-					operatorWantsControl = true;
-					operatorWantedPower = -0.8;
-					break;
-				case LOGI_A:
-					//Floor Mode
-					elevations.liftTote();
-					toteAcq.setClutch(ClutchState.ON);
-					toteAcq.setRollerPos(RollerPosition.FLOOR);
-					toteAcq.setStopper(StopState.ON);
-					operatorWantsControl = true;
-					operatorWantedPower = -0.8;
-					break;
-				case LOGI_Y:
-					//TODO: OFF Mode
-					toteAcq.setClutch(ClutchState.OFF);
-					toteAcq.setStopper(StopState.ON);
-					toteAcq.setRollerPos(RollerPosition.TRAVEL);
-					scoreWait = 0;
-					operatorWantsControl = false;
-					break;
 				case LOGI_X:
-					//Lower Totes Mode
+					//Reset Elevator
+					elevations.setHome();
 					break;
 				case LOGI_R1:
 					//SCORE
@@ -308,15 +305,12 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					toteAcq.setStopper(StopState.OFF);
 					scoreWait = Timer.getFPGATimestamp();
 					operatorWantsControl = true;
-					operatorWantedPower = -0.8;
+					operatorWantedPower = -0.70;
 					break;
 				case LOGI_START:
-					//EJECT
-					toteAcq.setClutch(ClutchState.ON);
-					toteAcq.setStopper(StopState.ON);
-					toteAcq.setRollerPos(RollerPosition.FLOOR);
-					operatorWantsControl = true;
-					operatorWantedPower = 0.8;
+					//STOP CAN TELE
+					canAcqTele.setState(CanAcqTele.HookState.STANDBY);
+					canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
 					break;
 				case LOGI_BACK:
 					//STOP

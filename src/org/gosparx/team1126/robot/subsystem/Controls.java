@@ -9,6 +9,7 @@ import org.gosparx.team1126.robot.util.AdvancedJoystick.ButtonEvent;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.JoystickListener;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.MultibuttonEvent;
 
+import sun.rmi.runtime.Log;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -131,7 +132,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 * constructor for the Controls
 	 */
 	private Controls() {
-		super("controls", Thread.NORM_PRIORITY);
+		super("Controls", Thread.NORM_PRIORITY);
 	}
 
 	/**
@@ -159,6 +160,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(LOGI_L1);
 		operatorJoy.addButton(LOGI_L2);
 		operatorJoy.addButton(LOGI_START);
+		operatorJoy.addButton(LOGI_B);
+		operatorJoy.addButton(LOGI_A);
 		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
@@ -194,11 +197,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 
 
 		//Driver vs Operator
-		if((left != 0 || right != 0) || !operatorWantsControl){
+		if((left != 0) || !operatorWantsControl){
 			drives.setPower(left, right, true);
 		}else if(operatorWantsControl){
 			if(scoreWait == 0 || Timer.getFPGATimestamp() > scoreWait + 0.25){
-				drives.setPower(operatorWantedPower, 0, false);
+				drives.setPower(operatorWantedPower, right, false);
 			}
 		}
 
@@ -211,6 +214,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			toteAcq.setStopper(StopState.ON);
 			operatorWantsControl = true;
 			operatorWantedPower = -0.8;
+			LOG.logMessage("OP Button: Human Feed Mode");
 		}else if(operatorJoy.getPOV(LOGI_POV) == 180){
 			//Floor Mode
 			elevations.liftTote();
@@ -219,6 +223,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			toteAcq.setStopper(StopState.ON);
 			operatorWantsControl = true;
 			operatorWantedPower = -0.8;
+			LOG.logMessage("OP Button: Floor Mode");
 		}else if(operatorJoy.getPOV(LOGI_POV) == 0){
 			//TODO: OFF Mode
 			toteAcq.setClutch(ClutchState.OFF);
@@ -226,6 +231,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			toteAcq.setRollerPos(RollerPosition.TRAVEL);
 			scoreWait = 0;
 			operatorWantsControl = false;
+			LOG.logMessage("OP Button: OFF Mode");
 		}else if(operatorJoy.getPOV(LOGI_POV) == 270){
 			//EJECT
 			toteAcq.setClutch(ClutchState.ON);
@@ -233,6 +239,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			toteAcq.setRollerPos(RollerPosition.FLOOR);
 			operatorWantsControl = true;
 			operatorWantedPower = 0.8;
+			LOG.logMessage("OP Button: Eject");
 		}	
 		return false;
 	}
@@ -251,7 +258,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected void writeLog() {
-
+		LOG.logMessage("DR Left axis: " + -driverJoyLeft.getAxis(ATTACK3_Y_AXIS));
+		LOG.logMessage("DR Right axis: " + -driverJoyRight.getAxis(ATTACK3_Y_AXIS));
+		LOG.logMessage("Operator wants control: " + operatorWantsControl);
 	}
 
 	/**
@@ -274,9 +283,11 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
 					drives.setManualShifting(true);
+					LOG.logMessage("DR Button: HIGH GEAR");
 					break;
 				case ATTACK3_TRIGGER:
 					drives.setManualShifting(false);
+					LOG.logMessage("DR Button: LOW GEAR");
 					break;
 				}
 				break;
@@ -284,19 +295,21 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			case IO.DRIVER_JOYSTICK_RIGHT:
 				switch(e.getID()){
 				case ATTACK3_TOP_BUTTON:
-					drives.driveStraight(5, 100);
+					drives.driveStraight(16, 100);
+					LOG.logMessage("DR Button: Auto Drive Straight");
 					break;
 				case ATTACK3_TRIGGER:
+					LOG.logMessage("DR Button: No command");
 					break;
 				}
 				break;
 
 			case IO.OPERATOR_JOYSTICK:
-
 				switch(e.getID()){
 				case LOGI_X:
 					//Reset Elevator
-					elevations.setHome();
+					elevations.setHome();					
+					LOG.logMessage("OP Button: Elevations reset");
 					break;
 				case LOGI_R1:
 					//SCORE
@@ -305,36 +318,51 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					toteAcq.setStopper(StopState.OFF);
 					scoreWait = Timer.getFPGATimestamp();
 					operatorWantsControl = true;
-					operatorWantedPower = -0.70;
+					operatorWantedPower = -0.75;
+					LOG.logMessage("OP Button: Score");
 					break;
 				case LOGI_START:
 					//STOP CAN TELE
 					canAcqTele.setState(CanAcqTele.HookState.STANDBY);
 					canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
+					LOG.logMessage("OP Button: Stop Can Tele");
 					break;
 				case LOGI_BACK:
 					//STOP
 					elevations.stopElevator();
+					LOG.logMessage("OP Button: Stop");
 					break;
 				case LOGI_L1:
-					LOG.logMessage("Grabbing Can");
 					elevations.scoreTotes();
 					canAcqTele.goToAcquire();
+					LOG.logMessage("OP Button: Dropping Can Tele");
 					break;
 				case LOGI_L2:
-					LOG.logMessage("Acquring Can");
 					canAcqTele.acquireCan();
+					LOG.logMessage("OP Button: Acquiring Can Tele");
+					break;
+				case LOGI_B:
+					if(e.isRising()){
+						canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
+						LOG.logMessage("OP Button: Can Auto Arms OPEN");
+					}else{
+						canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
+						LOG.logMessage("OP Button: Can Auto Arms CLOSE");
+					}
+					break;
+				case LOGI_A:
+					elevations.lowerTotes();
+					LOG.logMessage("OP Button: Lowering Elevations");
 					break;
 				}
-				break;
 			}
-		}
-		else{
+		}else{
 			switch (e.getPort()) {
 			case IO.DRIVER_JOYSTICK_LEFT:
 				if(e.isRising()){
 					manualShifting = !manualShifting;
 					drives.isManualShifting(manualShifting);
+					LOG.logMessage("DR Button: Manual Shifting is enabled? " + manualShifting);
 				}
 				break;
 			}

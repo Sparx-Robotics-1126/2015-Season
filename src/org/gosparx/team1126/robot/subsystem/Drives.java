@@ -337,10 +337,11 @@ public class Drives extends GenericSubsystem{
 		rightPower = 0;
 
 		//OTHER
-		gyro = new Gyro(0);;
+		gyro = new Gyro(0);
 		shiftingPnu = new Solenoid(IO.PNU_SHIFT);	
 		neutralPnu = new Solenoid(IO.PNU_DISENGAGE_DRIVES);//TODO: FIND CHANNEL
-		currentDriveState = State.IN_LOW_GEAR;
+		currentDriveState = State.SHIFTING_HIGH;
+		finalDriveState = State.IN_HIGH_GEAR;
 		currentSpeed = 0;
 		shiftTime = 0;
 		autoFunctions = State.AUTO_STAND_BY;
@@ -424,13 +425,13 @@ public class Drives extends GenericSubsystem{
 				shiftingPnu.set(!LOW_GEAR);
 			}
 			
-			if(Timer.getFPGATimestamp() >= shiftTime + 0.2){
+			if(Timer.getFPGATimestamp() >= shiftTime + 0.3){
 				leftPower = 0.2;
 			}else{
 				leftPower = -0.2;
 			}
 			
-			if(Timer.getFPGATimestamp() >= shiftTime + 0.4){
+			if(Timer.getFPGATimestamp() >= shiftTime + 0.6){
 				currentDriveState = finalDriveState;
 			}
 			break;
@@ -451,8 +452,8 @@ public class Drives extends GenericSubsystem{
 				}
 			}else{//WANT TO GO TO LOW GEAR
 				LOG.logMessage("NEUTRAL SETUP TO LOW");
-				currentDriveState = State.SHIFTING_LOW;
-				finalDriveState = State.IN_LOW_GEAR;
+				currentDriveState = State.SHIFTING_HIGH;//State.SHIFTING_LOW;
+				finalDriveState = State.IN_HIGH_GEAR;//State.IN_LOW_GEAR;
 			}
 			break;
 		default:
@@ -641,8 +642,8 @@ public class Drives extends GenericSubsystem{
 		//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
 		//		log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
 		//		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-				LOG.logMessage("Left Encoder: " + encoderDataLeft.getDistance() +
-						" Right Encoder: " +encoderDataRight.getDistance());
+				LOG.logMessage("Left Encoder: " + encoderDataLeft.getSpeed() +
+						" Right Encoder: " +encoderDataRight.getSpeed());
 				LOG.logMessage("POWER right: " + rightPower + " left: "+ leftPower);
 				LOG.logMessage("Auto Distance: " + autoDistance + " Auto Turn: " + autoWantedTurn);
 		LOG.logMessage("Gyro: " + gyro.getAngle());
@@ -673,15 +674,14 @@ public class Drives extends GenericSubsystem{
 			}else{
 				wantedRightPower = -(5/4)*Math.sqrt(-right);
 			}
-			//		rightPID.setGoal(right*100);
-			//		leftPID.setGoal(left*100);
+
 		}else{
 			if(driverControl != isDriverControlled){//FIRST TIME
 				currentDriveState = State.NEUTRAL_SETUP;
 				isDriverControlled = driverControl;
 			}
 			wantedLeftPower = left;
-			wantedRightPower = 0;
+			wantedRightPower = right;
 		}
 		isDriverControlled = driverControl;
 	}
@@ -762,6 +762,23 @@ public class Drives extends GenericSubsystem{
 		autoWantedTurn = 0;
 		maxSpeed = speed;
 	}
+	
+	/**
+	 * Drives robot forward set distance
+	 * @param inchDistance - distance to travel in inches
+	 * @param speed - desired speed(0 - 1)
+	 */
+	public void driveArc(int inchDistance, int degreesToArc, double speed){
+		LOG.logMessage("Received Auto Straight: " + inchDistance + " inches");
+		setAutoFunction(State.AUTO_DRIVE);
+		autoDistance = inchDistance;
+		gyro.reset();
+		encoderDataRight.reset();
+		encoderDataLeft.reset();
+		autoWantedTurn = degreesToArc;
+		maxSpeed = speed;
+	}
+	
 
 	/**
 	 * @return is drives is done with last auto command

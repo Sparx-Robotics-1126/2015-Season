@@ -1,8 +1,12 @@
 package org.gosparx.team1126.robot;
 
+import org.gosparx.team1126.robot.subsystem.CanAcqTele;
 import org.gosparx.team1126.robot.subsystem.CanAcquisition;
 import org.gosparx.team1126.robot.subsystem.Drives;
+import org.gosparx.team1126.robot.subsystem.Elevations;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
+
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,11 +26,15 @@ public class Autonomous extends GenericSubsystem{
 	 * An Instance of Drives
 	 */
 	private Drives drives;
-	
+
 	/**
 	 * An instance of CanAcq
 	 */
 	private CanAcquisition canAcq;
+
+	private CanAcqTele canAcqTele;
+
+	private Elevations ele;
 
 	/**
 	 * Supports singleton
@@ -102,11 +110,13 @@ public class Autonomous extends GenericSubsystem{
 	 * Time auto starts
 	 */
 	private double autoStartTime;
-	
+
 	/**
 	 * The actual time wanted to wait
 	 */
 	private double waitTime;
+
+	private boolean waiting = false;
 
 	/**
 	 * The voltages of the different choices on the selection switch
@@ -290,7 +300,25 @@ public class Autonomous extends GenericSubsystem{
 		 * Signals the end of the auto mode 
 		 * {}
 		 */
-		END(26);
+		END(26),
+
+		CAN_TELE_ACQUIRE(27),
+
+		CAN_TELE_DOWN(28),
+
+		CAN_TELE_DONE(29),
+
+		ELEV_DONE(30),
+		
+		/**
+		 * Angle to rotate
+		 */
+		CAN_TELE_ROTATE(31),
+
+		/**
+		 * Distance, arc angle, max speed
+		 */
+		DRIVES_ARC(32);
 
 		private int id;
 		private AutoCommands(int id){
@@ -338,6 +366,11 @@ public class Autonomous extends GenericSubsystem{
 			case TOTES_RAISE: 		return "Totes rasied";
 			case TOTES_STOP: 		return "TOTES ragged quit (STOPPED)";
 			case WAIT: 				return "AUTO WAITING....";
+			case CAN_TELE_ACQUIRE: 	return "Can Tele Acquire";
+			case CAN_TELE_DONE:		return "Can Tele Done";
+			case CAN_TELE_DOWN: 	return "Can Tele Down";
+			case DRIVES_ARC:		return "Drives Arcing";
+			case ELEV_DONE: 		return "Elevation Done";
 			default:				return auto.toId() + "";
 			}
 		}
@@ -410,7 +443,7 @@ public class Autonomous extends GenericSubsystem{
 		{AutoCommands.END.toId()}
 	};
 
-	
+
 	/**
 	 * Acquires 2 cans from the step and brings them to the auto zone
 	 */
@@ -441,13 +474,15 @@ public class Autonomous extends GenericSubsystem{
 		{AutoCommands.END.toId()}
 	};
 
-	private static final int[][] TEST_AUTO = {
-		{AutoCommands.DRIVES_GO_FORWARD.toId(), 73, 100},
+	private static final String TWO_CAN_STEP_CENTER_NAME = "Two can to center";
+	private static final int[][] TWO_CAN_STEP_CENTER = {
+		{AutoCommands.CHECK_TIME.toId(), 3, 3},
+		{AutoCommands.DRIVES_GO_FORWARD.toId(), 72, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
 		//{AutoCommands.DRIVES_STEP_LINUP.toId()},
 		//{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.ARMS_DROP.toId()},
-		{AutoCommands.CHECK_TIME.toId(), 5, 6},
+		{AutoCommands.CHECK_TIME.toId(), 5, 7},
 		{AutoCommands.DRIVES_DANCE.toId()},
 		{AutoCommands.ARMS_DONE.toId()},
 		//{AutoCommands.DRIVES_STEP_LINUP.toId()},
@@ -459,6 +494,74 @@ public class Autonomous extends GenericSubsystem{
 		{AutoCommands.DRIVES_GO_FORWARD.toId(), 25, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
 		{AutoCommands.END.toId()}
+	};
+
+	private final String ONE_CAN_DRAGGED_TO_AUTOZONE_NAME = "One can to autozone";
+	private final int[][] ONE_CAN_DRAGGED_TO_AUTOZONE = {
+			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.ELEV_DONE.toId()},
+			{AutoCommands.CAN_TELE_DOWN.toId()},
+			{AutoCommands.WAIT.toId(), 1500},
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 100, 80},
+			{AutoCommands.DRIVES_DONE.toId()},
+			//			{AutoCommands.CAN_TELE_ACQUIRE.toId()},
+			//			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.END.toId()}
+	};
+
+	private final String DRIVE_TO_LOAD_NAME	= "Drive to Load from HP";
+	private final int[][] DRIVE_TO_LOAD = {
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 16, 65},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.END.toId()}
+	};
+
+	private final String AUTO_CAN_AND_LINUP_NAME = "Auto Drive and lineup";
+	private final int[][] AUTO_CAN_AND_LINEUP = {
+			{AutoCommands.ELEV_DONE.toId()},
+			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.CAN_TELE_DOWN.toId()},
+			{AutoCommands.WAIT.toId(), 1500},
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 35, 100},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.CAN_TELE_ROTATE.toId(), 50},
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 15, 100},
+			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.CAN_TELE_DOWN.toId()},
+			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.CAN_TELE_ACQUIRE.toId()},
+			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.DRIVES_TURN_RIGHT.toId(), 140},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 50, 100},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.DRIVES_TURN_RIGHT.toId(), 45},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 20, 100},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.END.toId()}
+	};
+
+	private final String AUTO_CAN_TO_ZONE_NAME = "Auto Drive to Zone";
+	private final int[][] AUTO_CAN_TO_ZONE = {
+			{AutoCommands.ELEV_DONE.toId()},
+			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.CAN_TELE_DOWN.toId()},
+			{AutoCommands.WAIT.toId(), 1500},
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 35, 100},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.CAN_TELE_ROTATE.toId(), 50},
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 15, 100},
+			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.CAN_TELE_DOWN.toId()},
+			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.CAN_TELE_ACQUIRE.toId()},
+			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.DRIVES_ARC.toId(), -85, -45, 100},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.END.toId()}
 	};
 
 
@@ -488,6 +591,8 @@ public class Autonomous extends GenericSubsystem{
 		selectorSwitch = new AnalogInput(IO.ANA_AUTOSWITCH);
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
+		canAcqTele = CanAcqTele.getInstance();
+		ele = Elevations.getInstance();
 		runAuto = false;
 
 		//Auto current selected
@@ -500,6 +605,11 @@ public class Autonomous extends GenericSubsystem{
 		chooser.addObject(ONE_YELLOW_TOTE_FROM_STAGING_NAME, new Integer(3));
 		chooser.addObject(TWO_CANS_LEFT_STEP_NAME, new Integer(4));
 		chooser.addObject(TWO_CANS_RIGHT_STEP_NAME, new Integer(5));
+		chooser.addObject(TWO_CAN_STEP_CENTER_NAME, new Integer(6));
+		chooser.addObject(ONE_CAN_DRAGGED_TO_AUTOZONE_NAME, new Integer(7));
+		chooser.addObject(DRIVE_TO_LOAD_NAME, new Integer(8));
+		chooser.addObject(AUTO_CAN_TO_ZONE_NAME, new Integer(9));
+		chooser.addObject(AUTO_CAN_AND_LINUP_NAME, new Integer(10));
 		SmartDashboard.putData(SD_AUTO_NAME, chooser);
 
 		return false;
@@ -543,31 +653,31 @@ public class Autonomous extends GenericSubsystem{
 	private void getAutoMode(){
 		double voltage = selectorSwitch.getVoltage();
 		int wantedAuto = -1;
-		if(!SmartDashboard.getBoolean(SD_USE_SMART_AUTO)){
-			if (voltage >= SELECTION_0){
-				wantedAuto = 1;
-			}else if(voltage >= SELECTION_1){
-				wantedAuto = 2;
-			}else if(voltage >= SELECTION_2){
-				wantedAuto = 3;
-			}else if(voltage >= SELECTION_3){
-				wantedAuto = 4;
-			}else if(voltage >= SELECTION_4){
-				wantedAuto = 5;
-			}else if(voltage >= SELECTION_5){
-				wantedAuto = 6;
-			}else if(voltage >= SELECTION_6){
-				wantedAuto = 7;
-			}else if(voltage >= SELECTION_7){
-				wantedAuto = 8;
-			}else if(voltage >= SELECTION_8){
-				wantedAuto = 9;
-			}else{
-				wantedAuto = 10;
-			}
-		}else{
-			wantedAuto = (Integer)chooser.getSelected();
-		}
+		//		if(!SmartDashboard.getBoolean(SD_USE_SMART_AUTO)){
+		//			if (voltage >= SELECTION_0){
+		//				wantedAuto = 1;
+		//			}else if(voltage >= SELECTION_1){
+		//				wantedAuto = 2;
+		//			}else if(voltage >= SELECTION_2){
+		//				wantedAuto = 3;
+		//			}else if(voltage >= SELECTION_3){
+		//				wantedAuto = 4;
+		//			}else if(voltage >= SELECTION_4){
+		//				wantedAuto = 5;
+		//			}else if(voltage >= SELECTION_5){
+		//				wantedAuto = 6;
+		//			}else if(voltage >= SELECTION_6){
+		//				wantedAuto = 7;
+		//			}else if(voltage >= SELECTION_7){
+		//				wantedAuto = 8;
+		//			}else if(voltage >= SELECTION_8){
+		//				wantedAuto = 9;
+		//			}else{
+		//				wantedAuto = 10;
+		//			}
+		//		}else{
+		wantedAuto = (Integer)chooser.getSelected();
+		//		}
 		//SET AUTO;
 		switch(wantedAuto){
 		case 1:
@@ -590,9 +700,29 @@ public class Autonomous extends GenericSubsystem{
 			currentAutoName = TWO_CANS_RIGHT_STEP_NAME;
 			currentAuto = TWO_CANS_RIGHT_STEP;
 			break;
+		case 6:
+			currentAutoName = TWO_CAN_STEP_CENTER_NAME;
+			currentAuto = TWO_CAN_STEP_CENTER;
+			break;
+		case 7:
+			currentAutoName = ONE_CAN_DRAGGED_TO_AUTOZONE_NAME;
+			currentAuto = ONE_CAN_DRAGGED_TO_AUTOZONE;
+			break;
+		case 8:
+			currentAutoName = DRIVE_TO_LOAD_NAME;
+			currentAuto = DRIVE_TO_LOAD;
+			break;
+		case 9:
+			currentAutoName = AUTO_CAN_TO_ZONE_NAME;
+			currentAuto = AUTO_CAN_TO_ZONE;
+			break;
+		case 10:
+			currentAutoName = AUTO_CAN_AND_LINUP_NAME;
+			currentAuto = AUTO_CAN_AND_LINEUP;
+			break;
 		default:
-			currentAutoName = "Test";
-			currentAuto = TEST_AUTO;
+			currentAutoName = NO_AUTO_NAME;//NO_AUTO_NAME;
+			currentAuto = NO_AUTO;//NO_AUTO;
 		}
 		SmartDashboard.putString(SD_CURRENT_AUTO_MODE, currentAutoName);
 	}
@@ -624,6 +754,9 @@ public class Autonomous extends GenericSubsystem{
 				break;
 			case DRIVES_DANCE:
 				drives.autoDance();
+				break;
+			case DRIVES_ARC:
+				drives.driveArc(currentAuto[currentStep][1], currentAuto[currentStep][2], currentAuto[currentStep][3]);
 				break;
 			case DRIVES_DONE:
 				increaseStep = drives.isDone();
@@ -668,25 +801,49 @@ public class Autonomous extends GenericSubsystem{
 				break;
 			case TOTES_DONE:
 				break;
+			case CAN_TELE_ACQUIRE:
+				canAcqTele.acquireCan();
+				break;
+			case CAN_TELE_DOWN:
+				canAcqTele.goToAcquire();
+				ele.scoreTotes();
+				break;
+			case CAN_TELE_DONE:
+				increaseStep = canAcqTele.isDone();
+				break;
+			case CAN_TELE_ROTATE:
+				canAcqTele.setAutoPosition(currentAuto[currentStep][1]);
+				break;
+			case ELEV_DONE:
+				increaseStep = ele.isDone();
+				break;
 			case CHECK_TIME:
 				checkTime = true;
 				criticalStep =  currentAuto[currentStep][2];
 				criticalTime = currentAuto[currentStep][1];
 				break;
 			case WAIT:
-				waitTime = Timer.getFPGATimestamp() + currentAuto[currentStep][1];
+				if(!waiting){
+					waitTime = Timer.getFPGATimestamp() + (currentAuto[currentStep][1]/1000.0);
+					waiting = true;
+				}
+				break;
 			case END:
 				break;
 			default:
 				runAuto = false;
 				LOG.logError("Unknown autocommand: " + currentAuto[currentStep]);
+				break;
 			}
 			//WAIT
-			if(waitTime < Timer.getFPGATimestamp()){
+			if(waitTime < Timer.getFPGATimestamp() && waiting){
 				increaseStep = true;
+				waiting = false;
 				waitTime = Double.MAX_VALUE;
+			}else if(waiting){
+				increaseStep = false;
 			}
-			
+
 			if(increaseStep){
 				StringBuilder sb = new StringBuilder();
 				sb.append(AutoCommands.getName(AutoCommands.fromId(currentAuto[currentStep][0]))).append("(");
@@ -719,6 +876,6 @@ public class Autonomous extends GenericSubsystem{
 			drives.autoForceStop();
 			canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
 		}
-		LOG.logMessage("****************Auto has been switch to: " + run + "********************");
+		LOG.logMessage("****************Auto has been switch to: " + run + (run ? (" Running: " + currentAutoName) : "") + "********************");
 	}
 }

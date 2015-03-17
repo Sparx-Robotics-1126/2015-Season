@@ -8,6 +8,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 /**
  * Used to log messages to files. This is the singleton LogWriter that writes to the files.
  * @author Alex Mechler {amechler1998@gmail.com}
@@ -70,7 +73,8 @@ public class LogWriter extends GenericSubsystem{
 	protected boolean init() {
 		try {
 			Calendar cal = Calendar.getInstance();
-			logName = "log" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DATE) + "-" + cal.get(Calendar.YEAR) + "(" + cal.get(Calendar.HOUR_OF_DAY) + "-" + cal.get(Calendar.MINUTE) + ").txt";
+			DriverStation dr = DriverStation.getInstance();
+			logName = "log" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DATE) + "-" + cal.get(Calendar.YEAR) + "(" + cal.get(Calendar.HOUR_OF_DAY) + "-" + cal.get(Calendar.MINUTE) + ") " + (ds.getAlliance() == Alliance.Red ? "Red" : "Blue") + ".txt";
 			file = new File(FILE_PATH + logName);
 			file.mkdirs();
 			file.setWritable(true, false);

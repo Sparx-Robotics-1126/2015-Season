@@ -412,8 +412,8 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		LOG.logMessage("Current Hook State: " + currentHookState.toString());
-		LOG.logMessage("Current Rotate State: " + currentRotateState.toString());
+		LOG.logMessage("Current State Hook: " + currentHookState.toString());
+		LOG.logMessage("Current State Rotate: " + currentRotateState.toString());
 		LOG.logMessage("Wanted Angle: " + wantedAngle + " Current Angle: " + rotateEncData.getDistance());
 		LOG.logMessage("Wanted Hook Pos: " + wantedHookPos + " Current Hook Pos: " + hookEncData.getDistance());
 		LOG.logMessage("Hook Home: " + !hookHome.get() + " Rotate Home: " + !rotateHome.get());

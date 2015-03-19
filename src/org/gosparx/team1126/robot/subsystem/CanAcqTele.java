@@ -108,7 +108,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The position for the hook to acq
 	 */
-	private static final double ACQ_CAN_DIST = 26.5;
+	private static final double ACQ_CAN_DIST = 28.5;
 
 	/**
 	 * The max pos for the hook
@@ -278,7 +278,9 @@ public class CanAcqTele extends GenericSubsystem{
 					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : MIN_HOOK_SPEED;
 					if(hookEncData.getDistance() > 27 && isAcquiring){
 						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1.3 ) ? 1.3 : calculatedMovingSpeed;
-					} 
+					}else if(hookEncData.getDistance() < 6 && isAcquiring){
+						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1 ) ? 1 : calculatedMovingSpeed;
+					}  
 				}else{
 					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : -MIN_HOOK_SPEED;
 				}
@@ -289,7 +291,7 @@ public class CanAcqTele extends GenericSubsystem{
 				}
 				break;
 			case HOOK_FINDING_HOME:
-				wantedHookSpeed = 1.6;
+				wantedHookSpeed = 1.2;
 				if(!hookHome.get()){
 					hookEncData.reset();
 					hookEnc.reset();
@@ -301,7 +303,7 @@ public class CanAcqTele extends GenericSubsystem{
 			}
 		}
 
-		rotateMotor.set(wantedRotateSpeed);
+		rotateMotor.set(wantedRotateSpeed *3);
 		hookMotor.set(-wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor
 		return false;
 	}

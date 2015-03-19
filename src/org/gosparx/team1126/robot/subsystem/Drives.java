@@ -681,7 +681,7 @@ public class Drives extends GenericSubsystem{
 				isDriverControlled = driverControl;
 			}
 			wantedLeftPower = left;
-			wantedRightPower = 0;
+			wantedRightPower = right;
 		}
 		isDriverControlled = driverControl;
 	}
@@ -760,6 +760,17 @@ public class Drives extends GenericSubsystem{
 		encoderDataRight.reset();
 		encoderDataLeft.reset();
 		autoWantedTurn = 0;
+		maxSpeed = speed;
+	}
+	
+	public void driveArc(int inchDistance, int speed, int angle) {
+		LOG.logMessage("Received Auto Straight: " + inchDistance + " inches");
+		setAutoFunction(State.AUTO_DRIVE);
+		autoDistance = inchDistance;
+		gyro.reset();
+		encoderDataRight.reset();
+		encoderDataLeft.reset();
+		autoWantedTurn = angle;
 		maxSpeed = speed;
 	}
 
@@ -877,5 +888,7 @@ public class Drives extends GenericSubsystem{
 	private double getD(boolean right){
 		return right ? SmartDashboard.getNumber("Right D") : SmartDashboard.getNumber("Left D");
 	}
+
+	
 
 }

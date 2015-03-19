@@ -96,12 +96,12 @@ public class Elevations extends GenericSubsystem{
 	/**
 	 * The minimum speed the elevator can travel while moving up
 	 */
-	private static final double MIN_UP_SPEED = 0.55;
+	private static final double MIN_UP_SPEED = 0.45;//0.55;
 
 	/**
 	 * The minimum speed the elevator can travel while moving down
 	 */
-	private static final double MIN_DOWN_SPEED = 0.3;
+	private static final double MIN_DOWN_SPEED = 0.3;//0.6;
 
 	//******************VARIABLES********************
 
@@ -308,11 +308,10 @@ public class Elevations extends GenericSubsystem{
 				rightDone = false;
 				if(goingUp){
 					currState = State.STANDBY;
-					System.out.println("1126: TOP REACHED Tote: " + numOfTotes);
+					LOG.logMessage("1126: TOP REACHED Tote: " + numOfTotes);
 				}else{
 					if(scoreTotes){
 						currState = State.STANDBY;
-						System.out.println("1126: BOTTOM REACHED Tote: " + numOfTotes);
 					}else{
 						currState = State.SETTING_HOME;
 					}
@@ -351,7 +350,7 @@ public class Elevations extends GenericSubsystem{
 				rightWantedSpeed = 0;
 				rightDone = true;
 			}else{
-				rightWantedSpeed = -0.25;
+				rightWantedSpeed = -0.2;//-0.5;
 			}
 
 			if(leftHome){
@@ -360,7 +359,7 @@ public class Elevations extends GenericSubsystem{
 				leftWantedSpeed = 0;
 				leftDone = true;
 			}else{
-				leftWantedSpeed = -0.25;
+				leftWantedSpeed = -0.2;//-0.5;
 			}
 
 			if(rightDone && leftDone){
@@ -370,7 +369,7 @@ public class Elevations extends GenericSubsystem{
 				wantedPosition = TOTE_LIFT_DIST;
 				liftTote();
 				initalSetup = false;//ONLY USED FOR INITAL SETUP
-				System.out.println("1126: BOTTOM REACHED Tote: " + numOfTotes);
+				LOG.logMessage("1126: BOTTOM REACHED Tote: " + numOfTotes);
 			}
 			break;
 		}

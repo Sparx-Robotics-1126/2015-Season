@@ -154,9 +154,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		driverJoyRight.start();
 		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK, 12);
 		operatorJoy.addActionListener(this);
-		operatorJoy.addButton(LOGI_X);
+		operatorJoy.addButton(LOGI_Y);
 		operatorJoy.addButton(LOGI_R1);
-		operatorJoy.addButton(LOGI_BACK);
+		operatorJoy.addButton(LOGI_B);
 		operatorJoy.addButton(LOGI_L1);
 		operatorJoy.addButton(LOGI_L2);
 		operatorJoy.addButton(LOGI_START);
@@ -306,7 +306,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 
 			case IO.OPERATOR_JOYSTICK:
 				switch(e.getID()){
-				case LOGI_X:
+				case LOGI_Y:
 					//Reset Elevator
 					elevations.setHome();					
 					LOG.logMessage("OP Button: Elevations reset");
@@ -327,10 +327,10 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
 					LOG.logMessage("OP Button: Stop Can Tele");
 					break;
-				case LOGI_BACK:
+				case LOGI_B:
 					//STOP
 					elevations.stopElevator();
-					LOG.logMessage("OP Button: Stop");
+					LOG.logMessage("OP Button: Elevations Stop");
 					break;
 				case LOGI_L1:
 					elevations.scoreTotes();
@@ -340,15 +340,6 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				case LOGI_L2:
 					canAcqTele.acquireCan();
 					LOG.logMessage("OP Button: Acquiring Can Tele");
-					break;
-				case LOGI_B:
-					if(e.isRising()){
-						canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
-						LOG.logMessage("OP Button: Can Auto Arms OPEN");
-					}else{
-						canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
-						LOG.logMessage("OP Button: Can Auto Arms CLOSE");
-					}
 					break;
 				case LOGI_A:
 					elevations.lowerTotes();

@@ -6,6 +6,7 @@ import org.gosparx.team1126.robot.sensors.EncoderData;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
@@ -37,6 +38,8 @@ public class CanAcqTele extends GenericSubsystem{
 	 * The motor that controls the hook
 	 */
 	private Talon hookMotor;
+	
+	private Solenoid hookSolenoid;
 
 	/**
 	 * The encoder that tracks the rotation
@@ -88,12 +91,14 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The minimum power for the motors to get when we are rotating up
 	 */
-	private static final double MIN_ROTATE_UP_SPEED = 0.4;
+	private static final double MIN_ROTATE_UP_SPEED = 0.2;
 
 	/**
 	 * the minimum power for the motors when we are rotating down
 	 */
-	private static final double MIN_ROTATE_DOWN_SPEED = 0.2;
+	private static final double MIN_ROTATE_DOWN_SPEED = 0.1;
+	
+	private static final double MAX_SPEED = 0.5;
 
 	/**
 	 * The minimum hook speed
@@ -206,6 +211,9 @@ public class CanAcqTele extends GenericSubsystem{
 		elevations = Elevations.getInstance();
 		currentHookState = HookState.STANDBY;//HOOK_FINDING_HOME;
 		currentRotateState = RotateState.ROTATE_FINDING_HOME;
+		
+		hookSolenoid = new Solenoid(5);
+		
 		return true;
 	}
 
@@ -220,6 +228,7 @@ public class CanAcqTele extends GenericSubsystem{
 		LiveWindow.addSensor(getName(), "Rotate Home", rotateHome);
 		LiveWindow.addActuator(getName(), "Rotate Encoder", rotateEnc);
 		LiveWindow.addActuator(getName(), "Hook Encoder", hookEnc);
+		LiveWindow.addActuator(getName(), "Hook ReDesign", hookSolenoid);
 	}
 
 	/**
@@ -235,20 +244,23 @@ public class CanAcqTele extends GenericSubsystem{
 				wantedRotateSpeed = 0;
 				break;
 			case ROTATING:
-				double calculatedRotateSpeed = -(wantedAngle - rotateEncData.getDistance()) / rotationDivider;
+				double calculatedRotateSpeed = -(wantedAngle - rotateEncData.getDistance());// / rotationDivider;
 				if(calculatedRotateSpeed > 0){
 					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_UP_SPEED) ? calculatedRotateSpeed : MIN_ROTATE_UP_SPEED);
+					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MAX_SPEED) ? MAX_SPEED : calculatedRotateSpeed);
 				}else{
 					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_DOWN_SPEED) ? calculatedRotateSpeed : -MIN_ROTATE_DOWN_SPEED);
+					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > 0.2) ? -0.2 : calculatedRotateSpeed);
 				}
 
 				if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  60 && isAcquiring){
 					elevations.moveElevator(16, 1, true);
+					hookSolenoid.set(false);
 				}
 				
-				if(hookEncData.getDistance() > 24 && wantedRotateSpeed > 0 && isAcquiring){
-					wantedRotateSpeed = 0;
-				}
+//				if(hookEncData.getDistance() > 24 && wantedRotateSpeed > 0 && isAcquiring){
+//					wantedRotateSpeed = 0;
+//				}
 
 				if((rotateEncData.getDistance() >= wantedAngle - 2 && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle + 2 && calculatedRotateSpeed > 0)){
 					currentRotateState = RotateState.STANDBY;
@@ -346,6 +358,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 * Goes to acquiring mode
 	 */
 	public void goToAcquire(){
+		hookSolenoid.set(false);
 		wantedHookPos = ACQ_CAN_DIST;
 		wantedAngle = MAX_ROTATION;
 		rotationDivider = ROTATION_SPEED;
@@ -365,7 +378,8 @@ public class CanAcqTele extends GenericSubsystem{
 	 * Brings the can in
 	 */
 	public void acquireCan(){
-		rotationDivider = ACQUIRE_SPEED;
+		hookSolenoid.set(true);
+		rotationDivider = ROTATION_SPEED; //ACQUIRE_SPEED;
 		wantedHookPos = 0;
 		wantedAngle = 0;
 		currentHookState = HookState.MOVING;

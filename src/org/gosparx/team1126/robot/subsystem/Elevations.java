@@ -96,12 +96,12 @@ public class Elevations extends GenericSubsystem{
 	/**
 	 * The minimum speed the elevator can travel while moving up
 	 */
-	private static final double MIN_UP_SPEED = 0.45;//0.55;
+	private static final double MIN_UP_SPEED = 0.55;//0.45;
 
 	/**
 	 * The minimum speed the elevator can travel while moving down
 	 */
-	private static final double MIN_DOWN_SPEED = 0.3;//0.6;
+	private static final double MIN_DOWN_SPEED = 0.6;//0.3;
 
 	//******************VARIABLES********************
 
@@ -251,8 +251,8 @@ public class Elevations extends GenericSubsystem{
 		case COMPLEX_MOVE:
 			double rightDistance = elevationRightEncoderData.getDistance();
 			double leftDistance = elevationLeftEncoderData.getDistance();
-			double rightSpeed = (wantedPosition - rightDistance)/4.0;
-			double leftSpeed = (wantedPosition - leftDistance)/4.0;
+			double rightSpeed = (wantedPosition - rightDistance)/2.0;
+			double leftSpeed = (wantedPosition - leftDistance)/2.0;
 
 			//MAX SPEED
 			if(rightSpeed < 0){
@@ -350,7 +350,7 @@ public class Elevations extends GenericSubsystem{
 				rightWantedSpeed = 0;
 				rightDone = true;
 			}else{
-				rightWantedSpeed = -0.2;//-0.5;
+				rightWantedSpeed = -0.5;//-0.2;
 			}
 
 			if(leftHome){
@@ -359,7 +359,7 @@ public class Elevations extends GenericSubsystem{
 				leftWantedSpeed = 0;
 				leftDone = true;
 			}else{
-				leftWantedSpeed = -0.2;//-0.5;
+				leftWantedSpeed = -0.5;//-0.2;
 			}
 
 			if(rightDone && leftDone){

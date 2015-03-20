@@ -101,7 +101,7 @@ public class Elevations extends GenericSubsystem{
 	/**
 	 * The minimum speed the elevator can travel while moving down
 	 */
-	private static final double MIN_DOWN_SPEED = 0.3;
+	private static final double MIN_DOWN_SPEED = 0.4;
 
 	//******************VARIABLES********************
 
@@ -128,7 +128,7 @@ public class Elevations extends GenericSubsystem{
 	/**
 	 * A value between 0 - 1 which is the max speed the motors will go
 	 */
-	private double maxPower = 1;
+	private double maxPower = 0.85;//1;
 
 	/**
 	 * The current state of the system
@@ -251,8 +251,8 @@ public class Elevations extends GenericSubsystem{
 		case COMPLEX_MOVE:
 			double rightDistance = elevationRightEncoderData.getDistance();
 			double leftDistance = elevationLeftEncoderData.getDistance();
-			double rightSpeed = (wantedPosition - rightDistance)/4.0;
-			double leftSpeed = (wantedPosition - leftDistance)/4.0;
+			double rightSpeed = (wantedPosition - rightDistance)/2.0;
+			double leftSpeed = (wantedPosition - leftDistance)/2.0;
 
 			//MAX SPEED
 			if(rightSpeed < 0){
@@ -285,13 +285,11 @@ public class Elevations extends GenericSubsystem{
 
 			//DONE
 			if(((rightDistance >= wantedPosition - 0.15 && goingUp) || (rightDistance <= wantedPosition + 0.15 && !goingUp)) && !rightDone){
-				LOG.logMessage("RIGHT POSITION HAS BEEN FOUND at: " + wantedPosition);
 				rightDone = true;
 				rightWantedSpeed = 0;
 			}
 
 			if(((leftDistance >= wantedPosition - 0.15 && goingUp) || (leftDistance <= wantedPosition + 0.15 && !goingUp)) && !leftDone){
-				LOG.logMessage("LEFT POSITION HAS BEEN FOUND at: " + wantedPosition);
 				leftDone = true;
 				leftWantedSpeed = 0;
 			}
@@ -308,11 +306,11 @@ public class Elevations extends GenericSubsystem{
 				rightDone = false;
 				if(goingUp){
 					currState = State.STANDBY;
-					System.out.println("1126: TOP REACHED Tote: " + numOfTotes);
+					LOG.logMessage("1126: BOTTOM REACHED Tote: " + numOfTotes);
 				}else{
 					if(scoreTotes){
 						currState = State.STANDBY;
-						System.out.println("1126: BOTTOM REACHED Tote: " + numOfTotes);
+						
 					}else{
 						currState = State.SETTING_HOME;
 					}
@@ -351,7 +349,7 @@ public class Elevations extends GenericSubsystem{
 				rightWantedSpeed = 0;
 				rightDone = true;
 			}else{
-				rightWantedSpeed = -0.25;
+				rightWantedSpeed = -0.4;
 			}
 
 			if(leftHome){
@@ -360,7 +358,7 @@ public class Elevations extends GenericSubsystem{
 				leftWantedSpeed = 0;
 				leftDone = true;
 			}else{
-				leftWantedSpeed = -0.25;
+				leftWantedSpeed = -0.4;
 			}
 
 			if(rightDone && leftDone){
@@ -370,7 +368,7 @@ public class Elevations extends GenericSubsystem{
 				wantedPosition = TOTE_LIFT_DIST;
 				liftTote();
 				initalSetup = false;//ONLY USED FOR INITAL SETUP
-				System.out.println("1126: BOTTOM REACHED Tote: " + numOfTotes);
+				LOG.logMessage("1126: BOTTOM REACHED Tote: " + numOfTotes);
 			}
 			break;
 		}

@@ -103,7 +103,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The max position for the rotation
 	 */
-	private static final double MAX_ROTATION = 85;
+	private static final double MAX_ROTATION = 87;
 
 	/**
 	 * The position for the hook to acq
@@ -242,8 +242,8 @@ public class CanAcqTele extends GenericSubsystem{
 					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_DOWN_SPEED) ? calculatedRotateSpeed : -MIN_ROTATE_DOWN_SPEED);
 				}
 
-				if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  60 && isAcquiring){
-					elevations.moveElevator(16, 1, true);
+				if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  50 && isAcquiring){
+					elevations.moveElevator(15.5, 1, true);
 				}
 				
 				if(hookEncData.getDistance() > 24 && wantedRotateSpeed > 0 && isAcquiring){
@@ -273,12 +273,15 @@ public class CanAcqTele extends GenericSubsystem{
 				wantedHookSpeed= 0;
 				break;
 			case MOVING:
-				double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 2)*0.75;
+				double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 1.5);
 				if(calculatedMovingSpeed > 0){
-					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : MIN_HOOK_SPEED;
+					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1) ? calculatedMovingSpeed : 1;
+					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1.7) ? 1.7 : calculatedMovingSpeed;
 					if(hookEncData.getDistance() > 27 && isAcquiring){
-						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1.3 ) ? 1.3 : calculatedMovingSpeed;
-					} 
+						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1.0) ? 1.0 : calculatedMovingSpeed;
+					}else if(hookEncData.getDistance() < 9 && isAcquiring){
+						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1.6) ? 1.6 : calculatedMovingSpeed;
+					}
 				}else{
 					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : -MIN_HOOK_SPEED;
 				}
@@ -301,7 +304,7 @@ public class CanAcqTele extends GenericSubsystem{
 			}
 		}
 
-		rotateMotor.set(wantedRotateSpeed);
+		rotateMotor.set(wantedRotateSpeed*3);
 		hookMotor.set(-wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor
 		return false;
 	}

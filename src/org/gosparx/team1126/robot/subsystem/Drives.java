@@ -540,11 +540,11 @@ public class Drives extends GenericSubsystem{
 			
 			//NEED GYRO
 			if(currentDistance < autoDistance){
-				rightPower = driveSpeed + gyroOffset();
-				leftPower = driveSpeed - gyroOffset();
+				rightPower = driveSpeed - gyroOffset();
+				leftPower = driveSpeed + gyroOffset();
 			}else{
-				rightPower = -driveSpeed + gyroOffset();
-				leftPower = -driveSpeed - gyroOffset();
+				rightPower = -driveSpeed - gyroOffset();
+				leftPower = -driveSpeed + gyroOffset();
 			}
 			if(autoDistance - currentDistance < 0.5 && autoDistance - currentDistance > -0.5){
 				rightPower = 0;
@@ -760,6 +760,22 @@ public class Drives extends GenericSubsystem{
 		encoderDataRight.reset();
 		encoderDataLeft.reset();
 		autoWantedTurn = 0;
+		maxSpeed = speed;
+	}
+	
+	/**
+	 * Drives robot forward set distance
+	 * @param inchDistance - distance to travel in inches
+	 * @param speed - desired speed(0 - 1)
+	 */
+	public void driveArc(int inchDistance, double speed, double angle){
+		LOG.logMessage("Received Auto Straight: " + inchDistance + " inches");
+		setAutoFunction(State.AUTO_DRIVE);
+		autoDistance = inchDistance;
+		gyro.reset();
+		encoderDataRight.reset();
+		encoderDataLeft.reset();
+		autoWantedTurn = angle;
 		maxSpeed = speed;
 	}
 

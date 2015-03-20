@@ -114,7 +114,28 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private static final int ATTACK3_Z_AXIS = 2;
 	private static final int ATTACK3_TRIGGER = 1;
 	private static final int ATTACK3_TOP_BUTTON = 2;
-
+	
+	//***************************************************************************
+	//***************************XBOX360*****************************************
+	//***************************************************************************
+	private static final int XBOX_A = 1;
+	private static final int XBOX_B = 2;
+	private static final int XBOX_X = 3;
+	private static final int XBOX_Y = 4;
+	private static final int XBOX_L1 = 5;
+	private static final int XBOX_R1 = 6;
+	private static final int XBOX_BACK = 7;
+	private static final int XBOX_START = 8;
+	private static final int XBOX_L3 = 9;
+	private static final int XBOX_R3 = 10;
+	private static final int XBOX_LEFT_X = 0;
+	private static final int XBOX_LEFT_Y = 1;
+	private static final int XBOX_L2 = 2;
+	private static final int XBOX_R2 = 3;
+	private static final int XBOX_RIGHT_X = 4;
+	private static final int XBOX_RIGHT_Y = 5;
+	private static final int XBOX_POV = 0;
+	
 	/**
 	 * if controls == null, make a new controls
 	 * @return the new controls
@@ -152,16 +173,16 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		driverJoyRight.addButton(ATTACK3_TOP_BUTTON);
 		driverJoyRight.addButton(ATTACK3_TRIGGER);
 		driverJoyRight.start();
-		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK, 12);
+		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK, 10);
 		operatorJoy.addActionListener(this);
-		operatorJoy.addButton(LOGI_X);
-		operatorJoy.addButton(LOGI_R1);
-		operatorJoy.addButton(LOGI_BACK);
-		operatorJoy.addButton(LOGI_L1);
-		operatorJoy.addButton(LOGI_L2);
-		operatorJoy.addButton(LOGI_START);
-		operatorJoy.addButton(LOGI_B);
-		operatorJoy.addButton(LOGI_A);
+		operatorJoy.addButton(XBOX_X);
+		operatorJoy.addButton(XBOX_R1);
+		operatorJoy.addButton(XBOX_BACK);
+		operatorJoy.addButton(XBOX_L1);
+		operatorJoy.addButton(XBOX_L2);
+		operatorJoy.addButton(XBOX_START);
+		operatorJoy.addButton(XBOX_B);
+		operatorJoy.addButton(XBOX_A);
 		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
@@ -180,8 +201,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		double left = -driverJoyLeft.getAxis(ATTACK3_Y_AXIS);
 		double right = -driverJoyRight.getAxis(ATTACK3_Y_AXIS);
 		//TRIMS
-		double hookOveride = -operatorJoy.getAxis(LOGI_RIGHT_X_AXIS);
-		double rotateOveride = -operatorJoy.getAxis(LOGI_RIGHT_Y_AXIS);
+		double hookOveride = -operatorJoy.getAxis(XBOX_RIGHT_X);
+		double rotateOveride = -operatorJoy.getAxis(XBOX_RIGHT_Y);
 		if(Math.abs(rotateOveride) > 0){
 			elevations.scoreTotes();
 			canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
@@ -206,7 +227,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		}
 
 		//OPERATOR CONTORLS
-		if(operatorJoy.getPOV(LOGI_POV) == 90){
+		if(operatorJoy.getPOV(XBOX_POV) == 90){
 			//Human Feed Mode
 			elevations.liftTote();
 			toteAcq.setClutch(ClutchState.ON);
@@ -215,7 +236,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			operatorWantsControl = true;
 			operatorWantedPower = -0.8;
 			LOG.logMessage("OP Button: Human Feed Mode");
-		}else if(operatorJoy.getPOV(LOGI_POV) == 180){
+		}else if(operatorJoy.getPOV(XBOX_POV) == 180){
 			//Floor Mode
 			elevations.liftTote();
 			toteAcq.setClutch(ClutchState.ON);
@@ -224,7 +245,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			operatorWantsControl = true;
 			operatorWantedPower = -0.8;
 			LOG.logMessage("OP Button: Floor Mode");
-		}else if(operatorJoy.getPOV(LOGI_POV) == 0){
+		}else if(operatorJoy.getPOV(XBOX_POV) == 0){
 			//TODO: OFF Mode
 			toteAcq.setClutch(ClutchState.OFF);
 			toteAcq.setStopper(StopState.ON);
@@ -232,7 +253,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			scoreWait = 0;
 			operatorWantsControl = false;
 			LOG.logMessage("OP Button: OFF Mode");
-		}else if(operatorJoy.getPOV(LOGI_POV) == 270){
+		}else if(operatorJoy.getPOV(XBOX_POV) == 270){
 			//EJECT
 			toteAcq.setClutch(ClutchState.ON);
 			toteAcq.setStopper(StopState.ON);
@@ -241,6 +262,10 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			operatorWantedPower = 0.8;
 			LOG.logMessage("OP Button: Eject");
 		}	
+		if(operatorJoy.getAxis(XBOX_L2) > .5){
+			canAcqTele.acquireCan();
+			LOG.logMessage("Acquiring Can");
+		}
 		return false;
 	}
 
@@ -306,12 +331,12 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 
 			case IO.OPERATOR_JOYSTICK:
 				switch(e.getID()){
-				case LOGI_X:
+				case XBOX_X:
 					//Reset Elevator
 					elevations.setHome();					
 					LOG.logMessage("OP Button: Elevations reset");
 					break;
-				case LOGI_R1:
+				case XBOX_R1:
 					//SCORE
 					elevations.scoreTotes();
 					toteAcq.setClutch(ClutchState.ON);
@@ -321,27 +346,23 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					operatorWantedPower = -0.75;
 					LOG.logMessage("OP Button: Score");
 					break;
-				case LOGI_START:
+				case XBOX_START:
 					//STOP CAN TELE
 					canAcqTele.setState(CanAcqTele.HookState.STANDBY);
 					canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
 					LOG.logMessage("OP Button: Stop Can Tele");
 					break;
-				case LOGI_BACK:
+				case XBOX_BACK:
 					//STOP
 					elevations.stopElevator();
 					LOG.logMessage("OP Button: Stop");
 					break;
-				case LOGI_L1:
+				case XBOX_L1:
 					elevations.scoreTotes();
 					canAcqTele.goToAcquire();
 					LOG.logMessage("OP Button: Dropping Can Tele");
 					break;
-				case LOGI_L2:
-					canAcqTele.acquireCan();
-					LOG.logMessage("OP Button: Acquiring Can Tele");
-					break;
-				case LOGI_B:
+				case XBOX_B:
 					if(e.isRising()){
 						canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
 						LOG.logMessage("OP Button: Can Auto Arms OPEN");
@@ -350,7 +371,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 						LOG.logMessage("OP Button: Can Auto Arms CLOSE");
 					}
 					break;
-				case LOGI_A:
+				case XBOX_A:
 					elevations.lowerTotes();
 					LOG.logMessage("OP Button: Lowering Elevations");
 					break;

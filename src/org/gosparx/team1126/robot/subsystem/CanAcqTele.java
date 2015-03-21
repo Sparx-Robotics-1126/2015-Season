@@ -103,7 +103,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The max position for the rotation
 	 */
-	private static final double MAX_ROTATION = 87;
+	private static final double MAX_ROTATION = 86.5;
 
 	/**
 	 * The position for the hook to acq
@@ -168,6 +168,9 @@ public class CanAcqTele extends GenericSubsystem{
 	private double rotationDivider;
 	
 	private boolean isAcquiring = false;
+	
+	private boolean hookInitialized = false;
+	private boolean rotateInitialized = false;
 
 	/**
 	 * @return a CanAcqTele
@@ -229,7 +232,14 @@ public class CanAcqTele extends GenericSubsystem{
 	protected boolean execute() {
 		rotateEncData.calculateSpeed();
 		hookEncData.calculateSpeed();
-		if(useAutoFunctions){
+		
+		if(!rotateInitialized){
+			currentRotateState = RotateState.ROTATE_FINDING_HOME;
+		}else if(!hookInitialized){
+			currentHookState = HookState.HOOK_FINDING_HOME;
+		}
+		
+		if(useAutoFunctions || !rotateInitialized || !hookInitialized){
 			switch(currentRotateState){
 			case STANDBY:
 				wantedRotateSpeed = 0;
@@ -243,7 +253,7 @@ public class CanAcqTele extends GenericSubsystem{
 				}
 
 				if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  50 && isAcquiring){
-					elevations.moveElevator(15.5, 1, true);
+					elevations.moveElevator(15, 1, true);
 				}
 				
 				if(hookEncData.getDistance() > 24 && wantedRotateSpeed > 0 && isAcquiring){
@@ -264,6 +274,7 @@ public class CanAcqTele extends GenericSubsystem{
 					currentHookState = HookState.HOOK_FINDING_HOME;//Finding Home
 					LOG.logMessage("Rotate has found home*********");
 					rotateEncData.reset();
+					rotateInitialized = true;
 				}
 				break;
 			}
@@ -273,14 +284,14 @@ public class CanAcqTele extends GenericSubsystem{
 				wantedHookSpeed= 0;
 				break;
 			case MOVING:
-				double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 1.5);
+				double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 0.25);
 				if(calculatedMovingSpeed > 0){
 					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1) ? calculatedMovingSpeed : 1;
-					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1.7) ? 1.7 : calculatedMovingSpeed;
+					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 2) ? 2 : calculatedMovingSpeed;
 					if(hookEncData.getDistance() > 27 && isAcquiring){
 						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1.0) ? 1.0 : calculatedMovingSpeed;
 					}else if(hookEncData.getDistance() < 9 && isAcquiring){
-						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1.6) ? 1.6 : calculatedMovingSpeed;
+						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1.4) ? 1.4 : calculatedMovingSpeed;
 					}
 				}else{
 					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : -MIN_HOOK_SPEED;
@@ -299,6 +310,7 @@ public class CanAcqTele extends GenericSubsystem{
 					currentHookState = HookState.STANDBY;
 					wantedHookSpeed = 0;
 					LOG.logMessage("Hook has found home *********************");
+					hookInitialized = true;
 				}
 				break;
 			}
@@ -314,7 +326,11 @@ public class CanAcqTele extends GenericSubsystem{
 	 * @param speed - (-1 - 1)
 	 */
 	public void manualRotateOverride(double speed){
-		wantedRotateSpeed = speed/2;
+		if(rotateEncData.getDistance() > 0 && rotateEncData.getDistance() < MAX_ROTATION){
+			wantedRotateSpeed = speed/2;
+		}else{
+			wantedRotateSpeed = 0;
+		}
 	}
 
 	/**
@@ -322,7 +338,11 @@ public class CanAcqTele extends GenericSubsystem{
 	 * @param speed - (-1 - 1)
 	 */
 	public void manualHookOverride(double speed){
-		wantedHookSpeed = speed*1.25;
+		if(hookEncData.getDistance() > 0 && hookEncData.getDistance() < MAX_HOOK_POS){
+			wantedHookSpeed = speed*1.25;
+		}else{
+			wantedHookSpeed = 0;
+		}
 	}
 	
 	public void setAutoPosition(double angle){
@@ -352,6 +372,7 @@ public class CanAcqTele extends GenericSubsystem{
 		rotationDivider = ROTATION_SPEED;
 		currentHookState = HookState.MOVING;
 		currentRotateState = RotateState.ROTATING;
+		isAcquiring = false;
 	}
 
 	/**

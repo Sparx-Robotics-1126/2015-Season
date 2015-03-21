@@ -45,7 +45,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 	/**
 	 * Any axis value under this will be treated as 0
 	 */
-	private static final double DEADBAND = .04;
+	private static double DEADBAND = .04;
 
 	/**
 	 * Creates a new advanced joystick - INSTABLE IF JOYSTICKS ARE NOT ALWAYS PLUGGED IN
@@ -71,6 +71,19 @@ public class AdvancedJoystick extends GenericSubsystem{
 	public AdvancedJoystick(String name, int joyPort, int numButtons){
 		this(name, joyPort);
 		prevValues = new boolean[numButtons+1];
+	}
+	
+	/**
+	 * Creates a new advanced joystick
+	 * @param name - The name of the thread
+	 * @param joyPort - the port the joystick is in
+	 * @param numButtons - The number of buttons on the joystick
+	 * @param deadBand - The +/- deadband
+	 */
+	public AdvancedJoystick(String name, int joyPort, int numButtons, double deadBand) {
+		this(name, joyPort);
+		prevValues = new boolean[numButtons+1];
+		DEADBAND = deadBand;
 	}
 
 	/**

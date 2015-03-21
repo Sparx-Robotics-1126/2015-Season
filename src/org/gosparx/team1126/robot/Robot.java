@@ -29,14 +29,14 @@ public class Robot extends SampleRobot{
 		auto = Autonomous.getInstance();
 		
 		subsystems = new GenericSubsystem[]{	
-        	Controls.getInstance(),
-        	auto,
         	LogWriter.getInstance(),
         	Elevations.getInstance(),
         	Drives.getInstance(),
         	CanAcquisition.getInstance(),
         	CanAcqTele.getInstance(),
-        	ToteAcq.getInstance()
+        	ToteAcq.getInstance(),
+        	Controls.getInstance(),
+        	auto
 		};
 		
 		for(GenericSubsystem system: subsystems){

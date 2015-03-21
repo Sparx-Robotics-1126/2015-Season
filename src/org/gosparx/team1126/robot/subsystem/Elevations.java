@@ -128,7 +128,7 @@ public class Elevations extends GenericSubsystem{
 	/**
 	 * A value between 0 - 1 which is the max speed the motors will go
 	 */
-	private double maxPower = 0.85;//1;
+	private double maxPower = 1;
 
 	/**
 	 * The current state of the system

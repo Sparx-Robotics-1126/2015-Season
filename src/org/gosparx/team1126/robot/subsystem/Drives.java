@@ -681,7 +681,7 @@ public class Drives extends GenericSubsystem{
 				isDriverControlled = driverControl;
 			}
 			wantedLeftPower = left;
-			wantedRightPower = 0;
+			wantedRightPower = right;
 		}
 		isDriverControlled = driverControl;
 	}

@@ -173,9 +173,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		driverJoyRight.addButton(ATTACK3_TOP_BUTTON);
 		driverJoyRight.addButton(ATTACK3_TRIGGER);
 		driverJoyRight.start();
-		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK, 10);
+		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK, 10, 0.25);
 		operatorJoy.addActionListener(this);
-		operatorJoy.addButton(XBOX_X);
+		operatorJoy.addButton(XBOX_Y);
 		operatorJoy.addButton(XBOX_R1);
 		operatorJoy.addButton(XBOX_BACK);
 		operatorJoy.addButton(XBOX_L1);
@@ -201,7 +201,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		double left = -driverJoyLeft.getAxis(ATTACK3_Y_AXIS);
 		double right = -driverJoyRight.getAxis(ATTACK3_Y_AXIS);
 		//TRIMS
-		double hookOveride = -operatorJoy.getAxis(XBOX_RIGHT_X);
+		double hookOveride = -operatorJoy.getAxis(XBOX_LEFT_X);
 		double rotateOveride = -operatorJoy.getAxis(XBOX_RIGHT_Y);
 		if(Math.abs(rotateOveride) > 0){
 			elevations.scoreTotes();
@@ -331,7 +331,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 
 			case IO.OPERATOR_JOYSTICK:
 				switch(e.getID()){
-				case XBOX_X:
+				case XBOX_Y:
 					//Reset Elevator
 					elevations.setHome();					
 					LOG.logMessage("OP Button: Elevations reset");
@@ -352,7 +352,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
 					LOG.logMessage("OP Button: Stop Can Tele");
 					break;
-				case XBOX_BACK:
+				case XBOX_B:
 					//STOP
 					elevations.stopElevator();
 					LOG.logMessage("OP Button: Stop");
@@ -362,15 +362,15 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					canAcqTele.goToAcquire();
 					LOG.logMessage("OP Button: Dropping Can Tele");
 					break;
-				case XBOX_B:
-					if(e.isRising()){
-						canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
-						LOG.logMessage("OP Button: Can Auto Arms OPEN");
-					}else{
-						canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
-						LOG.logMessage("OP Button: Can Auto Arms CLOSE");
-					}
-					break;
+//				case XBOX_B:
+//					if(e.isRising()){
+//						canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
+//						LOG.logMessage("OP Button: Can Auto Arms OPEN");
+//					}else{
+//						canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
+//						LOG.logMessage("OP Button: Can Auto Arms CLOSE");
+//					}
+//					break;
 				case XBOX_A:
 					elevations.lowerTotes();
 					LOG.logMessage("OP Button: Lowering Elevations");

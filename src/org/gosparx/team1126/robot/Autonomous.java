@@ -511,7 +511,7 @@ public class Autonomous extends GenericSubsystem{
 
 	private final String DRIVE_TO_LOAD_NAME	= "Drive to Load from HP";
 	private final int[][] DRIVE_TO_LOAD = {
-			{AutoCommands.DRIVES_GO_FORWARD.toId(), 16, 65},
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 14, 65},
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.END.toId()}
 	};

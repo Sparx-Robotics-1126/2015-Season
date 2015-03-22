@@ -1,5 +1,6 @@
 package org.gosparx.team1126.robot.subsystem;
 
+import org.gosparx.team1126.robot.Autonomous;
 import org.gosparx.team1126.robot.IO;
 import org.gosparx.team1126.robot.subsystem.ToteAcq.ClutchState;
 import org.gosparx.team1126.robot.subsystem.ToteAcq.RollerPosition;
@@ -54,6 +55,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private CanAcqTele canAcqTele
 	 */
 	private ToteAcq toteAcq;
+	
+	private Autonomous auto;
 
 	/**
 	 * Manual shifting on or off
@@ -74,6 +77,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 * The wait for the tote stop to remove and the totes to score
 	 */
 	private double scoreWait = 0;
+	
+	private boolean useAuto = false;
 
 	/**
 	 * Instance for Elevations
@@ -114,6 +119,13 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private static final int ATTACK3_Z_AXIS = 2;
 	private static final int ATTACK3_TRIGGER = 1;
 	private static final int ATTACK3_TOP_BUTTON = 2;
+	
+	private static final int NEW_JOY_Y_AXIS = 1;
+	private static final int NEW_JOY_X_AXIS = 0;
+	private static final int NEW_JOY_TRIGGER = 1;//TRIGGEr
+	private static final int NEW_JOY_LEFT = 2;//LEFT
+	private static final int NEW_JOY_RIGHT = 3;//RIGHT
+	private static final int NEW_JOY_MIDDLE = 4;
 	
 	//***************************************************************************
 	//***************************XBOX360*****************************************
@@ -162,18 +174,19 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean init() {
-		driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT, 2);
+		driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT, 4);
 		driverJoyLeft.addActionListener(this);
-		driverJoyLeft.addButton(ATTACK3_TOP_BUTTON);
-		driverJoyLeft.addButton(ATTACK3_TRIGGER);
-		driverJoyLeft.addMultibutton(ATTACK3_TRIGGER, ATTACK3_TOP_BUTTON);
+		driverJoyLeft.addButton(NEW_JOY_LEFT);
+		driverJoyLeft.addButton(NEW_JOY_TRIGGER);
+		driverJoyLeft.addMultibutton(NEW_JOY_LEFT, NEW_JOY_TRIGGER);
 		driverJoyLeft.start();
-		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT, 2);
+		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT, 4);
 		driverJoyRight.addActionListener(this);
-		driverJoyRight.addButton(ATTACK3_TOP_BUTTON);
-		driverJoyRight.addButton(ATTACK3_TRIGGER);
+		driverJoyRight.addButton(NEW_JOY_LEFT);
+		driverJoyRight.addButton(NEW_JOY_TRIGGER);
+		driverJoyRight.addButton(NEW_JOY_MIDDLE);
 		driverJoyRight.start();
-		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK, 10, 0.25);
+		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK, 10, 0.1);
 		operatorJoy.addActionListener(this);
 		operatorJoy.addButton(XBOX_Y);
 		operatorJoy.addButton(XBOX_R1);
@@ -189,6 +202,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		canAcqTele = CanAcqTele.getInstance();
 		toteAcq = ToteAcq.getInstance();
 		elevations = Elevations.getInstance();
+		auto = Autonomous.getInstance();
 		return true;
 	}
 
@@ -198,17 +212,19 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean execute() {
-		double left = -driverJoyLeft.getAxis(ATTACK3_Y_AXIS);
-		double right = -driverJoyRight.getAxis(ATTACK3_Y_AXIS);
+		double left = -driverJoyLeft.getAxis(NEW_JOY_Y_AXIS);
+		double right = -driverJoyRight.getAxis(NEW_JOY_Y_AXIS);
 		//TRIMS
-		double hookOveride = -operatorJoy.getAxis(XBOX_LEFT_X);
+		double hookOveride = operatorJoy.getAxis(XBOX_LEFT_X);
 		double rotateOveride = -operatorJoy.getAxis(XBOX_RIGHT_Y);
 		if(Math.abs(rotateOveride) > 0){
+			System.out.println("**************************************");
 			elevations.scoreTotes();
 			canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
 			canAcqTele.overriding(true);
 			canAcqTele.manualRotateOverride(rotateOveride);
 		}else if(Math.abs(hookOveride) > 0){
+			System.out.println("**************************************");
 			canAcqTele.setState(CanAcqTele.HookState.STANDBY);
 			canAcqTele.overriding(true);
 			canAcqTele.manualHookOverride(hookOveride);
@@ -221,9 +237,16 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		if((left != 0) || !operatorWantsControl){
 			drives.setPower(left, right, true);
 		}else if(operatorWantsControl){
-			if(scoreWait == 0 || Timer.getFPGATimestamp() > scoreWait + 0.25){
+			if(scoreWait == 0 || Timer.getFPGATimestamp() > scoreWait + 0.1){
 				drives.setPower(operatorWantedPower, right, false);
 			}
+			useAuto = false;
+		}
+		if(left == 0 && right == 0 && useAuto){
+			auto.runAuto(true);
+		}else{
+			useAuto = false;
+			auto.runAuto(false);
 		}
 
 		//OPERATOR CONTORLS
@@ -261,7 +284,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 			operatorWantsControl = true;
 			operatorWantedPower = 0.8;
 			LOG.logMessage("OP Button: Eject");
-		}	
+		}
 		if(operatorJoy.getAxis(XBOX_L2) > .5){
 			canAcqTele.acquireCan();
 			LOG.logMessage("Acquiring Can");
@@ -286,6 +309,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		LOG.logMessage("DR Left axis: " + -driverJoyLeft.getAxis(ATTACK3_Y_AXIS));
 		LOG.logMessage("DR Right axis: " + -driverJoyRight.getAxis(ATTACK3_Y_AXIS));
 		LOG.logMessage("Operator wants control: " + operatorWantsControl);
+		LOG.logMessage("Operator Wanted Power: " + operatorWantedPower);
 	}
 
 	/**
@@ -302,15 +326,16 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	public void actionPerformed(ButtonEvent e) {
+//		useAuto = false;
 		if(!(e instanceof MultibuttonEvent)){
 			switch(e.getPort()){
 			case IO.DRIVER_JOYSTICK_LEFT:
 				switch(e.getID()){
-				case ATTACK3_TOP_BUTTON:
+				case NEW_JOY_LEFT:
 					drives.setManualShifting(true);
 					LOG.logMessage("DR Button: HIGH GEAR");
 					break;
-				case ATTACK3_TRIGGER:
+				case NEW_JOY_TRIGGER:
 					drives.setManualShifting(false);
 					LOG.logMessage("DR Button: LOW GEAR");
 					break;
@@ -319,12 +344,13 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 
 			case IO.DRIVER_JOYSTICK_RIGHT:
 				switch(e.getID()){
-				case ATTACK3_TOP_BUTTON:
+				case NEW_JOY_TRIGGER:
 					drives.driveStraight(16, 100);
 					LOG.logMessage("DR Button: Auto Drive Straight");
 					break;
-				case ATTACK3_TRIGGER:
-					LOG.logMessage("DR Button: No command");
+				case NEW_JOY_MIDDLE:
+					useAuto = true;
+					LOG.logMessage("USING AUTO");
 					break;
 				}
 				break;

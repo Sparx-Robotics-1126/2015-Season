@@ -309,7 +309,7 @@ public class Autonomous extends GenericSubsystem{
 		CAN_TELE_DONE(29),
 
 		ELEV_DONE(30),
-		
+
 		/**
 		 * Angle to rotate
 		 */
@@ -537,9 +537,9 @@ public class Autonomous extends GenericSubsystem{
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.DRIVES_GO_REVERSE.toId(), 30, 100},
 			{AutoCommands.DRIVES_DONE.toId()},
-			{AutoCommands.DRIVES_TURN_RIGHT.toId(), 45},
+			{AutoCommands.DRIVES_TURN_RIGHT.toId(), 35},
 			{AutoCommands.DRIVES_DONE.toId()},
-			{AutoCommands.DRIVES_GO_REVERSE.toId(), 30, 100},
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 24, 100},
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.END.toId()}
 	};
@@ -552,6 +552,29 @@ public class Autonomous extends GenericSubsystem{
 			{AutoCommands.WAIT.toId(), 1500},
 			{AutoCommands.DRIVES_GO_REVERSE.toId(), 35, 100},
 			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.CAN_TELE_ROTATE.toId(), 75},
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 15, 100},
+			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.CAN_TELE_DOWN.toId()},
+			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.WAIT.toId(), 500},
+			{AutoCommands.CAN_TELE_ACQUIRE.toId()},
+			{AutoCommands.WAIT.toId(), 2000},
+			{AutoCommands.DRIVES_ARC.toId(), -85, -45, 100},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.END.toId()}
+	};
+
+	private int[][] TELE_SETUP = {
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 5, 100},
+			{AutoCommands.ELEV_DONE.toId()},
+			{AutoCommands.CAN_TELE_DONE.toId()},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.CAN_TELE_DOWN.toId()},
+			{AutoCommands.WAIT.toId(), 1500},
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 35, 100},
+			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.CAN_TELE_ROTATE.toId(), 50},
 			{AutoCommands.DRIVES_GO_FORWARD.toId(), 15, 100},
 			{AutoCommands.CAN_TELE_DONE.toId()},
@@ -559,10 +582,7 @@ public class Autonomous extends GenericSubsystem{
 			{AutoCommands.CAN_TELE_DOWN.toId()},
 			{AutoCommands.CAN_TELE_DONE.toId()},
 			{AutoCommands.CAN_TELE_ACQUIRE.toId()},
-			{AutoCommands.CAN_TELE_DONE.toId()},
-			{AutoCommands.DRIVES_ARC.toId(), -85, -45, 100},
-			{AutoCommands.DRIVES_DONE.toId()},
-			{AutoCommands.END.toId()}
+			{AutoCommands.CAN_TELE_DONE.toId()}
 	};
 
 
@@ -624,7 +644,12 @@ public class Autonomous extends GenericSubsystem{
 		if(runAuto && ds.isEnabled()){
 			runAuto();
 		}else{
-			getAutoMode();
+			if(ds.isAutonomous()){
+				getAutoMode();
+			}else if(ds.isOperatorControl()){
+				currentAuto = TELE_SETUP;
+				currentAutoName = "Tele setup";
+			}
 			currentStep = 0;
 			autoStartTime = Timer.getFPGATimestamp();
 		}
@@ -733,7 +758,7 @@ public class Autonomous extends GenericSubsystem{
 	 */
 	private void runAuto(){
 		increaseStep = true;
-		if(ds.isAutonomous() && ds.isEnabled() && currentStep < currentAuto.length){
+		if(ds.isEnabled() && currentStep < currentAuto.length){
 			switch(AutoCommands.fromId(currentAuto[currentStep][0])){
 			case DRIVES_GO_FORWARD:
 				drives.driveStraight(currentAuto[currentStep][1], (currentAuto[currentStep][2]/100.0));
@@ -872,11 +897,14 @@ public class Autonomous extends GenericSubsystem{
 	}
 
 	public void runAuto(boolean run){
-		runAuto = run;
-		if(!runAuto){
+		if(run != runAuto && !run){
 			drives.autoForceStop();
 			canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
+		}else{
+			if(run != runAuto && run){
+				LOG.logMessage("****************Auto has been switch to: " + run + (run ? (" Running: " + currentAutoName) : "") + "********************");
+			}
 		}
-		LOG.logMessage("****************Auto has been switch to: " + run + (run ? (" Running: " + currentAutoName) : "") + "********************");
+		runAuto = run;
 	}
 }

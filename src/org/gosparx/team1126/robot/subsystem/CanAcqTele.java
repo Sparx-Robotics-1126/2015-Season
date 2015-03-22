@@ -108,7 +108,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The position for the hook to acq
 	 */
-	private static final double ACQ_CAN_DIST = 26.5;
+	private static final double ACQ_CAN_DIST = 27.5;
 
 	/**
 	 * The max pos for the hook
@@ -267,7 +267,7 @@ public class CanAcqTele extends GenericSubsystem{
 				}
 				break;
 			case ROTATE_FINDING_HOME:
-				wantedRotateSpeed = 0.4;
+				wantedRotateSpeed = 0.2;
 				if(!rotateHome.get()){
 					wantedRotateSpeed = 0;
 					currentRotateState = RotateState.STANDBY;
@@ -303,7 +303,7 @@ public class CanAcqTele extends GenericSubsystem{
 				}
 				break;
 			case HOOK_FINDING_HOME:
-				wantedHookSpeed = 1.6;
+				wantedHookSpeed = 1.2;
 				if(!hookHome.get()){
 					hookEncData.reset();
 					hookEnc.reset();
@@ -326,7 +326,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 * @param speed - (-1 - 1)
 	 */
 	public void manualRotateOverride(double speed){
-		if(rotateEncData.getDistance() > 0 && rotateEncData.getDistance() < MAX_ROTATION){
+		if((rotateEncData.getDistance() > 0 && speed > 0) || (speed < 0 && rotateEncData.getDistance() < MAX_ROTATION)){
 			wantedRotateSpeed = speed/2;
 		}else{
 			wantedRotateSpeed = 0;
@@ -338,7 +338,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 * @param speed - (-1 - 1)
 	 */
 	public void manualHookOverride(double speed){
-		if(hookEncData.getDistance() > 0 && hookEncData.getDistance() < MAX_HOOK_POS){
+		if((hookEncData.getDistance() > 0 && speed > 0) || (speed < 0 && hookEncData.getDistance() < MAX_HOOK_POS)){
 			wantedHookSpeed = speed*1.25;
 		}else{
 			wantedHookSpeed = 0;

@@ -412,6 +412,9 @@ public class Drives extends GenericSubsystem{
 			}
 			break;
 		case IN_NEUTRAL_GEAR:
+//			if(Math.abs(encoderDataLeft.getDistance()) > 4){
+//				wantedLeftPower = 0;
+//			}
 			if(isDriverControlled){
 				currentDriveState = State.NEUTRAL_SETUP;
 			}
@@ -432,6 +435,10 @@ public class Drives extends GenericSubsystem{
 			
 			if(Timer.getFPGATimestamp() >= shiftTime + 0.4){
 				currentDriveState = finalDriveState;
+				encoderDataLeft.reset();//Used to detect if PTO has not engaged
+				encoderLeft.reset();
+				encoderDataRight.reset();
+				encoderRight.reset();
 			}
 			break;
 		case NEUTRAL_SETUP:

@@ -144,6 +144,9 @@ public class Elevations extends GenericSubsystem{
 	 * Tells weather or not a new tote has been detected by the newToteSensor
 	 */
 	private boolean newToteDetected = false;
+	
+	private boolean raiseHook = false;
+	private double hookTimer;
 
 	/**
 	 * Time since the tote has entered the robot
@@ -229,18 +232,22 @@ public class Elevations extends GenericSubsystem{
 		
 		if(currState == State.STANDBY && newTote && !newToteDetected && !scoreTotes){
 			toteSenceTime = Timer.getFPGATimestamp();
+			hookTimer = Timer.getFPGATimestamp();
+			raiseHook = true;
 			newToteDetected = true;
 		}else if(currState == State.STANDBY && Timer.getFPGATimestamp() >= toteSenceTime + 0.0 && newToteDetected && numOfTotes < 5){
 			LOG.logMessage("New tote acquired, starting lifting sequence");
 			newToteDetected = false;
 			lowerTotes();
-			canAcqTele.acquiredTote(44);
 			numOfTotes++;
 		}else if(currState == State.STANDBY && Timer.getFPGATimestamp() >= toteSenceTime + 0.0 && newToteDetected){
 			LOG.logMessage("6th Tote Acquire");
 			newToteDetected = false;
-			canAcqTele.acquiredTote(-2);
 			scoreTotes();
+		}
+		if(Timer.getFPGATimestamp() >= (hookTimer + 1) && raiseHook){//FIND BETTER WAY
+			canAcqTele.acquiredTote(44);
+			raiseHook = false;
 		}
 
 		switch(currState){

@@ -42,6 +42,8 @@ public class LogWriter extends GenericSubsystem{
 	 */
 	private static LogWriter lw;
 
+	private boolean loggerWorking = true;
+
 	/**
 	 * A queue of log messages we need to write so that they always appear in chronological order.
 	 */
@@ -74,7 +76,7 @@ public class LogWriter extends GenericSubsystem{
 		try {
 			Calendar cal = Calendar.getInstance();
 			DriverStation dr = DriverStation.getInstance();
-			logName = "log" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DATE) + "-" + cal.get(Calendar.YEAR) + "(" + cal.get(Calendar.HOUR_OF_DAY) + "-" + cal.get(Calendar.MINUTE) + ") " + (ds.getAlliance() == Alliance.Red ? "Red" : "Blue") + ".txt";
+			logName = "log" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DATE) + "-" + cal.get(Calendar.YEAR) + "(" + cal.get(Calendar.HOUR_OF_DAY) + "-" + cal.get(Calendar.MINUTE) + ") " + (ds.isFMSAttached() ? (ds.getAlliance() == Alliance.Red ? "Red" : "Blue") : "Practice") + ".txt";
 			file = new File(FILE_PATH + logName);
 			file.mkdirs();
 			file.setWritable(true, false);
@@ -126,14 +128,18 @@ public class LogWriter extends GenericSubsystem{
 	 * @param bytes - the array of bytes to write
 	 */
 	private synchronized void write(byte[] bytes) {
-		try {
-			dos = new FileOutputStream(file,true);
-			dos.write(bytes);
-			dos.flush();
-			dos.close();
-			dos = null;
-		} catch (Exception e) {
-			e.printStackTrace();
+		if(loggerWorking){
+			try {
+				dos = new FileOutputStream(file,true);
+				dos.write(bytes);
+				dos.flush();
+				dos.close();
+				dos = null;
+			} catch (Exception e) {
+				//			e.printStackTrace();
+				loggerWorking = false;
+				System.out.println("LOGGER FAILED******************************************************");
+			}
 		}
 	}
 
@@ -148,6 +154,6 @@ public class LogWriter extends GenericSubsystem{
 	@Override
 	protected void liveWindow() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

@@ -123,7 +123,7 @@ public class AdvancedJoystick extends GenericSubsystem{
 	 */
 	@Override
 	protected long sleepTime() {
-		return 20;
+		return 30;
 	}
 
 	/**

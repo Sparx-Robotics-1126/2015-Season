@@ -36,8 +36,8 @@ public final class IO {
 	public static final int DIO_CAN_HOOK_B				= 7;
 	public static final int DIO_CAN_ROTATE_A			= 8;
 	public static final int DIO_CAN_ROTATE_B			= 9;
-	public static final int DIO_ELEVATIONS_RIGHT_A		= 10;
-	public static final int DIO_ELEVATIONS_RIGHT_B		= 11;
+	public static final int DIO_ELEVATIONS_RIGHT_A		= 11;
+	public static final int DIO_ELEVATIONS_RIGHT_B		= 10;
 	
 	public static final int DIO_TOTE_SENSOR				= 14;
 	public static final int DIO_CAN_AUTO_LEFT			= 16;

@@ -187,7 +187,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * the speed required to shift
 	 */
-	private static final double SHIFTINGSPEED = 0.35;
+	private static final double SHIFTINGSPEED = 0.1;
 
 	/**
 	 * Alex said I didn't need comments (=
@@ -344,7 +344,7 @@ public class Drives extends GenericSubsystem{
 		currentSpeed = 0;
 		shiftTime = 0;
 		autoFunctions = State.AUTO_STAND_BY;
-		
+
 		pdp = new PowerDistributionPanel();
 
 		if(USE_PID_DEBUG){
@@ -359,6 +359,7 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
+		isWorking = true;//USE FOR DEBUGGING
 		encoderDataRight.calculateSpeed();
 		encoderDataLeft.calculateSpeed();
 		leftPower = 0;
@@ -412,9 +413,6 @@ public class Drives extends GenericSubsystem{
 			}
 			break;
 		case IN_NEUTRAL_GEAR:
-//			if(Math.abs(encoderDataLeft.getDistance()) > 4){
-//				wantedLeftPower = 0;
-//			}
 			if(isDriverControlled){
 				currentDriveState = State.NEUTRAL_SETUP;
 			}
@@ -422,23 +420,23 @@ public class Drives extends GenericSubsystem{
 		case SHIFTING_NEUTRAL:
 			lastShiftState = State.SHIFTING_NEUTRAL;
 			neutralPnu.set(ENABLE_NEUTRAL_SELECT);
-		
-			if(Timer.getFPGATimestamp() >= shiftTime + 0.1){
+
+			if(Timer.getFPGATimestamp() >= shiftTime + 0.4){
 				shiftingPnu.set(!LOW_GEAR);
 			}
 			
-			if(Timer.getFPGATimestamp() >= shiftTime + 0.2){
-				leftPower = 0.2;
-			}else{
-				leftPower = -0.2;
-			}
-			
 			if(Timer.getFPGATimestamp() >= shiftTime + 0.4){
+				if(Timer.getFPGATimestamp() >= shiftTime + 0.5){
+					leftPower = -0.1;
+				}else{
+					leftPower = 0.1;
+				}
+			}
+
+			if(Timer.getFPGATimestamp() >= shiftTime + 0.6){
 				currentDriveState = finalDriveState;
 				encoderDataLeft.reset();//Used to detect if PTO has not engaged
 				encoderLeft.reset();
-				encoderDataRight.reset();
-				encoderRight.reset();
 			}
 			break;
 		case NEUTRAL_SETUP:
@@ -465,12 +463,18 @@ public class Drives extends GenericSubsystem{
 		default:
 			LOG.logMessage("Error currentDriveState = " + currentDriveState);
 		}
-		
+
 		switch(autoFunctions){
 		case AUTO_STAND_BY:
 			if(currentDriveState == State.IN_HIGH_GEAR || currentDriveState == State.IN_LOW_GEAR || currentDriveState == State.IN_NEUTRAL_GEAR){
-				rightPower = wantedRightPower;
-				leftPower = wantedLeftPower;
+				if(Math.abs(encoderDataLeft.getDistance()) > 3 && currentDriveState == State.IN_NEUTRAL_GEAR){
+					rightPower = 0;
+					leftPower = 0;
+					isWorking = false;//USE FOR DEBUGGING
+				}else{
+					rightPower = wantedRightPower;
+					leftPower = wantedLeftPower;
+				}
 			}
 			break;
 		case AUTO_LIGHT_LINE_UP:
@@ -495,16 +499,16 @@ public class Drives extends GenericSubsystem{
 		case AUTO_STEP_LINEUP:
 			boolean right = (pdp.getCurrent(14) + pdp.getCurrent(15))/2 > 8 ? true : false; //rightTouch.get();
 			boolean left = (pdp.getCurrent(12) + pdp.getCurrent(13))/2 > 8 ? true : false;//leftTouch.get();
-//			System.out.println("Right: " + pdp.getCurrent(14) + " LEFt: " + pdp.getCurrent(12));
+			//			System.out.println("Right: " + pdp.getCurrent(14) + " LEFt: " + pdp.getCurrent(12));
 			if(right){
 				//rightPower = -LINEUP_SPEED;
-//				rightPower = 0;
+				//				rightPower = 0;
 			}else{
 				rightPower = LINEUP_SPEED;
 			}
 			if(left){
 				//				leftPower = -LINEUP_SPEED;
-//				leftPower = 0;
+				//				leftPower = 0;
 			}else{
 				leftPower = LINEUP_SPEED;
 			}
@@ -544,7 +548,7 @@ public class Drives extends GenericSubsystem{
 				driveSpeed = driveSpeed > -0.5 ? -0.5: -driveSpeed;
 				driveSpeed = driveSpeed < -maxSpeed ? -maxSpeed : -driveSpeed;
 			}
-			
+
 			//NEED GYRO
 			if(currentDistance < autoDistance){
 				rightPower = driveSpeed - gyroOffset();
@@ -558,7 +562,7 @@ public class Drives extends GenericSubsystem{
 				leftPower = 0;
 				autoFunctions = State.AUTO_STAND_BY;
 			}
-			
+
 			break;
 		case AUTO_DANCE:
 			if(danceLeft){
@@ -620,10 +624,10 @@ public class Drives extends GenericSubsystem{
 			leftPower = leftPID.update(encoderDataLeft.getSpeed());
 		}
 
-			leftFront.set(leftPower);
-			leftBack.set(leftPower);
-			rightFront.set(-rightPower);
-			rightBack.set(-rightPower);
+		leftFront.set(leftPower);
+		leftBack.set(leftPower);
+		rightFront.set(-rightPower);
+		rightBack.set(-rightPower);
 		return false;
 	}
 
@@ -633,7 +637,7 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected long sleepTime() {
-		return 10;
+		return 30;
 	}
 
 	/**
@@ -641,17 +645,17 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-				LOG.logMessage("Current speed: " + currentSpeed);
-				LOG.logMessage("Current drive state: " + currentDriveState);
-				LOG.logMessage("Auto State: " + autoFunctions);
+		LOG.logMessage("Current speed: " + currentSpeed);
+		LOG.logMessage("Current drive state: " + currentDriveState);
+		LOG.logMessage("Auto State: " + autoFunctions);
 		//		log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
 		//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
 		//		log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
 		//		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-				LOG.logMessage("Left Encoder: " + encoderDataLeft.getDistance() +
-						" Right Encoder: " +encoderDataRight.getDistance());
-				LOG.logMessage("POWER right: " + rightPower + " left: "+ leftPower);
-				LOG.logMessage("Auto Distance: " + autoDistance + " Auto Turn: " + autoWantedTurn);
+		LOG.logMessage("Left Encoder: " + encoderDataLeft.getDistance() +
+				" Right Encoder: " +encoderDataRight.getDistance());
+		LOG.logMessage("POWER right: " + rightPower + " left: "+ leftPower);
+		LOG.logMessage("Auto Distance: " + autoDistance + " Auto Turn: " + autoWantedTurn);
 		LOG.logMessage("Gyro: " + gyro.getAngle());
 	}
 
@@ -670,16 +674,18 @@ public class Drives extends GenericSubsystem{
 		}
 
 		if(driverControl){
-			if(left > 0){
-				wantedLeftPower = (5/4)*Math.sqrt(left);
-			}else{
-				wantedLeftPower = -(5/4)*Math.sqrt(-left);
-			}
-			if(right > 0){
-				wantedRightPower = (5/4)*Math.sqrt(right);
-			}else{
-				wantedRightPower = -(5/4)*Math.sqrt(-right);
-			}
+			wantedLeftPower = left;
+			wantedRightPower = right;
+//			if(left > 0){
+//				wantedLeftPower = (5/4)*Math.sqrt(left);
+//			}else{
+//				wantedLeftPower = -(5/4)*Math.sqrt(-left);
+//			}
+//			if(right > 0){
+//				wantedRightPower = (5/4)*Math.sqrt(right);
+//			}else{
+//				wantedRightPower = -(5/4)*Math.sqrt(-right);
+//			}
 			//		rightPID.setGoal(right*100);
 			//		leftPID.setGoal(left*100);
 		}else{
@@ -687,8 +693,15 @@ public class Drives extends GenericSubsystem{
 				currentDriveState = State.NEUTRAL_SETUP;
 				isDriverControlled = driverControl;
 			}
+			if(right != 0){
+				encoderDataLeft.reset();
+			}
 			wantedLeftPower = left;
-			wantedRightPower = right;
+			if(right != 0){
+				wantedRightPower = right;
+			}else{
+				wantedRightPower = 0.02;
+			}
 		}
 		isDriverControlled = driverControl;
 	}
@@ -765,11 +778,13 @@ public class Drives extends GenericSubsystem{
 		autoDistance = inchDistance;
 		gyro.reset();
 		encoderDataRight.reset();
+		encoderRight.reset();
 		encoderDataLeft.reset();
+		encoderLeft.reset();
 		autoWantedTurn = 0;
 		maxSpeed = speed;
 	}
-	
+
 	/**
 	 * Drives robot forward set distance
 	 * @param inchDistance - distance to travel in inches
@@ -864,7 +879,7 @@ public class Drives extends GenericSubsystem{
 		LiveWindow.addActuator(subsytemName, "Right Rear Motor", rightBack);
 		LiveWindow.addActuator(subsytemName, "Left Front Motor", leftFront);
 		LiveWindow.addActuator(subsytemName, "Left Back Motor", leftBack);
-			
+
 	}
 
 	//PID

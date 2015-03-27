@@ -93,7 +93,7 @@ public class CanAcquisition extends GenericSubsystem{
 	 * Creates new CanAqcuisition
 	 */
 	private CanAcquisition() {
-		super("Can Acq", Thread.NORM_PRIORITY);
+		super("Can Acq", Thread.MIN_PRIORITY);
 	}
 
 	/**
@@ -193,7 +193,7 @@ public class CanAcquisition extends GenericSubsystem{
 	 * The amount of time we are sleeping for
 	 */
 	protected long sleepTime() {
-		return 10;
+		return 100;
 	}
 
 	/**

@@ -93,7 +93,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * the minimum power for the motors when we are rotating down
 	 */
-	private static final double MIN_ROTATE_DOWN_SPEED = 0.2;
+	private static final double MIN_ROTATE_DOWN_SPEED = 0.05;
 
 	/**
 	 * The minimum hook speed
@@ -103,6 +103,8 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The max position for the rotation
 	 */
+	private static final double ACQ_ROTATION = 77;//86.5;
+	
 	private static final double MAX_ROTATION = 86.5;
 
 	/**
@@ -118,12 +120,12 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * Acquire speed for grabbing a RC
 	 */
-	private static final double ACQUIRE_SPEED = 490;
+	private static final double ACQUIRE_SPEED = 30;//490;
 	
 	/**
 	 * Rotation speed for rotating down
 	 */
-	private static final double ROTATION_SPEED = 200;
+	private static final double ROTATION_SPEED = 20;//200;
 
 	/***********************Variables*********************/
 
@@ -169,7 +171,9 @@ public class CanAcqTele extends GenericSubsystem{
 	
 	private boolean isAcquiring = false;
 	
-	private boolean hookInitialized = false;
+	private double maxRotateUp = 1;
+	
+	private boolean hookInitialized = true;//false;
 	private boolean rotateInitialized = false;
 
 	/**
@@ -230,37 +234,50 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
+		isWorking = true;//USE TO DEBUG
 		rotateEncData.calculateSpeed();
 		hookEncData.calculateSpeed();
 		
 		if(!rotateInitialized){
 			currentRotateState = RotateState.ROTATE_FINDING_HOME;
-		}else if(!hookInitialized){
-			currentHookState = HookState.HOOK_FINDING_HOME;
-		}
+			isWorking = false;
+		}//else if(!hookInitialized){
+		//	currentHookState = HookState.HOOK_FINDING_HOME;
+		//}
 		
 		if(useAutoFunctions || !rotateInitialized || !hookInitialized){
 			switch(currentRotateState){
 			case STANDBY:
-				wantedRotateSpeed = 0;
+				if(rotateEncData.getDistance() < 10){
+					wantedRotateSpeed = 0.06;
+					if(rotateEncData.getDistance() < -0.01){
+						rotateEncData.reset();
+						LOG.logMessage("Encoder Home has been reset");
+					}
+				}else{
+					wantedRotateSpeed = 0;
+				}
 				break;
 			case ROTATING:
 				double calculatedRotateSpeed = -(wantedAngle - rotateEncData.getDistance()) / rotationDivider;
 				if(calculatedRotateSpeed > 0){
 					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_UP_SPEED) ? calculatedRotateSpeed : MIN_ROTATE_UP_SPEED);
+					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > maxRotateUp) ? maxRotateUp : calculatedRotateSpeed);
+					
 				}else{
 					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_DOWN_SPEED) ? calculatedRotateSpeed : -MIN_ROTATE_DOWN_SPEED);
+					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > 0.25) ? -0.15 : calculatedRotateSpeed);
 				}
 
-				if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  50 && isAcquiring){
+				if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  50  && rotateEncData.getDistance() >= 40 && isAcquiring){
 					elevations.moveElevator(15, 1, true);
 				}
 				
-				if(hookEncData.getDistance() > 24 && wantedRotateSpeed > 0 && isAcquiring){
-					wantedRotateSpeed = 0;
-				}
+//				if(hookEncData.getDistance() > 24 && wantedRotateSpeed > 0 && isAcquiring){
+//					wantedRotateSpeed = 0;
+//				}
 
-				if((rotateEncData.getDistance() >= wantedAngle - 2 && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle + 2 && calculatedRotateSpeed > 0)){
+				if((rotateEncData.getDistance() >= wantedAngle - 2 && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle + 1 && calculatedRotateSpeed > 0)){
 					currentRotateState = RotateState.STANDBY;
 					wantedRotateSpeed = 0;
 					LOG.logMessage("Done rotating");
@@ -327,7 +344,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	public void manualRotateOverride(double speed){
 		if((rotateEncData.getDistance() > 0 && speed > 0) || (speed < 0 && rotateEncData.getDistance() < MAX_ROTATION)){
-			wantedRotateSpeed = speed/2;
+			wantedRotateSpeed = speed/4;
 		}else{
 			wantedRotateSpeed = 0;
 		}
@@ -368,7 +385,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	public void goToAcquire(){
 		wantedHookPos = ACQ_CAN_DIST;
-		wantedAngle = MAX_ROTATION;
+		wantedAngle = ACQ_ROTATION;
 		rotationDivider = ROTATION_SPEED;
 		currentHookState = HookState.MOVING;
 		currentRotateState = RotateState.ROTATING;
@@ -386,13 +403,18 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * Brings the can in
 	 */
-	public void acquireCan(){
+	public void acquireCan(boolean isSlow){
 		rotationDivider = ACQUIRE_SPEED;
 		wantedHookPos = 0;
 		wantedAngle = 0;
 		currentHookState = HookState.MOVING;
 		currentRotateState = RotateState.ROTATING;
 		isAcquiring = true;
+		if(isSlow){
+			maxRotateUp = 0.35;
+		}else{
+			maxRotateUp = 0.6;
+		}
 	}
 
 	/**
@@ -404,7 +426,7 @@ public class CanAcqTele extends GenericSubsystem{
 	}
 	
 	public boolean isDone(){
-		return (currentHookState == HookState.STANDBY && currentRotateState == RotateState.STANDBY);
+		return currentRotateState == RotateState.STANDBY;//(currentHookState == HookState.STANDBY && currentRotateState == RotateState.STANDBY);
 	}
 
 	/**
@@ -428,7 +450,7 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	@Override
 	protected long sleepTime() {
-		return 20;
+		return 25;
 	}
 
 	/**

@@ -55,7 +55,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private CanAcqTele canAcqTele
 	 */
 	private ToteAcq toteAcq;
-	
+
 	private Autonomous auto;
 
 	/**
@@ -77,7 +77,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 * The wait for the tote stop to remove and the totes to score
 	 */
 	private double scoreWait = 0;
-	
+
 	private boolean useAuto = false;
 
 	/**
@@ -119,14 +119,14 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private static final int ATTACK3_Z_AXIS = 2;
 	private static final int ATTACK3_TRIGGER = 1;
 	private static final int ATTACK3_TOP_BUTTON = 2;
-	
+
 	private static final int NEW_JOY_Y_AXIS = 1;
 	private static final int NEW_JOY_X_AXIS = 0;
 	private static final int NEW_JOY_TRIGGER = 1;//TRIGGEr
 	private static final int NEW_JOY_LEFT = 2;//LEFT
 	private static final int NEW_JOY_RIGHT = 3;//RIGHT
 	private static final int NEW_JOY_MIDDLE = 4;
-	
+
 	//***************************************************************************
 	//***************************XBOX360*****************************************
 	//***************************************************************************
@@ -147,7 +147,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private static final int XBOX_RIGHT_X = 4;
 	private static final int XBOX_RIGHT_Y = 5;
 	private static final int XBOX_POV = 0;
-	
+
 	/**
 	 * if controls == null, make a new controls
 	 * @return the new controls
@@ -174,19 +174,19 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean init() {
-		driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT, 4);
+		driverJoyLeft = new AdvancedJoystick("Left Driver", IO.DRIVER_JOYSTICK_LEFT, 4, 0.05);
 		driverJoyLeft.addActionListener(this);
 		driverJoyLeft.addButton(NEW_JOY_LEFT);
 		driverJoyLeft.addButton(NEW_JOY_TRIGGER);
 		driverJoyLeft.addMultibutton(NEW_JOY_LEFT, NEW_JOY_TRIGGER);
 		driverJoyLeft.start();
-		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT, 4);
+		driverJoyRight = new AdvancedJoystick("Right Driver", IO.DRIVER_JOYSTICK_RIGHT, 4, 0.05);
 		driverJoyRight.addActionListener(this);
 		driverJoyRight.addButton(NEW_JOY_LEFT);
 		driverJoyRight.addButton(NEW_JOY_TRIGGER);
 		driverJoyRight.addButton(NEW_JOY_MIDDLE);
 		driverJoyRight.start();
-		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK, 10, 0.1);
+		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK, 10, 0.25);
 		operatorJoy.addActionListener(this);
 		operatorJoy.addButton(XBOX_Y);
 		operatorJoy.addButton(XBOX_R1);
@@ -196,6 +196,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(XBOX_START);
 		operatorJoy.addButton(XBOX_B);
 		operatorJoy.addButton(XBOX_A);
+		operatorJoy.addButton(XBOX_X);
 		operatorJoy.start();
 		drives = Drives.getInstance();
 		canAcq = CanAcquisition.getInstance();
@@ -212,82 +213,88 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	protected boolean execute() {
-		double left = -driverJoyLeft.getAxis(NEW_JOY_Y_AXIS);
-		double right = -driverJoyRight.getAxis(NEW_JOY_Y_AXIS);
-		//TRIMS
-		double hookOveride = operatorJoy.getAxis(XBOX_LEFT_X);
-		double rotateOveride = -operatorJoy.getAxis(XBOX_RIGHT_Y);
-		if(Math.abs(rotateOveride) > 0){
-			System.out.println("**************************************");
-			elevations.scoreTotes();
-			canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
-			canAcqTele.overriding(true);
-			canAcqTele.manualRotateOverride(rotateOveride);
-		}else if(Math.abs(hookOveride) > 0){
-			System.out.println("**************************************");
-			canAcqTele.setState(CanAcqTele.HookState.STANDBY);
-			canAcqTele.overriding(true);
-			canAcqTele.manualHookOverride(hookOveride);
-		}else{
-			canAcqTele.overriding(false);
-		}
-
-
-		//Driver vs Operator
-		if((left != 0) || !operatorWantsControl){
-			drives.setPower(left, right, true);
-		}else if(operatorWantsControl){
-			if(scoreWait == 0 || Timer.getFPGATimestamp() > scoreWait + 0.1){
-				drives.setPower(operatorWantedPower, right, false);
+		if(ds.isOperatorControl()){
+			double left = -driverJoyLeft.getAxis(NEW_JOY_Y_AXIS);
+			double right = -driverJoyRight.getAxis(NEW_JOY_Y_AXIS);
+			//TRIMS
+			double hookOveride = operatorJoy.getAxis(XBOX_LEFT_X);
+			double rotateOveride = -operatorJoy.getAxis(XBOX_RIGHT_Y);
+			if(Math.abs(rotateOveride) > 0){
+				System.out.println("**************************************ROTATE");
+				elevations.scoreTotes();
+				canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
+				canAcqTele.overriding(true);
+				canAcqTele.manualRotateOverride(rotateOveride);
+			}else if(Math.abs(hookOveride) > 0){
+				System.out.println("**************************************HOOK");
+				canAcqTele.setState(CanAcqTele.HookState.STANDBY);
+				canAcqTele.overriding(true);
+				canAcqTele.manualHookOverride(hookOveride);
+			}else{
+				canAcqTele.overriding(false);
 			}
-			useAuto = false;
-		}
-		if(left == 0 && right == 0 && useAuto){
-			auto.runAuto(true);
-		}else{
-			useAuto = false;
-			auto.runAuto(false);
-		}
 
-		//OPERATOR CONTORLS
-		if(operatorJoy.getPOV(XBOX_POV) == 90){
-			//Human Feed Mode
-			elevations.liftTote();
-			toteAcq.setClutch(ClutchState.ON);
-			toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
-			toteAcq.setStopper(StopState.ON);
-			operatorWantsControl = true;
-			operatorWantedPower = -0.8;
-			LOG.logMessage("OP Button: Human Feed Mode");
-		}else if(operatorJoy.getPOV(XBOX_POV) == 180){
-			//Floor Mode
-			elevations.liftTote();
-			toteAcq.setClutch(ClutchState.ON);
-			toteAcq.setRollerPos(RollerPosition.FLOOR);
-			toteAcq.setStopper(StopState.ON);
-			operatorWantsControl = true;
-			operatorWantedPower = -0.8;
-			LOG.logMessage("OP Button: Floor Mode");
-		}else if(operatorJoy.getPOV(XBOX_POV) == 0){
-			//TODO: OFF Mode
-			toteAcq.setClutch(ClutchState.OFF);
-			toteAcq.setStopper(StopState.ON);
-			toteAcq.setRollerPos(RollerPosition.TRAVEL);
-			scoreWait = 0;
-			operatorWantsControl = false;
-			LOG.logMessage("OP Button: OFF Mode");
-		}else if(operatorJoy.getPOV(XBOX_POV) == 270){
-			//EJECT
-			toteAcq.setClutch(ClutchState.ON);
-			toteAcq.setStopper(StopState.ON);
-			toteAcq.setRollerPos(RollerPosition.FLOOR);
-			operatorWantsControl = true;
-			operatorWantedPower = 0.8;
-			LOG.logMessage("OP Button: Eject");
-		}
-		if(operatorJoy.getAxis(XBOX_L2) > .5){
-			canAcqTele.acquireCan();
-			LOG.logMessage("Acquiring Can");
+
+			//Driver vs Operator
+			if((left != 0) || !operatorWantsControl){
+				drives.setPower(left, right, true);
+			}else if(operatorWantsControl){
+				if(scoreWait == 0 || Timer.getFPGATimestamp() > scoreWait + 0.1){
+					drives.setPower(operatorWantedPower, right, false);
+				}
+				useAuto = false;
+			}
+			if(left == 0 && right == 0 && useAuto){
+				auto.runAuto(true);
+			}else{
+				useAuto = false;
+				auto.runAuto(false);
+			}
+
+			//OPERATOR CONTORLS
+			if(operatorJoy.getPOV(XBOX_POV) == 90){
+				//Human Feed Mode
+				elevations.liftTote();
+				toteAcq.setClutch(ClutchState.ON);
+				toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
+				toteAcq.setStopper(StopState.ON);
+				operatorWantsControl = true;
+				operatorWantedPower = -0.8;
+				LOG.logMessage("OP Button: Human Feed Mode");
+			}else if(operatorJoy.getPOV(XBOX_POV) == 180){
+				//Floor Mode
+				elevations.liftTote();
+				toteAcq.setClutch(ClutchState.ON);
+				toteAcq.setRollerPos(RollerPosition.FLOOR);
+				toteAcq.setStopper(StopState.ON);
+				operatorWantsControl = true;
+				operatorWantedPower = -0.8;
+				LOG.logMessage("OP Button: Floor Mode");
+			}else if(operatorJoy.getPOV(XBOX_POV) == 0){
+				//TODO: OFF Mode
+				toteAcq.setClutch(ClutchState.OFF);
+				toteAcq.setStopper(StopState.ON);
+				toteAcq.setRollerPos(RollerPosition.TRAVEL);
+				scoreWait = 0;
+				operatorWantsControl = false;
+				LOG.logMessage("OP Button: OFF Mode");
+			}else if(operatorJoy.getPOV(XBOX_POV) == 270){
+				//EJECT
+				toteAcq.setClutch(ClutchState.ON);
+				toteAcq.setStopper(StopState.ON);
+				toteAcq.setRollerPos(RollerPosition.FLOOR);
+				operatorWantsControl = true;
+				operatorWantedPower = 0.8;
+				LOG.logMessage("OP Button: Eject");
+			}
+			if(operatorJoy.getAxis(XBOX_L2) > .5){
+				canAcqTele.acquireCan(false);
+				LOG.logMessage("Acquiring Can");
+			}
+			if(operatorJoy.getAxis(XBOX_R2) > .5){
+				canAcqTele.setAutoPosition(40);
+				LOG.logMessage("Capping Stack");
+			}
 		}
 		return false;
 	}
@@ -326,92 +333,99 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 */
 	@Override
 	public void actionPerformed(ButtonEvent e) {
-//		useAuto = false;
-		if(!(e instanceof MultibuttonEvent)){
-			switch(e.getPort()){
-			case IO.DRIVER_JOYSTICK_LEFT:
-				switch(e.getID()){
-				case NEW_JOY_LEFT:
-					drives.setManualShifting(true);
-					LOG.logMessage("DR Button: HIGH GEAR");
+		if(ds.isOperatorControl()){
+			//		useAuto = false;
+			if(!(e instanceof MultibuttonEvent)){
+				switch(e.getPort()){
+				case IO.DRIVER_JOYSTICK_LEFT:
+					switch(e.getID()){
+					case NEW_JOY_LEFT:
+						drives.setManualShifting(true);
+						LOG.logMessage("DR Button: HIGH GEAR");
+						break;
+					case NEW_JOY_TRIGGER:
+						drives.setManualShifting(false);
+						LOG.logMessage("DR Button: LOW GEAR");
+						break;
+					}
 					break;
-				case NEW_JOY_TRIGGER:
-					drives.setManualShifting(false);
-					LOG.logMessage("DR Button: LOW GEAR");
-					break;
-				}
-				break;
 
-			case IO.DRIVER_JOYSTICK_RIGHT:
-				switch(e.getID()){
-				case NEW_JOY_TRIGGER:
-					drives.driveStraight(16, 100);
-					LOG.logMessage("DR Button: Auto Drive Straight");
+				case IO.DRIVER_JOYSTICK_RIGHT:
+					switch(e.getID()){
+					case NEW_JOY_TRIGGER:
+						drives.driveStraight(10, 100);
+						LOG.logMessage("DR Button: Auto Drive Straight");
+						break;
+					case NEW_JOY_MIDDLE:
+						useAuto = true;
+						LOG.logMessage("USING AUTO");
+						break;
+					}
 					break;
-				case NEW_JOY_MIDDLE:
-					useAuto = true;
-					LOG.logMessage("USING AUTO");
-					break;
-				}
-				break;
 
-			case IO.OPERATOR_JOYSTICK:
-				switch(e.getID()){
-				case XBOX_Y:
-					//Reset Elevator
-					elevations.setHome();					
-					LOG.logMessage("OP Button: Elevations reset");
-					break;
-				case XBOX_R1:
-					//SCORE
-					elevations.scoreTotes();
-					toteAcq.setClutch(ClutchState.ON);
-					toteAcq.setStopper(StopState.OFF);
-					scoreWait = Timer.getFPGATimestamp();
-					operatorWantsControl = true;
-					operatorWantedPower = -0.75;
-					LOG.logMessage("OP Button: Score");
-					break;
-				case XBOX_START:
-					//STOP CAN TELE
-					canAcqTele.setState(CanAcqTele.HookState.STANDBY);
-					canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
-					LOG.logMessage("OP Button: Stop Can Tele");
-					break;
-				case XBOX_B:
-					//STOP
-					elevations.stopElevator();
-					LOG.logMessage("OP Button: Stop");
-					break;
-				case XBOX_L1:
-					elevations.scoreTotes();
-					canAcqTele.goToAcquire();
-					LOG.logMessage("OP Button: Dropping Can Tele");
-					break;
-//				case XBOX_B:
-//					if(e.isRising()){
-//						canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
-//						LOG.logMessage("OP Button: Can Auto Arms OPEN");
-//					}else{
-//						canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
-//						LOG.logMessage("OP Button: Can Auto Arms CLOSE");
-//					}
-//					break;
-				case XBOX_A:
-					elevations.lowerTotes();
-					LOG.logMessage("OP Button: Lowering Elevations");
+				case IO.OPERATOR_JOYSTICK:
+					switch(e.getID()){
+					case XBOX_Y:
+						//Reset Elevator
+						elevations.setHome();					
+						LOG.logMessage("OP Button: Elevations reset");
+						break;
+					case XBOX_R1:
+						//SCORE
+						elevations.scoreTotes();
+						toteAcq.setClutch(ClutchState.ON);
+						toteAcq.setStopper(StopState.OFF);
+						scoreWait = Timer.getFPGATimestamp();
+						operatorWantsControl = true;
+						operatorWantedPower = -0.75;
+						LOG.logMessage("OP Button: Score");
+						break;
+					case XBOX_START:
+						//STOP CAN TELE
+						canAcqTele.setState(CanAcqTele.HookState.STANDBY);
+						canAcqTele.setState(CanAcqTele.RotateState.STANDBY);
+						LOG.logMessage("OP Button: Stop Can Tele");
+						break;
+					case XBOX_B:
+						//STOP
+						elevations.stopElevator();
+						LOG.logMessage("OP Button: Stop");
+						break;
+					case XBOX_X:
+						canAcqTele.setAutoPosition(85);
+						elevations.scoreTotes();
+						LOG.logMessage("Floor pickup");
+						break;
+					case XBOX_L1:
+						elevations.scoreTotes();
+						canAcqTele.goToAcquire();
+						LOG.logMessage("OP Button: Dropping Can Tele");
+						break;
+						//				case XBOX_B:
+						//					if(e.isRising()){
+						//						canAcq.setAutoFunction(CanAcquisition.State.ATTEMPT_TO_GRAB);
+						//						LOG.logMessage("OP Button: Can Auto Arms OPEN");
+						//					}else{
+						//						canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
+						//						LOG.logMessage("OP Button: Can Auto Arms CLOSE");
+						//					}
+						//					break;
+					case XBOX_A:
+						elevations.lowerTotes();
+						LOG.logMessage("OP Button: Lowering Elevations");
+						break;
+					}
+				}
+			}else{
+				switch (e.getPort()) {
+				case IO.DRIVER_JOYSTICK_LEFT:
+					if(e.isRising()){
+						manualShifting = !manualShifting;
+						drives.isManualShifting(manualShifting);
+						LOG.logMessage("DR Button: Manual Shifting is enabled? " + manualShifting);
+					}
 					break;
 				}
-			}
-		}else{
-			switch (e.getPort()) {
-			case IO.DRIVER_JOYSTICK_LEFT:
-				if(e.isRising()){
-					manualShifting = !manualShifting;
-					drives.isManualShifting(manualShifting);
-					LOG.logMessage("DR Button: Manual Shifting is enabled? " + manualShifting);
-				}
-				break;
 			}
 		}
 	}

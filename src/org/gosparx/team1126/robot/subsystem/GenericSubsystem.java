@@ -6,6 +6,7 @@ import org.gosparx.team1126.robot.util.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is designed to be the base class of all the subsystems on the
@@ -85,6 +86,14 @@ public abstract class GenericSubsystem extends Thread {
 	 */
 	abstract protected void writeLog();
 
+	public boolean isWorking = true;
+	/**
+	 * Is the subsystem Working?
+	 */
+	private void updateSmartStatus(){
+		SmartDashboard.putBoolean(getName(), isWorking);
+	}
+
 	/**
 	 * Runs and loops the execute() until execute returns false, logging ever logTime() seconds.
 	 */
@@ -102,6 +111,7 @@ public abstract class GenericSubsystem extends Thread {
 			if(!ds.isTest()){
 				try{
 					retVal = execute();
+					updateSmartStatus();
 				}catch(Exception e){
 					if(LOG != null)
 						LOG.logError("Uncaught Exception! " + e.getMessage());

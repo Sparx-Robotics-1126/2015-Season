@@ -6,6 +6,7 @@ import org.gosparx.team1126.robot.sensors.EncoderData;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
@@ -72,6 +73,11 @@ public class CanAcqTele extends GenericSubsystem{
 	 * The power distribution board instance
 	 */
 	private PowerDistributionPanel pdp;
+	
+	/**
+	 * The floor grabber thingy
+	 */
+	private Solenoid floorGrabbers;
 
 	/***********************Constants*********************/
 
@@ -175,6 +181,8 @@ public class CanAcqTele extends GenericSubsystem{
 	
 	private boolean hookInitialized = true;//false;
 	private boolean rotateInitialized = false;
+	
+	private boolean currentFloorGrabbers = false;
 
 	/**
 	 * @return a CanAcqTele
@@ -213,6 +221,7 @@ public class CanAcqTele extends GenericSubsystem{
 		elevations = Elevations.getInstance();
 		currentHookState = HookState.STANDBY;//HOOK_FINDING_HOME;
 		currentRotateState = RotateState.ROTATE_FINDING_HOME;
+		floorGrabbers = new Solenoid(IO.PNU_FLOOR_GRABBER);
 		return true;
 	}
 
@@ -333,6 +342,7 @@ public class CanAcqTele extends GenericSubsystem{
 			}
 		}
 
+		floorGrabbers.set(currentFloorGrabbers);
 		rotateMotor.set(wantedRotateSpeed*3);
 		hookMotor.set(-wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor
 		return false;
@@ -444,7 +454,11 @@ public class CanAcqTele extends GenericSubsystem{
 	public void setState(HookState state){
 		currentHookState = state;
 	}
-
+	
+	public void toggleFloorGrabbers(){
+		currentFloorGrabbers = !currentFloorGrabbers;
+	}
+	
 	/**
 	 * How long to sleep between loops
 	 */

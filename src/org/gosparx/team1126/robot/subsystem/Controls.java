@@ -66,7 +66,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	/**
 	 * The operator wants controls over the PTO
 	 */
-	private boolean operatorWantsControl = false;
+	//private boolean operatorWantsControl = false;
 
 	/**
 	 * The speed at which the operator wants to power the PTO
@@ -236,13 +236,9 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 
 
 			//Driver vs Operator
-			if((left != 0) || !operatorWantsControl){
-				drives.setPower(left, right, true);
-			}else if(operatorWantsControl){
-				if(scoreWait == 0 || Timer.getFPGATimestamp() > scoreWait + 0.1){
-					drives.setPower(operatorWantedPower, right, false);
-				}
-				useAuto = false;
+			drives.setPower(left, right, true);
+			if(scoreWait == 0 || Timer.getFPGATimestamp() > scoreWait + 0.1){
+				drives.setPTO(operatorWantedPower);
 			}
 			if(left == 0 && right == 0 && useAuto){
 				auto.runAuto(true);
@@ -258,7 +254,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				toteAcq.setClutch(ClutchState.ON);
 				toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
 				toteAcq.setStopper(StopState.ON);
-				operatorWantsControl = true;
+				//operatorWantsControl = true;
 				operatorWantedPower = -0.8;
 				LOG.logMessage("OP Button: Human Feed Mode");
 			}else if(operatorJoy.getPOV(XBOX_POV) == 180){
@@ -267,7 +263,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				toteAcq.setClutch(ClutchState.ON);
 				toteAcq.setRollerPos(RollerPosition.FLOOR);
 				toteAcq.setStopper(StopState.ON);
-				operatorWantsControl = true;
+				//operatorWantsControl = true;
 				operatorWantedPower = -0.8;
 				LOG.logMessage("OP Button: Floor Mode");
 			}else if(operatorJoy.getPOV(XBOX_POV) == 0){
@@ -276,14 +272,14 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				toteAcq.setStopper(StopState.ON);
 				toteAcq.setRollerPos(RollerPosition.TRAVEL);
 				scoreWait = 0;
-				operatorWantsControl = false;
+				//operatorWantsControl = false;
 				LOG.logMessage("OP Button: OFF Mode");
 			}else if(operatorJoy.getPOV(XBOX_POV) == 270){
 				//EJECT
 				toteAcq.setClutch(ClutchState.ON);
 				toteAcq.setStopper(StopState.ON);
 				toteAcq.setRollerPos(RollerPosition.FLOOR);
-				operatorWantsControl = true;
+				//operatorWantsControl = true;
 				operatorWantedPower = 0.8;
 				LOG.logMessage("OP Button: Eject");
 			}
@@ -315,7 +311,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	protected void writeLog() {
 		LOG.logMessage("DR Left axis: " + -driverJoyLeft.getAxis(ATTACK3_Y_AXIS));
 		LOG.logMessage("DR Right axis: " + -driverJoyRight.getAxis(ATTACK3_Y_AXIS));
-		LOG.logMessage("Operator wants control: " + operatorWantsControl);
+		//LOG.logMessage("Operator wants control: " + operatorWantsControl);
 		LOG.logMessage("Operator Wanted Power: " + operatorWantedPower);
 	}
 
@@ -376,7 +372,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 						toteAcq.setClutch(ClutchState.ON);
 						toteAcq.setStopper(StopState.OFF);
 						scoreWait = Timer.getFPGATimestamp();
-						operatorWantsControl = true;
+						//operatorWantsControl = true;
 						operatorWantedPower = -0.75;
 						LOG.logMessage("OP Button: Score");
 						break;

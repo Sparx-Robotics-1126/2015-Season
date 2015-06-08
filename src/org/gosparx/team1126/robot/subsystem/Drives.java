@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -80,6 +81,11 @@ public class Drives extends GenericSubsystem{
 	 */
 	private Victor rightBack;
 
+	/**
+	 * Object used to set the PTO
+	 */
+	private Talon ptoMotor;
+	
 	//****************************PNU**************************
 	/**
 	 * the solenoid used for shifting
@@ -89,7 +95,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * Neutral shifting
 	 */
-	private Solenoid neutralPnu;
+	//private Solenoid neutralPnu;
 
 	//****************************SENSORS**********************
 	/**
@@ -218,7 +224,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * The position of the pnu solenoid to enable the neutral gear
 	 */
-	private static final boolean ENABLE_NEUTRAL_SELECT = true;
+	//private static final boolean ENABLE_NEUTRAL_SELECT = true;
 
 	/**
 	 * The distance the robot will dance
@@ -284,7 +290,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * Determinds weather driver wanted to drive or operator wants rollers to run
 	 */
-	private boolean isDriverControlled = true;
+	//private boolean isDriverControlled = true;
 
 	/**
 	 * Weather we are in manual or auto shifting
@@ -292,6 +298,8 @@ public class Drives extends GenericSubsystem{
 	private boolean isAutoShifting = true;
 
 	private double maxAmps = 0;
+	
+	private double wantedPTO;
 	/**
 	 * if drives == null, make a new drives
 	 * @return the new drives
@@ -339,12 +347,14 @@ public class Drives extends GenericSubsystem{
 		//OTHER
 		gyro = new Gyro(0);
 		shiftingPnu = new Solenoid(IO.PNU_SHIFT);	
-		neutralPnu = new Solenoid(IO.PNU_DISENGAGE_DRIVES);//TODO: FIND CHANNEL
+		//neutralPnu = new Solenoid(IO.PNU_DISENGAGE_DRIVES);//TODO: FIND CHANNEL
 		currentDriveState = State.IN_LOW_GEAR;
 		currentSpeed = 0;
 		shiftTime = 0;
 		autoFunctions = State.AUTO_STAND_BY;
 
+		ptoMotor = new Talon(IO.PWM_PTO_MOTOR);
+		
 		pdp = new PowerDistributionPanel();
 
 		if(USE_PID_DEBUG){
@@ -376,7 +386,7 @@ public class Drives extends GenericSubsystem{
 			break;
 		case SHIFTING_LOW:
 			lastShiftState = State.SHIFTING_LOW;
-			neutralPnu.set(!ENABLE_NEUTRAL_SELECT);
+			//neutralPnu.set(!ENABLE_NEUTRAL_SELECT);
 			shiftingPnu.set(LOW_GEAR);
 			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
 				currentDriveState = finalDriveState;
@@ -412,6 +422,7 @@ public class Drives extends GenericSubsystem{
 				leftPower = SHIFTINGSPEED;
 			}
 			break;
+			/**
 		case IN_NEUTRAL_GEAR:
 			if(isDriverControlled){
 				currentDriveState = State.NEUTRAL_SETUP;
@@ -424,7 +435,7 @@ public class Drives extends GenericSubsystem{
 			if(Timer.getFPGATimestamp() >= shiftTime + 0.4){
 				shiftingPnu.set(!LOW_GEAR);
 			}
-			
+
 			if(Timer.getFPGATimestamp() >= shiftTime + 0.4){
 				if(Timer.getFPGATimestamp() >= shiftTime + 0.5){
 					leftPower = -0.1;
@@ -460,14 +471,15 @@ public class Drives extends GenericSubsystem{
 				finalDriveState = State.IN_LOW_GEAR;
 			}
 			break;
+			 **/
 		default:
 			LOG.logMessage("Error currentDriveState = " + currentDriveState);
 		}
 
 		switch(autoFunctions){
 		case AUTO_STAND_BY:
-			if(currentDriveState == State.IN_HIGH_GEAR || currentDriveState == State.IN_LOW_GEAR || currentDriveState == State.IN_NEUTRAL_GEAR){
-				if(Math.abs(encoderDataLeft.getDistance()) > 3 && currentDriveState == State.IN_NEUTRAL_GEAR){
+			if(currentDriveState == State.IN_HIGH_GEAR || currentDriveState == State.IN_LOW_GEAR){// || currentDriveState == State.IN_NEUTRAL_GEAR){
+				if(Math.abs(encoderDataLeft.getDistance()) > 3){// && currentDriveState == State.IN_NEUTRAL_GEAR){
 					rightPower = 0;
 					leftPower = 0;
 					isWorking = false;//USE FOR DEBUGGING
@@ -624,6 +636,7 @@ public class Drives extends GenericSubsystem{
 			leftPower = leftPID.update(encoderDataLeft.getSpeed());
 		}
 
+		ptoMotor.set(wantedPTO);
 		leftFront.set(leftPower);
 		leftBack.set(leftPower);
 		rightFront.set(-rightPower);
@@ -676,23 +689,23 @@ public class Drives extends GenericSubsystem{
 		if(driverControl){
 			wantedLeftPower = left;
 			wantedRightPower = right;
-//			if(left > 0){
-//				wantedLeftPower = (5/4)*Math.sqrt(left);
-//			}else{
-//				wantedLeftPower = -(5/4)*Math.sqrt(-left);
-//			}
-//			if(right > 0){
-//				wantedRightPower = (5/4)*Math.sqrt(right);
-//			}else{
-//				wantedRightPower = -(5/4)*Math.sqrt(-right);
-//			}
+			//			if(left > 0){
+			//				wantedLeftPower = (5/4)*Math.sqrt(left);
+			//			}else{
+			//				wantedLeftPower = -(5/4)*Math.sqrt(-left);
+			//			}
+			//			if(right > 0){
+			//				wantedRightPower = (5/4)*Math.sqrt(right);
+			//			}else{
+			//				wantedRightPower = -(5/4)*Math.sqrt(-right);
+			//			}
 			//		rightPID.setGoal(right*100);
 			//		leftPID.setGoal(left*100);
 		}else{
-			if(driverControl != isDriverControlled){//FIRST TIME
-				currentDriveState = State.NEUTRAL_SETUP;
-				isDriverControlled = driverControl;
-			}
+			//if(driverControl != isDriverControlled){//FIRST TIME
+				//currentDriveState = State.NEUTRAL_SETUP;
+			//	isDriverControlled = driverControl;
+			//}
 			if(right != 0){
 				encoderDataLeft.reset();
 			}
@@ -703,9 +716,16 @@ public class Drives extends GenericSubsystem{
 				wantedRightPower = 0.02;
 			}
 		}
-		isDriverControlled = driverControl;
+		//isDriverControlled = driverControl;
 	}
 
+	/**
+	 * SETS THE PTO SPEED
+	 */
+	public void setPTO(double wanted){
+		wantedPTO = wanted;
+	}
+	
 	/**
 	 * Sets the shifting mode
 	 * @param isAutoShift - true if auto shifting, false if manual shifting
@@ -826,9 +846,9 @@ public class Drives extends GenericSubsystem{
 		SHIFTING_LOW,
 		IN_HIGH_GEAR,
 		SHIFTING_HIGH,
-		NEUTRAL_SETUP,
-		IN_NEUTRAL_GEAR,
-		SHIFTING_NEUTRAL,
+		//NEUTRAL_SETUP,
+		//IN_NEUTRAL_GEAR,
+		//SHIFTING_NEUTRAL,
 		AUTO_STAND_BY,
 		AUTO_TURN,
 		AUTO_DRIVE,
@@ -860,8 +880,8 @@ public class Drives extends GenericSubsystem{
 				return "In Auto Drive";
 			case AUTO_DANCE:
 				return "In Auto Dance";
-			case NEUTRAL_SETUP:
-				return "Neutral Setup";
+				//case NEUTRAL_SETUP:
+				//	return "Neutral Setup";
 			default:
 				return "Error";
 			}

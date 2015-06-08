@@ -414,6 +414,12 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 						elevations.lowerTotes();
 						LOG.logMessage("OP Button: Lowering Elevations");
 						break;
+					case XBOX_BACK:
+						elevations.scoreTotes();
+						toteAcq.setClutch(ClutchState.OFF);
+						toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
+						toteAcq.setStopper(StopState.ON);
+						break;
 					}
 				}
 			}else{

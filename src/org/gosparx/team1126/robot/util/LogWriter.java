@@ -64,7 +64,7 @@ public class LogWriter extends GenericSubsystem{
 	 * Creates a LogWriter
 	 */
 	private LogWriter(){
-		super("LogWriter", Thread.NORM_PRIORITY);
+		super("LogWriter", Thread.MIN_PRIORITY);
 		toLog = new LinkedBlockingQueue<String>();
 	}
 

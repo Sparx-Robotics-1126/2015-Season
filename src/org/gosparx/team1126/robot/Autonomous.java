@@ -393,7 +393,7 @@ public class Autonomous extends GenericSubsystem{
 	/**
 	 * NO AUTO
 	 */
-	private static final String NO_AUTO_NAME = "No Auto";
+	private static final String NO_AUTO_NAME = "1: No Auto";
 	private static final int[][] NO_AUTO = {
 		{AutoCommands.END.toId()}
 	};
@@ -401,7 +401,7 @@ public class Autonomous extends GenericSubsystem{
 	/**
 	 * Drives from the alliance wall to the center of the auto zone 
 	 */
-	private static final String DRIVES_TO_AUTOZONE_FROM_STAGING_NAME = "Into Autozone from wall";
+	private static final String DRIVES_TO_AUTOZONE_FROM_STAGING_NAME = "2: Into Autozone from wall";
 	private int[][] DRIVES_TO_AUTOZONE_FROM_STAGING = {
 			{AutoCommands.DRIVES_GO_FORWARD.toId(), 135, 50},
 			{AutoCommands.DRIVES_DONE.toId()},
@@ -412,7 +412,7 @@ public class Autonomous extends GenericSubsystem{
 	/**
 	 * Moves one yellow tote from the staging zone to the Autozone, robot starts at alliance wall
 	 */
-	private static final String ONE_YELLOW_TOTE_FROM_STAGING_NAME = "One yellow tote into Autozone";
+	private static final String ONE_YELLOW_TOTE_FROM_STAGING_NAME = "3: One yellow tote into Autozone";
 	private int[][] ONE_YELLOW_TOTE_FROM_STAGING = {
 			{AutoCommands.DRIVES_GO_FORWARD.toId(), 135, 75},
 			{AutoCommands.DRIVES_DONE.toId()},
@@ -425,7 +425,7 @@ public class Autonomous extends GenericSubsystem{
 	/**
 	 * Acquires 2 cans from the step and brings them to the auto zone
 	 */
-	private static final String TWO_CANS_LEFT_STEP_NAME = "Two Cans from Step to left";
+	private static final String TWO_CANS_LEFT_STEP_NAME = "4: Two Cans from Step to left";
 	private static final int[][] TWO_CANS_LEFT_STEP= {
 		{AutoCommands.DRIVES_GO_FORWARD.toId(), 58, 100},
 		{AutoCommands.DRIVES_DONE.toId()},
@@ -456,7 +456,7 @@ public class Autonomous extends GenericSubsystem{
 	/**
 	 * Acquires 2 cans from the step and brings them to the auto zone
 	 */
-	private static final String TWO_CANS_RIGHT_STEP_NAME = "Two Cans from Step to right";
+	private static final String TWO_CANS_RIGHT_STEP_NAME = "5: Two Cans from Step to right";
 	private static final int[][] TWO_CANS_RIGHT_STEP= {
 		{AutoCommands.DRIVES_GO_FORWARD.toId(), 55, 75},
 		{AutoCommands.DRIVES_DONE.toId()},
@@ -483,7 +483,7 @@ public class Autonomous extends GenericSubsystem{
 		{AutoCommands.END.toId()}
 	};
 
-	private static final String TWO_CAN_STEP_CENTER_NAME = "Two can to center";
+	private static final String TWO_CAN_STEP_CENTER_NAME = "6: Two can to center";
 	private static final int[][] TWO_CAN_STEP_CENTER = {
 		{AutoCommands.CHECK_TIME.toId(), 3, 3},
 		{AutoCommands.DRIVES_GO_FORWARD.toId(), 72, 100},
@@ -505,7 +505,7 @@ public class Autonomous extends GenericSubsystem{
 		{AutoCommands.END.toId()}
 	};
 
-	private final String ONE_CAN_DRAGGED_TO_AUTOZONE_NAME = "One can to autozone";
+	private final String ONE_CAN_DRAGGED_TO_AUTOZONE_NAME = "7: One can to autozone";
 	private final int[][] ONE_CAN_DRAGGED_TO_AUTOZONE = {
 			{AutoCommands.CAN_TELE_DONE.toId()},
 			{AutoCommands.ELEV_DONE.toId()},
@@ -518,14 +518,14 @@ public class Autonomous extends GenericSubsystem{
 			{AutoCommands.END.toId()}
 	};
 
-	private final String DRIVE_TO_LOAD_NAME	= "Drive to Load from HP";
+	private final String DRIVE_TO_LOAD_NAME	= "8: Drive to Load from HP";
 	private final int[][] DRIVE_TO_LOAD = {
 			{AutoCommands.DRIVES_GO_FORWARD.toId(), 14, 65},
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.END.toId()}
 	};
 
-	private final String AUTO_CAN_AND_LINUP_HOOK_NAME = "Auto Drive and lineup with Hook";
+	private final String AUTO_CAN_AND_LINUP_HOOK_NAME = "9: Auto Drive and lineup with Hook";
 	private final int[][] AUTO_CAN_AND_LINEUP_HOOK = {
 			{AutoCommands.ELEV_DONE.toId()},
 			{AutoCommands.CAN_TELE_DONE.toId()},
@@ -553,7 +553,7 @@ public class Autonomous extends GenericSubsystem{
 			{AutoCommands.END.toId()}
 	};
 
-	private final String AUTO_CAN_TO_ZONE_HOOK_NAME = "Auto Drive to Zone wih Hook";
+	private final String AUTO_CAN_TO_ZONE_HOOK_NAME = "10: Auto Drive to Zone wih Hook";
 	private final int[][] AUTO_CAN_TO_ZONE_HOOK = {
 			{AutoCommands.ELEV_DONE.toId()},
 			{AutoCommands.CAN_TELE_DONE.toId()},
@@ -575,16 +575,9 @@ public class Autonomous extends GenericSubsystem{
 			{AutoCommands.END.toId()}
 	};
 	
-	private final String AUTO_CAN_TO_LINUP_ARMS_NAME = "Can to HP with Arms";
+	private final String AUTO_CAN_TO_HP_RIGHT_ARMS_NAME = "11: Can to HP RIGHT with Arms";
 	private int[][] AUTO_CAN_TO_LINEUP_ARMS = {
-			{AutoCommands.CAN_TELE_DONE.toId()},
 			{AutoCommands.ELEV_DONE.toId()},
-			{AutoCommands.DRIVES_DONE.toId()},
-			{AutoCommands.DRIVES_GO_REVERSE.toId(), 22, 100},
-			{AutoCommands.DRIVES_DONE.toId()},
-			{AutoCommands.CAN_TELE_DOWN.toId()},
-			{AutoCommands.CAN_TELE_DONE.toId()},
-			{AutoCommands.DRIVES_GO_FORWARD.toId(), 9, 100},
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.CAN_TELE_ACQUIRE_FAST.toId()},
 			{AutoCommands.WAIT.toId(), 1000},
@@ -597,19 +590,13 @@ public class Autonomous extends GenericSubsystem{
 			{AutoCommands.END.toId()}
 	};
 	
-	private final String AUTO_CAN_TO_ZONE_ARMS_NAME = "Can to Zone with Arms";
+	private final String AUTO_CAN_TO_ZONE_ARMS_NAME = "12: Can to Zone with Arms";
 	private int[][] AUTO_CAN_TO_ZONE_ARMS = {
-			{AutoCommands.CAN_TELE_DONE.toId()},
 			{AutoCommands.ELEV_DONE.toId()},
-			{AutoCommands.DRIVES_DONE.toId()},
-			{AutoCommands.DRIVES_GO_REVERSE.toId(), 24, 100},
-			{AutoCommands.DRIVES_DONE.toId()},
-			{AutoCommands.CAN_TELE_DOWN.toId()},
-			{AutoCommands.CAN_TELE_DONE.toId()},
-			{AutoCommands.DRIVES_GO_FORWARD.toId(), 11, 100},
-			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.CAN_TELE_ACQUIRE_FAST.toId()},
 			{AutoCommands.WAIT.toId(), 500},
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 5, 100},
+			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.DRIVES_TURN_RIGHT.toId(), 90},
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.DRIVES_GO_FORWARD.toId(), 115, 100},
@@ -617,21 +604,27 @@ public class Autonomous extends GenericSubsystem{
 			{AutoCommands.END.toId()}
 	};
 	
-	private final String AUTO_CAN_TO_ZONE_DIRECT_ARMS_NAME = "Can to Zone straight with Arms";
+	private final String AUTO_CAN_TO_ZONE_DIRECT_ARMS_NAME = "13: Can to Zone straight with Arms";
 	private int[][] AUTO_CAN_TO_ZONE_DIRECT_ARMS = {
-//			{AutoCommands.CHECK_TIME.toId(), 10, 11},
-			{AutoCommands.CAN_TELE_DONE.toId()},
-			{AutoCommands.ELEV_DONE.toId()},
-			{AutoCommands.DRIVES_GO_REVERSE.toId(), 26, 100},
-			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.ELEV_DOWN.toId()},
-			{AutoCommands.CAN_TELE_ROTATE.toId(), 73},
-			{AutoCommands.CAN_TELE_DONE.toId()},
-			{AutoCommands.DRIVES_GO_FORWARD.toId(), 7, 100},
-			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.CAN_TELE_ACQUIRE_SLOW.toId()},
 			{AutoCommands.WAIT.toId(), 750},
-			{AutoCommands.DRIVES_GO_REVERSE.toId(), 115, 100},
+			{AutoCommands.DRIVES_TURN_LEFT.toId(), 15},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 80, 75},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.END.toId()}
+	};
+	
+	private final String AUTO_CAN_TO_HP_LEFT_ARMS_NAME = "14: Can to HP LEFT with arms";
+	private int[][] AUTO_CAN_TO_HP_LEFT_ARMS = {
+			{AutoCommands.ELEV_DONE.toId()},
+			{AutoCommands.ELEV_DOWN.toId()},
+			{AutoCommands.CAN_TELE_ACQUIRE_FAST.toId()},
+			{AutoCommands.WAIT.toId(), 750},
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 5, 100},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.DRIVES_TURN_RIGHT.toId(), 180},
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.END.toId()}
 	};
@@ -715,9 +708,10 @@ public class Autonomous extends GenericSubsystem{
 		chooser.addObject(DRIVE_TO_LOAD_NAME, new Integer(8));
 		chooser.addObject(AUTO_CAN_TO_ZONE_HOOK_NAME, new Integer(9));
 		chooser.addObject(AUTO_CAN_AND_LINUP_HOOK_NAME, new Integer(10));
-		chooser.addObject(AUTO_CAN_TO_LINUP_ARMS_NAME, new Integer(11));
+		chooser.addObject(AUTO_CAN_TO_HP_RIGHT_ARMS_NAME, new Integer(11));
 		chooser.addObject(AUTO_CAN_TO_ZONE_ARMS_NAME, new Integer(12));
 		chooser.addObject(AUTO_CAN_TO_ZONE_DIRECT_ARMS_NAME, new Integer(13));
+		chooser.addObject(AUTO_CAN_TO_HP_LEFT_ARMS_NAME, new Integer(14));
 		SmartDashboard.putData(SD_AUTO_NAME, chooser);
 
 		return false;
@@ -834,7 +828,7 @@ public class Autonomous extends GenericSubsystem{
 			currentAuto = AUTO_CAN_AND_LINEUP_HOOK;
 			break;
 		case 11:
-			currentAutoName = AUTO_CAN_TO_LINUP_ARMS_NAME;
+			currentAutoName = AUTO_CAN_TO_HP_RIGHT_ARMS_NAME;
 			currentAuto = AUTO_CAN_TO_LINEUP_ARMS;
 			break;
 		case 12:
@@ -844,6 +838,10 @@ public class Autonomous extends GenericSubsystem{
 		case 13:
 			currentAutoName = AUTO_CAN_TO_ZONE_DIRECT_ARMS_NAME;
 			currentAuto = AUTO_CAN_TO_ZONE_DIRECT_ARMS;
+			break;
+		case 14:
+			currentAutoName = AUTO_CAN_TO_HP_LEFT_ARMS_NAME;
+			currentAuto = AUTO_CAN_TO_HP_LEFT_ARMS;
 			break;
 		default:
 			currentAutoName = NO_AUTO_NAME;//NO_AUTO_NAME;

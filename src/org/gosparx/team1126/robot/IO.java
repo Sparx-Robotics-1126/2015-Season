@@ -60,4 +60,5 @@ public final class IO {
 	public static final int PNU_DISENGAGE_DRIVES		= 3;
 	public static final int PNU_TOTE_STOP				= 6;
 	public static final int PNU_ACQ_CLUTCH				= 7;
+	public static final int PNU_FLOOR_GRABBER           = 4;
 }

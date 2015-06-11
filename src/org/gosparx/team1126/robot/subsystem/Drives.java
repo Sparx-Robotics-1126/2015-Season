@@ -299,7 +299,7 @@ public class Drives extends GenericSubsystem{
 
 	private double maxAmps = 0;
 	
-	private double wantedPTO;
+	private double wantedPTO = 0.0;
 	/**
 	 * if drives == null, make a new drives
 	 * @return the new drives
@@ -723,7 +723,7 @@ public class Drives extends GenericSubsystem{
 	 * SETS THE PTO SPEED
 	 */
 	public void setPTO(double wanted){
-		wantedPTO = wanted;
+		wantedPTO = -wanted;
 	}
 	
 	/**

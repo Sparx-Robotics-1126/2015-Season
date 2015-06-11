@@ -37,7 +37,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The motor that controls the hook
 	 */
-	private Talon hookMotor;
+	//private Talon hookMotor;
 
 	/**
 	 * The encoder that tracks the rotation
@@ -210,7 +210,7 @@ public class CanAcqTele extends GenericSubsystem{
 		rotateEnc = new Encoder(IO.DIO_CAN_ROTATE_A, IO.DIO_CAN_ROTATE_B);
 		rotateEnc.setDistancePerPulse(DISTANCE_PER_TICK_ROTATE);
 		rotateEncData = new EncoderData(rotateEnc, DISTANCE_PER_TICK_ROTATE);
-		hookMotor = new Talon(IO.PWM_CAN_HOOK);
+		//hookMotor = new Talon(IO.PWM_CAN_HOOK);
 		hookEnc = new Encoder(IO.DIO_CAN_HOOK_A, IO.DIO_CAN_HOOK_B);
 		hookEncData = new EncoderData(hookEnc, DISTANCE_PER_TICK_HOOK);
 		hookHome = new DigitalInput(18);
@@ -231,7 +231,7 @@ public class CanAcqTele extends GenericSubsystem{
 	@Override
 	protected void liveWindow() {
 		LiveWindow.addActuator(getName(), "Rotating Victor", rotateMotor);
-		LiveWindow.addActuator(getName(), "Hooking Victor", hookMotor);
+		//LiveWindow.addActuator(getName(), "Hooking Victor", hookMotor);
 		LiveWindow.addSensor(getName(), "Hook Home", hookHome);
 		LiveWindow.addSensor(getName(), "Rotate Home", rotateHome);
 		LiveWindow.addActuator(getName(), "Rotate Encoder", rotateEnc);
@@ -344,7 +344,7 @@ public class CanAcqTele extends GenericSubsystem{
 
 		floorGrabbers.set(currentFloorGrabbers);
 		rotateMotor.set(wantedRotateSpeed*3);
-		hookMotor.set(-wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor
+		//hookMotor.set(-wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor
 		return false;
 	}
 

@@ -272,6 +272,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 				toteAcq.setStopper(StopState.ON);
 				toteAcq.setRollerPos(RollerPosition.TRAVEL);
 				scoreWait = 0;
+				operatorWantedPower = 0;
 				//operatorWantsControl = false;
 				LOG.logMessage("OP Button: OFF Mode");
 			}else if(operatorJoy.getPOV(XBOX_POV) == 270){

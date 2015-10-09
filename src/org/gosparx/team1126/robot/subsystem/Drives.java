@@ -295,7 +295,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * Weather we are in manual or auto shifting
 	 */
-	private boolean isAutoShifting = true;
+	private boolean isAutoShifting = false;
 
 	private double maxAmps = 0;
 	
@@ -471,7 +471,7 @@ public class Drives extends GenericSubsystem{
 				finalDriveState = State.IN_LOW_GEAR;
 			}
 			break;
-			 **/
+			*/
 		default:
 			LOG.logMessage("Error currentDriveState = " + currentDriveState);
 		}
@@ -479,14 +479,14 @@ public class Drives extends GenericSubsystem{
 		switch(autoFunctions){
 		case AUTO_STAND_BY:
 			if(currentDriveState == State.IN_HIGH_GEAR || currentDriveState == State.IN_LOW_GEAR){// || currentDriveState == State.IN_NEUTRAL_GEAR){
-				if(Math.abs(encoderDataLeft.getDistance()) > 3){// && currentDriveState == State.IN_NEUTRAL_GEAR){
-					rightPower = 0;
-					leftPower = 0;
-					isWorking = false;//USE FOR DEBUGGING
-				}else{
+				//if(Math.abs(encoderDataLeft.getDistance()) > 3){// && currentDriveState == State.IN_NEUTRAL_GEAR){
+				//	rightPower = 0;
+				//	leftPower = 0;
+				//	isWorking = false;//USE FOR DEBUGGING
+				//}else{
 					rightPower = wantedRightPower;
 					leftPower = wantedLeftPower;
-				}
+				//}
 			}
 			break;
 		case AUTO_LIGHT_LINE_UP:
@@ -635,7 +635,6 @@ public class Drives extends GenericSubsystem{
 			rightPower = rightPID.update(encoderDataRight.getSpeed());
 			leftPower = leftPID.update(encoderDataLeft.getSpeed());
 		}
-
 		ptoMotor.set(wantedPTO);
 		leftFront.set(leftPower);
 		leftBack.set(leftPower);

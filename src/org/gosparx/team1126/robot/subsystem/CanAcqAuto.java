@@ -4,47 +4,52 @@ import org.gosparx.team1126.robot.IO;
 import org.gosparx.team1126.robot.sensors.MagnetSensor;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 public class CanAcqAuto extends GenericSubsystem{
-	
+
 	/**
 	 * A solenoid that holds the arms
 	 */
 	private Solenoid armHolder;
-	
+
 	/**
 	 * Bob likes to determine when to stop moving the arms
 	 */
 	private MagnetSensor limitSwitch;
-	
+
 	/**
 	 * The victor that moves the arm up
 	 */
 	private Victor armController;
-	
+
 	/**
 	 * The current state the arms are in
 	 */
 	private State currentState;
-	
-	private static final double RAISE_POWER = 1.0;
-	
+
+	private double raiseTime;
+
 	private static CanAcqAuto canAcqAuto;
-	
+
+	private static final double RAISE_POWER = 1.0;
+
+	private static final double TIMEOUT = 5.0;
+
 	public static CanAcqAuto getInstance(){
 		if(canAcqAuto == null){
 			canAcqAuto = new CanAcqAuto();
 		}
 		return canAcqAuto;
 	}
-	
+
 	private CanAcqAuto() {
 		super("CanAcqAuto", Thread.NORM_PRIORITY);
 	}
 
-	
+
 	@Override
 	protected boolean init() {
 		armHolder = new Solenoid(IO.PNU_CAN_ARM_CONTROLLER);
@@ -53,13 +58,7 @@ public class CanAcqAuto extends GenericSubsystem{
 		currentState = State.STANDBY;
 		return false;
 	}
-
-	@Override
-	protected void liveWindow() {
-		LiveWindow.addActuator(getName(), "Holder", armHolder);
-		LiveWindow.addActuator(getName(), "Window Motor", armController);
-	}
-
+	
 	@Override
 	protected boolean execute() {
 		switch(currentState){
@@ -74,9 +73,15 @@ public class CanAcqAuto extends GenericSubsystem{
 		case ARMS_RAISING:
 			if(!limitSwitch.isTripped()){
 				armController.set(RAISE_POWER);
+				if(Timer.getFPGATimestamp() - TIMEOUT >= raiseTime){
+					armController.set(0);
+					currentState = State.ARMS_HELD;		
+					LOG.logError("Timeout reached on arms, firing pnus");
+				}
 			}else{
 				armController.set(0);
-				currentState = State.ARMS_HELD;				
+				currentState = State.ARMS_HELD;		
+				LOG.logMessage("Limit Switch tripped, firing pnus");
 			}
 			break;
 		case STANDBY:
@@ -88,6 +93,17 @@ public class CanAcqAuto extends GenericSubsystem{
 		return false;
 	}
 
+	public void dropArms(){
+		currentState = State.ARMS_DROPPING;
+		LOG.logMessage("Attempting to drop arms");
+	}
+
+	public void raiseArms(){
+		currentState = State.ARMS_RAISING;
+		raiseTime = Timer.getFPGATimestamp();
+		LOG.logMessage("Raising Arms");
+	}
+
 	@Override
 	protected long sleepTime() {
 		return 20;
@@ -97,14 +113,19 @@ public class CanAcqAuto extends GenericSubsystem{
 	protected void writeLog() {
 		LOG.logMessage("Current State: " + currentState);
 	}
-
+	
+	@Override
+	protected void liveWindow() {
+		LiveWindow.addActuator(getName(), "Holder", armHolder);
+		LiveWindow.addActuator(getName(), "Window Motor", armController);
+	}
 
 	private enum State{
 		ARMS_HELD,
 		ARMS_RAISING,
 		ARMS_DROPPING,
 		STANDBY;
-		
+
 		@Override
 		public String toString(){
 			switch(this){
@@ -116,7 +137,7 @@ public class CanAcqAuto extends GenericSubsystem{
 				return("Arms are dropped");
 			case STANDBY:
 				return("In standby");
-				default: return("Error not in a state");
+			default: return("Error not in a state");
 			}
 		}
 	}

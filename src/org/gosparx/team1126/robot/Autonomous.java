@@ -1,7 +1,6 @@
 package org.gosparx.team1126.robot;
 
 import org.gosparx.team1126.robot.subsystem.CanAcqTele;
-import org.gosparx.team1126.robot.subsystem.CanAcquisition;
 import org.gosparx.team1126.robot.subsystem.Drives;
 import org.gosparx.team1126.robot.subsystem.Elevations;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
@@ -26,11 +25,6 @@ public class Autonomous extends GenericSubsystem{
 	 * An Instance of Drives
 	 */
 	private Drives drives;
-
-	/**
-	 * An instance of CanAcq
-	 */
-	private CanAcquisition canAcq;
 
 	private CanAcqTele canAcqTele;
 
@@ -695,7 +689,6 @@ public class Autonomous extends GenericSubsystem{
 	protected boolean init() {
 		selectorSwitch = new AnalogInput(IO.ANA_AUTOSWITCH);
 		drives = Drives.getInstance();
-		canAcq = CanAcquisition.getInstance();
 		canAcqTele = CanAcqTele.getInstance();
 		ele = Elevations.getInstance();
 		runAuto = false;
@@ -887,22 +880,16 @@ public class Autonomous extends GenericSubsystem{
 				increaseStep = drives.isDone();
 				break;
 			case ARMS_DROP:
-				canAcq.setAutoFunction(CanAcquisition.State.DROP_ARMS);
 				break;
 			case ARMS_RAISE:
-				canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
 				break;
 			case ARMS_GRAB:
-				canAcq.setAutoFunction(CanAcquisition.State.DROP_ARMS);
 				break;
 			case ARMS_RELEASE:
-				canAcq.setAutoFunction(CanAcquisition.State.RELEASE);
 				break;
 			case ARMS_STOP:
-				canAcq.setAutoFunction(CanAcquisition.State.STANDBY);
 				break;
 			case ARMS_DONE:
-				increaseStep = canAcq.isDone();
 				break;
 			case ACQ_LOWER:
 				break;
@@ -1004,7 +991,6 @@ public class Autonomous extends GenericSubsystem{
 	public void runAuto(boolean run){
 		if(run != runAuto && !run){
 			drives.autoForceStop();
-			canAcq.setAutoFunction(CanAcquisition.State.DISABLE);
 		}else{
 			if(run != runAuto && run){
 				LOG.logMessage("****************Auto has been switch to: " + run + (run ? (" Running: " + currentAutoName) : "") + "********************");

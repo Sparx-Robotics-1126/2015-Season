@@ -16,6 +16,7 @@ public final class IO {
 	public static final int PWM_CAN_ROTATE				= 6;
 	public static final int PWM_CAN_HOOK				= 7;
 	public static final int PWM_PTO_MOTOR				= 7;
+	public static final int PWM_CAN_ARM_CONTROLLER		= 1939489485;
 	
 	//Analog
 	public static final int ANA_GYRO					= 0;
@@ -52,6 +53,8 @@ public final class IO {
 	public static final int DIO_COLOR_LED_LEFT			= 24;
 	public static final int DIO_COLOR_LED_RIGHT			= 25;
 	
+	public static final int DIO_CAN_ARM_CONTROLLER		= 10495739;
+	
 	//PNU
 	public static final int PNU_SHIFT					= 0;
 	public static final int PNU_ACQ_TOTE				= 1;
@@ -62,4 +65,5 @@ public final class IO {
 	public static final int PNU_TOTE_STOP				= 6;
 	public static final int PNU_ACQ_CLUTCH				= 7;
 	public static final int PNU_FLOOR_GRABBER           = 4;
+	public static final int PNU_CAN_ARM_CONTROLLER		= 2019484395;
 }

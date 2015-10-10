@@ -46,11 +46,6 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	private Drives drives;
 
 	/**
-	 * instance for CanAcquisition
-	 */
-	private CanAcquisition canAcq;
-
-	/**
 	 * Instance for ToteAcq
 	private CanAcqTele canAcqTele
 	 */
@@ -199,7 +194,6 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		operatorJoy.addButton(XBOX_X);
 		operatorJoy.start();
 		drives = Drives.getInstance();
-		canAcq = CanAcquisition.getInstance();
 		canAcqTele = CanAcqTele.getInstance();
 		toteAcq = ToteAcq.getInstance();
 		elevations = Elevations.getInstance();

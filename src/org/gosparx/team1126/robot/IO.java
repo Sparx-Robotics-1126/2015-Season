@@ -15,6 +15,7 @@ public final class IO {
 	public static final int PWM_ELEVATIONS_RIGHT 		= 5;
 	public static final int PWM_CAN_ROTATE				= 6;
 	public static final int PWM_CAN_HOOK				= 7;
+	public static final int PWM_PTO_MOTOR				= 7;
 	
 	//Analog
 	public static final int ANA_GYRO					= 0;
@@ -26,18 +27,18 @@ public final class IO {
 	public static final int ANA_COLOR_RIGHT_BLUE		= 7;
 	
 	//DIO
-	public static final int DIO_DRIVES_LEFT_ENC_A		= 0;
-	public static final int DIO_DRIVES_LEFT_ENC_B		= 1;
-	public static final int DIO_DRIVES_RIGHT_ENC_A		= 2;
-	public static final int DIO_DRIVES_RIGHT_ENC_B		= 3;
+	public static final int DIO_DRIVES_LEFT_ENC_A		= 1;
+	public static final int DIO_DRIVES_LEFT_ENC_B		= 0;
+	public static final int DIO_DRIVES_RIGHT_ENC_A		= 3;
+	public static final int DIO_DRIVES_RIGHT_ENC_B		= 2;
 	public static final int DIO_ELEVATIONS_LEFT_A		= 5;
 	public static final int DIO_ELEVATIONS_LEFT_B		= 4;
 	public static final int DIO_CAN_HOOK_A				= 6;
 	public static final int DIO_CAN_HOOK_B				= 7;
 	public static final int DIO_CAN_ROTATE_A			= 8;
 	public static final int DIO_CAN_ROTATE_B			= 9;
-	public static final int DIO_ELEVATIONS_RIGHT_A		= 10;
-	public static final int DIO_ELEVATIONS_RIGHT_B		= 11;
+	public static final int DIO_ELEVATIONS_RIGHT_A		= 11;
+	public static final int DIO_ELEVATIONS_RIGHT_B		= 10;
 	
 	public static final int DIO_TOTE_SENSOR				= 14;
 	public static final int DIO_CAN_AUTO_LEFT			= 16;
@@ -60,4 +61,5 @@ public final class IO {
 	public static final int PNU_DISENGAGE_DRIVES		= 3;
 	public static final int PNU_TOTE_STOP				= 6;
 	public static final int PNU_ACQ_CLUTCH				= 7;
+	public static final int PNU_FLOOR_GRABBER           = 4;
 }

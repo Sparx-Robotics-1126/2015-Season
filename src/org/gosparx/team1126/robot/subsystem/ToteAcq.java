@@ -95,7 +95,7 @@ public class ToteAcq extends GenericSubsystem{
 	 * Creates a new ToteAcq
 	 */
 	private ToteAcq() {
-		super("ToteAcq", Thread.NORM_PRIORITY);
+		super("ToteAcq", Thread.MIN_PRIORITY);
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class ToteAcq extends GenericSubsystem{
 	 */
 	@Override
 	protected long sleepTime() {
-		return 20;
+		return 50;
 	}
 
 	/**

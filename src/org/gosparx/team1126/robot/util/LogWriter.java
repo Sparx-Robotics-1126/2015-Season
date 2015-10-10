@@ -8,6 +8,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 /**
  * Used to log messages to files. This is the singleton LogWriter that writes to the files.
  * @author Alex Mechler {amechler1998@gmail.com}
@@ -17,7 +20,7 @@ public class LogWriter extends GenericSubsystem{
 	/**
 	 * The file path to store the logs in. /mnt/sda1 is the USB port.
 	 */
-	private static final String FILE_PATH = "/u/";
+	private static final String FILE_PATH = "/U/sda1/";
 
 	/**
 	 * The name of the log
@@ -38,6 +41,8 @@ public class LogWriter extends GenericSubsystem{
 	 * Support for the singleton model
 	 */
 	private static LogWriter lw;
+
+	private boolean loggerWorking = true;
 
 	/**
 	 * A queue of log messages we need to write so that they always appear in chronological order.
@@ -70,8 +75,9 @@ public class LogWriter extends GenericSubsystem{
 	protected boolean init() {
 		try {
 			Calendar cal = Calendar.getInstance();
-			logName = "log" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DATE) + "-" + cal.get(Calendar.YEAR) + "(" + cal.get(Calendar.HOUR_OF_DAY) + "-" + cal.get(Calendar.MINUTE) + ").txt";
-			file = new File(FILE_PATH + "test.txt");//logName);
+			DriverStation dr = DriverStation.getInstance();
+			logName = "log" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DATE) + "-" + cal.get(Calendar.YEAR) + "(" + cal.get(Calendar.HOUR_OF_DAY) + "-" + cal.get(Calendar.MINUTE) + ") " + (ds.isFMSAttached() ? (ds.getAlliance() == Alliance.Red ? "Red" : "Blue") : "Practice") + ".txt";
+			file = new File(FILE_PATH + logName);
 			file.mkdirs();
 			file.setWritable(true, false);
 			if(file.exists()){
@@ -122,14 +128,18 @@ public class LogWriter extends GenericSubsystem{
 	 * @param bytes - the array of bytes to write
 	 */
 	private synchronized void write(byte[] bytes) {
-		try {
-			dos = new FileOutputStream(file,true);
-			dos.write(bytes);
-			dos.flush();
-			dos.close();
-			dos = null;
-		} catch (Exception e) {
-			e.printStackTrace();
+		if(loggerWorking){
+			try {
+				dos = new FileOutputStream(file,true);
+				dos.write(bytes);
+				dos.flush();
+				dos.close();
+				dos = null;
+			} catch (Exception e) {
+				//			e.printStackTrace();
+				loggerWorking = false;
+				System.out.println("LOGGER FAILED******************************************************");
+			}
 		}
 	}
 
@@ -144,6 +154,6 @@ public class LogWriter extends GenericSubsystem{
 	@Override
 	protected void liveWindow() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

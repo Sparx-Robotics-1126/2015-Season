@@ -6,6 +6,7 @@ import org.gosparx.team1126.robot.sensors.EncoderData;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
@@ -36,7 +37,7 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * The motor that controls the hook
 	 */
-	private Talon hookMotor;
+	//private Talon hookMotor;
 
 	/**
 	 * The encoder that tracks the rotation
@@ -72,6 +73,11 @@ public class CanAcqTele extends GenericSubsystem{
 	 * The power distribution board instance
 	 */
 	private PowerDistributionPanel pdp;
+	
+	/**
+	 * The floor grabber thingy
+	 */
+	private Solenoid floorGrabbers;
 
 	/***********************Constants*********************/
 
@@ -86,11 +92,6 @@ public class CanAcqTele extends GenericSubsystem{
 	private static final double DISTANCE_PER_TICK_ROTATE = 75/256.0;
 
 	/**
-	 * The distance the can must go up per tote
-	 */
-	private static final double DISTANCE_PER_TOTE = 10.0;
-
-	/**
 	 * The minimum power for the motors to get when we are rotating up
 	 */
 	private static final double MIN_ROTATE_UP_SPEED = 0.4;
@@ -98,37 +99,39 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * the minimum power for the motors when we are rotating down
 	 */
-	private static final double MIN_ROTATE_DOWN_SPEED = 0.2;
+	private static final double MIN_ROTATE_DOWN_SPEED = 0.05;
 
 	/**
 	 * The minimum hook speed
 	 */
-	private static final double MIN_HOOK_SPEED = 0.4;
+	private static final double MIN_HOOK_SPEED = 1.2;
 
 	/**
 	 * The max position for the rotation
 	 */
-	private static final double MAX_ROTATION = 85;
+	private static final double ACQ_ROTATION = 77;//86.5;
+	
+	private static final double MAX_ROTATION = 86.5;
 
 	/**
 	 * The position for the hook to acq
 	 */
-	private static final double ACQ_CAN_DIST = 22.5;
+	private static final double ACQ_CAN_DIST = 27.5;
 
 	/**
 	 * The max pos for the hook
 	 */
-	private static final double MAX_HOOK_POS = 44;
+	private static final double MAX_HOOK_POS = 43;
 	
 	/**
 	 * Acquire speed for grabbing a RC
 	 */
-	private static final double ACQUIRE_SPEED = 490;
+	private static final double ACQUIRE_SPEED = 30;//490;
 	
 	/**
 	 * Rotation speed for rotating down
 	 */
-	private static final double ROTATION_SPEED = 200;
+	private static final double ROTATION_SPEED = 20;//200;
 
 	/***********************Variables*********************/
 
@@ -171,6 +174,15 @@ public class CanAcqTele extends GenericSubsystem{
 	 * The divider for the rotation speed
 	 */
 	private double rotationDivider;
+	
+	private boolean isAcquiring = false;
+	
+	private double maxRotateUp = 1;
+	
+	private boolean hookInitialized = true;//false;
+	private boolean rotateInitialized = false;
+	
+	private boolean currentFloorGrabbers = false;
 
 	/**
 	 * @return a CanAcqTele
@@ -198,7 +210,7 @@ public class CanAcqTele extends GenericSubsystem{
 		rotateEnc = new Encoder(IO.DIO_CAN_ROTATE_A, IO.DIO_CAN_ROTATE_B);
 		rotateEnc.setDistancePerPulse(DISTANCE_PER_TICK_ROTATE);
 		rotateEncData = new EncoderData(rotateEnc, DISTANCE_PER_TICK_ROTATE);
-		hookMotor = new Talon(IO.PWM_CAN_HOOK);
+		//hookMotor = new Talon(IO.PWM_CAN_HOOK);
 		hookEnc = new Encoder(IO.DIO_CAN_HOOK_A, IO.DIO_CAN_HOOK_B);
 		hookEncData = new EncoderData(hookEnc, DISTANCE_PER_TICK_HOOK);
 		hookHome = new DigitalInput(18);
@@ -209,6 +221,7 @@ public class CanAcqTele extends GenericSubsystem{
 		elevations = Elevations.getInstance();
 		currentHookState = HookState.STANDBY;//HOOK_FINDING_HOME;
 		currentRotateState = RotateState.ROTATE_FINDING_HOME;
+		floorGrabbers = new Solenoid(IO.PNU_FLOOR_GRABBER);
 		return true;
 	}
 
@@ -218,7 +231,7 @@ public class CanAcqTele extends GenericSubsystem{
 	@Override
 	protected void liveWindow() {
 		LiveWindow.addActuator(getName(), "Rotating Victor", rotateMotor);
-		LiveWindow.addActuator(getName(), "Hooking Victor", hookMotor);
+		//LiveWindow.addActuator(getName(), "Hooking Victor", hookMotor);
 		LiveWindow.addSensor(getName(), "Hook Home", hookHome);
 		LiveWindow.addSensor(getName(), "Rotate Home", rotateHome);
 		LiveWindow.addActuator(getName(), "Rotate Encoder", rotateEnc);
@@ -230,37 +243,64 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
-		if(useAutoFunctions){
+		isWorking = true;//USE TO DEBUG
+		rotateEncData.calculateSpeed();
+		hookEncData.calculateSpeed();
+		
+		if(!rotateInitialized){
+			currentRotateState = RotateState.ROTATE_FINDING_HOME;
+			isWorking = false;
+		}//else if(!hookInitialized){
+		//	currentHookState = HookState.HOOK_FINDING_HOME;
+		//}
+		
+		if(useAutoFunctions || !rotateInitialized || !hookInitialized){
 			switch(currentRotateState){
 			case STANDBY:
-				wantedRotateSpeed = 0;
+				if(rotateEncData.getDistance() < 10){
+					wantedRotateSpeed = 0.06;
+					if(rotateEncData.getDistance() < -0.01){
+						rotateEncData.reset();
+						LOG.logMessage("Encoder Home has been reset");
+					}
+				}else{
+					wantedRotateSpeed = 0;
+				}
 				break;
 			case ROTATING:
 				double calculatedRotateSpeed = -(wantedAngle - rotateEncData.getDistance()) / rotationDivider;
 				if(calculatedRotateSpeed > 0){
 					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_UP_SPEED) ? calculatedRotateSpeed : MIN_ROTATE_UP_SPEED);
+					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > maxRotateUp) ? maxRotateUp : calculatedRotateSpeed);
+					
 				}else{
 					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > MIN_ROTATE_DOWN_SPEED) ? calculatedRotateSpeed : -MIN_ROTATE_DOWN_SPEED);
+					wantedRotateSpeed = ((Math.abs(calculatedRotateSpeed) > 0.25) ? -0.15 : calculatedRotateSpeed);
 				}
 
-				if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  60){
-					elevations.moveElevator(15, 1);
+				if(calculatedRotateSpeed > 0 && rotateEncData.getDistance() <=  50  && rotateEncData.getDistance() >= 40 && isAcquiring){
+					elevations.moveElevator(15, 1, true);
 				}
+				
+//				if(hookEncData.getDistance() > 24 && wantedRotateSpeed > 0 && isAcquiring){
+//					wantedRotateSpeed = 0;
+//				}
 
-				if((rotateEncData.getDistance() >= wantedAngle - 2 && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle + 2 && calculatedRotateSpeed > 0)){
+				if((rotateEncData.getDistance() >= wantedAngle - 2 && calculatedRotateSpeed < 0) || (rotateEncData.getDistance() <= wantedAngle + 1 && calculatedRotateSpeed > 0)){
 					currentRotateState = RotateState.STANDBY;
 					wantedRotateSpeed = 0;
 					LOG.logMessage("Done rotating");
 				}
 				break;
 			case ROTATE_FINDING_HOME:
-				wantedRotateSpeed = 0.4;
+				wantedRotateSpeed = 0.2;
 				if(!rotateHome.get()){
 					wantedRotateSpeed = 0;
 					currentRotateState = RotateState.STANDBY;
 					currentHookState = HookState.HOOK_FINDING_HOME;//Finding Home
-					LOG.logMessage("Rotate has found home");
+					LOG.logMessage("Rotate has found home*********");
 					rotateEncData.reset();
+					rotateInitialized = true;
 				}
 				break;
 			}
@@ -270,9 +310,15 @@ public class CanAcqTele extends GenericSubsystem{
 				wantedHookSpeed= 0;
 				break;
 			case MOVING:
-				double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 2)*0.75;
+				double calculatedMovingSpeed = -((wantedHookPos - hookEncData.getDistance()) / 0.25);
 				if(calculatedMovingSpeed > 0){
-					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : MIN_HOOK_SPEED; 
+					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1) ? calculatedMovingSpeed : 1;
+					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 2) ? 2 : calculatedMovingSpeed;
+					if(hookEncData.getDistance() > 27 && isAcquiring){
+						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1.0) ? 1.0 : calculatedMovingSpeed;
+					}else if(hookEncData.getDistance() < 9 && isAcquiring){
+						wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > 1.4) ? 1.4 : calculatedMovingSpeed;
+					}
 				}else{
 					wantedHookSpeed = (Math.abs(calculatedMovingSpeed) > MIN_HOOK_SPEED) ? calculatedMovingSpeed : -MIN_HOOK_SPEED;
 				}
@@ -283,19 +329,22 @@ public class CanAcqTele extends GenericSubsystem{
 				}
 				break;
 			case HOOK_FINDING_HOME:
-				wantedHookSpeed = 1;
+				wantedHookSpeed = 1.2;
 				if(!hookHome.get()){
 					hookEncData.reset();
+					hookEnc.reset();
 					currentHookState = HookState.STANDBY;
 					wantedHookSpeed = 0;
-					LOG.logMessage("Hook has found home");
+					LOG.logMessage("Hook has found home *********************");
+					hookInitialized = true;
 				}
 				break;
 			}
 		}
 
-		rotateMotor.set(wantedRotateSpeed);
-		hookMotor.set(-wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor
+		floorGrabbers.set(currentFloorGrabbers);
+		rotateMotor.set(wantedRotateSpeed*3);
+		//hookMotor.set(-wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor
 		return false;
 	}
 
@@ -304,7 +353,11 @@ public class CanAcqTele extends GenericSubsystem{
 	 * @param speed - (-1 - 1)
 	 */
 	public void manualRotateOverride(double speed){
-		wantedRotateSpeed = speed/2;
+		if((rotateEncData.getDistance() > 0 && speed > 0) || (speed < 0 && rotateEncData.getDistance() < MAX_ROTATION)){
+			wantedRotateSpeed = speed/4;
+		}else{
+			wantedRotateSpeed = 0;
+		}
 	}
 
 	/**
@@ -312,7 +365,18 @@ public class CanAcqTele extends GenericSubsystem{
 	 * @param speed - (-1 - 1)
 	 */
 	public void manualHookOverride(double speed){
-		wantedHookSpeed = speed;
+		if((hookEncData.getDistance() > 0 && speed > 0) || (speed < 0 && hookEncData.getDistance() < MAX_HOOK_POS)){
+			wantedHookSpeed = speed*1.25;
+		}else{
+			wantedHookSpeed = 0;
+		}
+	}
+	
+	public void setAutoPosition(double angle){
+		wantedAngle = angle;
+		currentRotateState = RotateState.ROTATING;
+		rotationDivider = ROTATION_SPEED;
+		isAcquiring = false;
 	}
 
 	/**
@@ -331,10 +395,11 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	public void goToAcquire(){
 		wantedHookPos = ACQ_CAN_DIST;
-		wantedAngle = MAX_ROTATION;
+		wantedAngle = ACQ_ROTATION;
 		rotationDivider = ROTATION_SPEED;
 		currentHookState = HookState.MOVING;
 		currentRotateState = RotateState.ROTATING;
+		isAcquiring = false;
 	}
 
 	/**
@@ -348,24 +413,30 @@ public class CanAcqTele extends GenericSubsystem{
 	/**
 	 * Brings the can in
 	 */
-	public void acquireCan(){
+	public void acquireCan(boolean isSlow){
 		rotationDivider = ACQUIRE_SPEED;
 		wantedHookPos = 0;
 		wantedAngle = 0;
 		currentHookState = HookState.MOVING;
 		currentRotateState = RotateState.ROTATING;
+		isAcquiring = true;
+		if(isSlow){
+			maxRotateUp = 0.35;
+		}else{
+			maxRotateUp = 0.6;
+		}
 	}
 
 	/**
 	 * Moves the can up DISTANCE_PER_TOTE
 	 */
-	public void acquiredTote(boolean initalValue){
+	public void acquiredTote(double distance){
 		currentHookState = HookState.MOVING;
-		if(initalValue){
-			wantedHookPos = 5;
-		}else{
-			wantedHookPos = Math.min(hookEncData.getDistance() + DISTANCE_PER_TOTE, MAX_HOOK_POS);	
-		}
+		wantedHookPos = Math.min(hookEncData.getDistance() + distance, MAX_HOOK_POS);	
+	}
+	
+	public boolean isDone(){
+		return currentRotateState == RotateState.STANDBY;//(currentHookState == HookState.STANDBY && currentRotateState == RotateState.STANDBY);
 	}
 
 	/**
@@ -383,13 +454,17 @@ public class CanAcqTele extends GenericSubsystem{
 	public void setState(HookState state){
 		currentHookState = state;
 	}
-
+	
+	public void toggleFloorGrabbers(){
+		currentFloorGrabbers = !currentFloorGrabbers;
+	}
+	
 	/**
 	 * How long to sleep between loops
 	 */
 	@Override
 	protected long sleepTime() {
-		return 20;
+		return 25;
 	}
 
 	/**
@@ -397,11 +472,12 @@ public class CanAcqTele extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-		LOG.logMessage("Current Hook State: " + currentHookState.toString());
-		LOG.logMessage("Current Rotate State: " + currentRotateState.toString());
+		LOG.logMessage("Current State Hook: " + currentHookState.toString());
+		LOG.logMessage("Current State Rotate: " + currentRotateState.toString());
+		LOG.logMessage("Current Rotate Location:" + rotateEncData.getDistance());
 		LOG.logMessage("Wanted Angle: " + wantedAngle + " Current Angle: " + rotateEncData.getDistance());
 		LOG.logMessage("Wanted Hook Pos: " + wantedHookPos + " Current Hook Pos: " + hookEncData.getDistance());
-		LOG.logMessage("Hook Home: " + hookHome.get() + " Rotate Home: " + rotateHome.get());
+		LOG.logMessage("Hook Home: " + !hookHome.get() + " Rotate Home: " + !rotateHome.get());
 		LOG.logMessage("Hook Current: " + pdp.getCurrent(IO.PWM_CAN_HOOK));
 	}
 

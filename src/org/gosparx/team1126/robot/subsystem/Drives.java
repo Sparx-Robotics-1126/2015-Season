@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -80,6 +81,11 @@ public class Drives extends GenericSubsystem{
 	 */
 	private Victor rightBack;
 
+	/**
+	 * Object used to set the PTO
+	 */
+	private Talon ptoMotor;
+	
 	//****************************PNU**************************
 	/**
 	 * the solenoid used for shifting
@@ -89,7 +95,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * Neutral shifting
 	 */
-	private Solenoid neutralPnu;
+	//private Solenoid neutralPnu;
 
 	//****************************SENSORS**********************
 	/**
@@ -187,7 +193,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * the speed required to shift
 	 */
-	private static final double SHIFTINGSPEED = 0.35;
+	private static final double SHIFTINGSPEED = 0.1;
 
 	/**
 	 * Alex said I didn't need comments (=
@@ -198,7 +204,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * determines if it's in high or low gear
 	 */
-	private static final boolean LOW_GEAR = true;
+	private static final boolean LOW_GEAR = false;
 
 	/**
 	 * stops the motors for auto
@@ -218,7 +224,7 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * The position of the pnu solenoid to enable the neutral gear
 	 */
-	private static final boolean ENABLE_NEUTRAL_SELECT = true;
+	//private static final boolean ENABLE_NEUTRAL_SELECT = true;
 
 	/**
 	 * The distance the robot will dance
@@ -284,14 +290,16 @@ public class Drives extends GenericSubsystem{
 	/**
 	 * Determinds weather driver wanted to drive or operator wants rollers to run
 	 */
-	private boolean isDriverControlled = true;
+	//private boolean isDriverControlled = true;
 
 	/**
 	 * Weather we are in manual or auto shifting
 	 */
-	private boolean isAutoShifting = true;
+	private boolean isAutoShifting = false;
 
 	private double maxAmps = 0;
+	
+	private double wantedPTO = 0.0;
 	/**
 	 * if drives == null, make a new drives
 	 * @return the new drives
@@ -337,13 +345,15 @@ public class Drives extends GenericSubsystem{
 		rightPower = 0;
 
 		//OTHER
-		gyro = new Gyro(0);;
+		gyro = new Gyro(0);
 		shiftingPnu = new Solenoid(IO.PNU_SHIFT);	
-		neutralPnu = new Solenoid(IO.PNU_DISENGAGE_DRIVES);//TODO: FIND CHANNEL
+		//neutralPnu = new Solenoid(IO.PNU_DISENGAGE_DRIVES);//TODO: FIND CHANNEL
 		currentDriveState = State.IN_LOW_GEAR;
 		currentSpeed = 0;
 		shiftTime = 0;
 		autoFunctions = State.AUTO_STAND_BY;
+
+		ptoMotor = new Talon(IO.PWM_PTO_MOTOR);
 		
 		pdp = new PowerDistributionPanel();
 
@@ -359,59 +369,60 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
+		isWorking = true;//USE FOR DEBUGGING
 		encoderDataRight.calculateSpeed();
 		encoderDataLeft.calculateSpeed();
 		leftPower = 0;
 		rightPower = 0;
 		currentSpeed = (encoderDataRight.getSpeed() + encoderDataLeft.getSpeed()) / 2;
-		if(!DriverStation.getInstance().isAutonomous()){
-			switch(currentDriveState){
-			case IN_LOW_GEAR:
+		switch(currentDriveState){
+		case IN_LOW_GEAR:
 			if(Math.abs(currentSpeed) >= UPPERSHIFTSPEED &&  isAutoShifting){
 				LOG.logMessage("SHIFTING HIGH");
-					shiftTime = Timer.getFPGATimestamp();
-					currentDriveState = State.SHIFTING_HIGH;
+				shiftTime = Timer.getFPGATimestamp();
+				currentDriveState = State.SHIFTING_HIGH;
 				finalDriveState = State.IN_HIGH_GEAR;
-				}
-				break;
-			case SHIFTING_LOW:
+			}
+			break;
+		case SHIFTING_LOW:
 			lastShiftState = State.SHIFTING_LOW;
-			neutralPnu.set(!ENABLE_NEUTRAL_SELECT);
+			//neutralPnu.set(!ENABLE_NEUTRAL_SELECT);
 			shiftingPnu.set(LOW_GEAR);
-				if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
+			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
 				currentDriveState = finalDriveState;
-				}
-				if(currentSpeed < 0){
-					rightPower = SHIFTINGSPEED * - 1;
-					leftPower = SHIFTINGSPEED * - 1;
-				}else{
-					rightPower = SHIFTINGSPEED;
+			}
+			if(currentSpeed < 0){
+				rightPower = SHIFTINGSPEED * - 1;
+				leftPower = SHIFTINGSPEED * - 1;
+			}else{
+				rightPower = SHIFTINGSPEED;
 
-					leftPower = SHIFTINGSPEED;
-				}
-				break;
-			case IN_HIGH_GEAR:
+				leftPower = SHIFTINGSPEED;
+			}
+			break;
+		case IN_HIGH_GEAR:
 			if(Math.abs(currentSpeed) <= LOWERSHIFTSPEED && isAutoShifting){
 				LOG.logMessage("SHIFTING LOW");
-					shiftTime = Timer.getFPGATimestamp();
-					currentDriveState = State.SHIFTING_LOW;
+				shiftTime = Timer.getFPGATimestamp();
+				currentDriveState = State.SHIFTING_LOW;
 				finalDriveState = State.IN_LOW_GEAR;
-				}
-				break;
-			case SHIFTING_HIGH:
+			}
+			break;
+		case SHIFTING_HIGH:
 			lastShiftState = State.SHIFTING_HIGH;
 			shiftingPnu.set(!LOW_GEAR);
-				if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
+			if(Timer.getFPGATimestamp() >= shiftTime + SHIFTING_TIME){
 				currentDriveState = finalDriveState;
-				}
-				if(currentSpeed < 0){
-					rightPower = SHIFTINGSPEED * - 1;
-					leftPower = SHIFTINGSPEED * - 1;
-				}else{
-					rightPower = SHIFTINGSPEED;
-					leftPower = SHIFTINGSPEED;
-				}
-				break;
+			}
+			if(currentSpeed < 0){
+				rightPower = SHIFTINGSPEED * - 1;
+				leftPower = SHIFTINGSPEED * - 1;
+			}else{
+				rightPower = SHIFTINGSPEED;
+				leftPower = SHIFTINGSPEED;
+			}
+			break;
+			/**
 		case IN_NEUTRAL_GEAR:
 			if(isDriverControlled){
 				currentDriveState = State.NEUTRAL_SETUP;
@@ -420,30 +431,34 @@ public class Drives extends GenericSubsystem{
 		case SHIFTING_NEUTRAL:
 			lastShiftState = State.SHIFTING_NEUTRAL;
 			neutralPnu.set(ENABLE_NEUTRAL_SELECT);
-		
-			if(Timer.getFPGATimestamp() >= shiftTime + 0.1){
+
+			if(Timer.getFPGATimestamp() >= shiftTime + 0.4){
 				shiftingPnu.set(!LOW_GEAR);
 			}
-			
-			if(Timer.getFPGATimestamp() >= shiftTime + 0.2){
-				leftPower = 0.2;
-			}else{
-				leftPower = -0.2;
-			}
-			
+
 			if(Timer.getFPGATimestamp() >= shiftTime + 0.4){
+				if(Timer.getFPGATimestamp() >= shiftTime + 0.5){
+					leftPower = -0.1;
+				}else{
+					leftPower = 0.1;
+				}
+			}
+
+			if(Timer.getFPGATimestamp() >= shiftTime + 0.6){
 				currentDriveState = finalDriveState;
+				encoderDataLeft.reset();//Used to detect if PTO has not engaged
+				encoderLeft.reset();
 			}
 			break;
 		case NEUTRAL_SETUP:
 			//WANT TO GO TO NEUTRAL
 			shiftTime = Timer.getFPGATimestamp();
 			if(!isDriverControlled){
-				if(lastShiftState == State.SHIFTING_LOW){
+				if(lastShiftState == State.SHIFTING_HIGH){
 					LOG.logMessage("NEUTRAL SETUP TO HIGH");
-					currentDriveState = State.SHIFTING_HIGH;
+					currentDriveState = State.SHIFTING_LOW;
 					finalDriveState = State.NEUTRAL_SETUP;
-				}else if(lastShiftState == State.SHIFTING_HIGH){
+				}else if(lastShiftState == State.SHIFTING_LOW){
 					LOG.logMessage("NEUTRAL SETUP TO NEUTRAL");
 					currentDriveState = State.SHIFTING_NEUTRAL;
 					finalDriveState = State.IN_NEUTRAL_GEAR;
@@ -456,15 +471,22 @@ public class Drives extends GenericSubsystem{
 				finalDriveState = State.IN_LOW_GEAR;
 			}
 			break;
-			default:
+			*/
+		default:
 			LOG.logMessage("Error currentDriveState = " + currentDriveState);
-			}
 		}
+
 		switch(autoFunctions){
 		case AUTO_STAND_BY:
-			if(currentDriveState == State.IN_HIGH_GEAR || currentDriveState == State.IN_LOW_GEAR || currentDriveState == State.IN_NEUTRAL_GEAR){
-				rightPower = wantedRightPower;
-				leftPower = wantedLeftPower;
+			if(currentDriveState == State.IN_HIGH_GEAR || currentDriveState == State.IN_LOW_GEAR){// || currentDriveState == State.IN_NEUTRAL_GEAR){
+				//if(Math.abs(encoderDataLeft.getDistance()) > 3){// && currentDriveState == State.IN_NEUTRAL_GEAR){
+				//	rightPower = 0;
+				//	leftPower = 0;
+				//	isWorking = false;//USE FOR DEBUGGING
+				//}else{
+					rightPower = wantedRightPower;
+					leftPower = wantedLeftPower;
+				//}
 			}
 			break;
 		case AUTO_LIGHT_LINE_UP:
@@ -489,16 +511,16 @@ public class Drives extends GenericSubsystem{
 		case AUTO_STEP_LINEUP:
 			boolean right = (pdp.getCurrent(14) + pdp.getCurrent(15))/2 > 8 ? true : false; //rightTouch.get();
 			boolean left = (pdp.getCurrent(12) + pdp.getCurrent(13))/2 > 8 ? true : false;//leftTouch.get();
-//			System.out.println("Right: " + pdp.getCurrent(14) + " LEFt: " + pdp.getCurrent(12));
+			//			System.out.println("Right: " + pdp.getCurrent(14) + " LEFt: " + pdp.getCurrent(12));
 			if(right){
 				//rightPower = -LINEUP_SPEED;
-//				rightPower = 0;
+				//				rightPower = 0;
 			}else{
 				rightPower = LINEUP_SPEED;
 			}
 			if(left){
 				//				leftPower = -LINEUP_SPEED;
-//				leftPower = 0;
+				//				leftPower = 0;
 			}else{
 				leftPower = LINEUP_SPEED;
 			}
@@ -530,29 +552,29 @@ public class Drives extends GenericSubsystem{
 			break;
 		case AUTO_DRIVE:
 			double currentDistance = (encoderDataRight.getDistance() + encoderDataLeft.getDistance())/2;
-			double driveSpeed = (1.0/10)*(Math.sqrt(Math.abs(autoDistance - currentDistance)));
+			double driveSpeed = (1.0/8)*(Math.sqrt(Math.abs(autoDistance - currentDistance)));
 			if(autoDistance > 0){
 				driveSpeed = driveSpeed < 0.5 ? 0.5: driveSpeed;
 				driveSpeed = driveSpeed > maxSpeed ? maxSpeed : driveSpeed;
 			}else{
-				driveSpeed = driveSpeed > -0.5 ? -0.5: driveSpeed;
-				driveSpeed = driveSpeed > -maxSpeed ? -maxSpeed : driveSpeed;
-				driveSpeed = -driveSpeed;
+				driveSpeed = driveSpeed > -0.5 ? -0.5: -driveSpeed;
+				driveSpeed = driveSpeed < -maxSpeed ? -maxSpeed : -driveSpeed;
 			}
-			
-			
+
+			//NEED GYRO
 			if(currentDistance < autoDistance){
-				rightPower = driveSpeed + gyroOffset();
-				leftPower = driveSpeed - gyroOffset();
+				rightPower = driveSpeed - gyroOffset();
+				leftPower = driveSpeed + gyroOffset();
 			}else{
-				rightPower = -driveSpeed + gyroOffset();
-				leftPower = -driveSpeed - gyroOffset();
+				rightPower = -driveSpeed - gyroOffset();
+				leftPower = -driveSpeed + gyroOffset();
 			}
 			if(autoDistance - currentDistance < 0.5 && autoDistance - currentDistance > -0.5){
 				rightPower = 0;
 				leftPower = 0;
 				autoFunctions = State.AUTO_STAND_BY;
 			}
+
 			break;
 		case AUTO_DANCE:
 			if(danceLeft){
@@ -613,11 +635,11 @@ public class Drives extends GenericSubsystem{
 			rightPower = rightPID.update(encoderDataRight.getSpeed());
 			leftPower = leftPID.update(encoderDataLeft.getSpeed());
 		}
-
-			leftFront.set(leftPower);
-			leftBack.set(leftPower);
-			rightFront.set(-rightPower);
-			rightBack.set(-rightPower);
+		ptoMotor.set(wantedPTO);
+		leftFront.set(leftPower);
+		leftBack.set(leftPower);
+		rightFront.set(-rightPower);
+		rightBack.set(-rightPower);
 		return false;
 	}
 
@@ -627,7 +649,7 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected long sleepTime() {
-		return 10;
+		return 30;
 	}
 
 	/**
@@ -635,16 +657,17 @@ public class Drives extends GenericSubsystem{
 	 */
 	@Override
 	protected void writeLog() {
-				LOG.logMessage("Current speed: " + currentSpeed);
-				LOG.logMessage("Current drive state: " + currentDriveState);
-				LOG.logMessage("Auto State: " + autoFunctions);
+		LOG.logMessage("Current speed: " + currentSpeed);
+		LOG.logMessage("Current drive state: " + currentDriveState);
+		LOG.logMessage("Auto State: " + autoFunctions);
 		//		log.logMessage("Left: " + colorSensorLeft.colorToString(colorSensorLeft.getColor()) +
 		//				"  Right: " + colorSensorRight.colorToString(colorSensorRight.getColor()));
 		//		log.logMessage("Left Red: " + colorSensorLeft.getRed() + " Left Blue:" + colorSensorLeft.getBlue());
 		//		log.logMessage("Right Red: " + colorSensorRight.getRed() + " Right Blue:" + colorSensorRight.getBlue());
-				LOG.logMessage("Left Encoder: " + encoderDataLeft.getDistance() +
-						" Right Encoder: " +encoderDataRight.getDistance());
-				LOG.logMessage("POWER right: " + rightPower + " left: "+ leftPower);
+		LOG.logMessage("Left Encoder: " + encoderDataLeft.getDistance() +
+				" Right Encoder: " +encoderDataRight.getDistance());
+		LOG.logMessage("POWER right: " + rightPower + " left: "+ leftPower);
+		LOG.logMessage("Auto Distance: " + autoDistance + " Auto Turn: " + autoWantedTurn);
 		LOG.logMessage("Gyro: " + gyro.getAngle());
 	}
 
@@ -663,29 +686,45 @@ public class Drives extends GenericSubsystem{
 		}
 
 		if(driverControl){
-			if(left > 0){
-				wantedLeftPower = (5/4)*Math.sqrt(left);
-			}else{
-				wantedLeftPower = -(5/4)*Math.sqrt(-left);
-			}
-			if(right > 0){
-				wantedRightPower = (5/4)*Math.sqrt(right);
-			}else{
-				wantedRightPower = -(5/4)*Math.sqrt(-right);
-			}
+			wantedLeftPower = left;
+			wantedRightPower = right;
+			//			if(left > 0){
+			//				wantedLeftPower = (5/4)*Math.sqrt(left);
+			//			}else{
+			//				wantedLeftPower = -(5/4)*Math.sqrt(-left);
+			//			}
+			//			if(right > 0){
+			//				wantedRightPower = (5/4)*Math.sqrt(right);
+			//			}else{
+			//				wantedRightPower = -(5/4)*Math.sqrt(-right);
+			//			}
 			//		rightPID.setGoal(right*100);
 			//		leftPID.setGoal(left*100);
 		}else{
-			if(driverControl != isDriverControlled){//FIRST TIME
-				currentDriveState = State.NEUTRAL_SETUP;
-				isDriverControlled = driverControl;
+			//if(driverControl != isDriverControlled){//FIRST TIME
+				//currentDriveState = State.NEUTRAL_SETUP;
+			//	isDriverControlled = driverControl;
+			//}
+			if(right != 0){
+				encoderDataLeft.reset();
 			}
 			wantedLeftPower = left;
-			wantedRightPower = 0;
+			if(right != 0){
+				wantedRightPower = right;
+			}else{
+				wantedRightPower = 0.02;
+			}
 		}
-		isDriverControlled = driverControl;
+		//isDriverControlled = driverControl;
 	}
 
+	/**
+	 * SETS THE PTO SPEED
+	 */
+	public void setPTO(double wanted){
+		wantedPTO = -wanted;
+	}
+	
 	/**
 	 * Sets the shifting mode
 	 * @param isAutoShift - true if auto shifting, false if manual shifting
@@ -758,8 +797,26 @@ public class Drives extends GenericSubsystem{
 		autoDistance = inchDistance;
 		gyro.reset();
 		encoderDataRight.reset();
+		encoderRight.reset();
 		encoderDataLeft.reset();
+		encoderLeft.reset();
 		autoWantedTurn = 0;
+		maxSpeed = speed;
+	}
+
+	/**
+	 * Drives robot forward set distance
+	 * @param inchDistance - distance to travel in inches
+	 * @param speed - desired speed(0 - 1)
+	 */
+	public void driveArc(int inchDistance, double speed, double angle){
+		LOG.logMessage("Received Auto Straight: " + inchDistance + " inches");
+		setAutoFunction(State.AUTO_DRIVE);
+		autoDistance = inchDistance;
+		gyro.reset();
+		encoderDataRight.reset();
+		encoderDataLeft.reset();
+		autoWantedTurn = angle;
 		maxSpeed = speed;
 	}
 
@@ -788,9 +845,9 @@ public class Drives extends GenericSubsystem{
 		SHIFTING_LOW,
 		IN_HIGH_GEAR,
 		SHIFTING_HIGH,
-		NEUTRAL_SETUP,
-		IN_NEUTRAL_GEAR,
-		SHIFTING_NEUTRAL,
+		//NEUTRAL_SETUP,
+		//IN_NEUTRAL_GEAR,
+		//SHIFTING_NEUTRAL,
 		AUTO_STAND_BY,
 		AUTO_TURN,
 		AUTO_DRIVE,
@@ -822,8 +879,8 @@ public class Drives extends GenericSubsystem{
 				return "In Auto Drive";
 			case AUTO_DANCE:
 				return "In Auto Dance";
-			case NEUTRAL_SETUP:
-				return "Neutral Setup";
+				//case NEUTRAL_SETUP:
+				//	return "Neutral Setup";
 			default:
 				return "Error";
 			}
@@ -841,7 +898,7 @@ public class Drives extends GenericSubsystem{
 		LiveWindow.addActuator(subsytemName, "Right Rear Motor", rightBack);
 		LiveWindow.addActuator(subsytemName, "Left Front Motor", leftFront);
 		LiveWindow.addActuator(subsytemName, "Left Back Motor", leftBack);
-			
+
 	}
 
 	//PID

@@ -19,19 +19,24 @@ public class Robot extends SampleRobot{
 	 * An array of all of the subsystems on the robot
 	 */
 	private GenericSubsystem[] subsystems;
+	
+	private Autonomous auto;
 
 	/**
 	 * Called once every time the robot is powered on
 	 */
 	public Robot() {
+		auto = Autonomous.getInstance();
+		
 		subsystems = new GenericSubsystem[]{	
-        	Controls.getInstance(),
         	LogWriter.getInstance(),
         	Elevations.getInstance(),
         	Drives.getInstance(),
         	CanAcquisition.getInstance(),
         	CanAcqTele.getInstance(),
-        	ToteAcq.getInstance()
+        	ToteAcq.getInstance(),
+        	Controls.getInstance(),
+        	auto
 		};
 		
 		for(GenericSubsystem system: subsystems){
@@ -43,14 +48,14 @@ public class Robot extends SampleRobot{
 	 *  Called one time when the robot enters autonomous
 	 */
 	public void autonomous() {
-		
+		auto.runAuto(true);
 	}
 
 	/**
 	 *  Called one time when the robot enters teleop
 	 */
 	public void operatorControl() {
-		
+		auto.runAuto(false);
 	}
 
 	/**

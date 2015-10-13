@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
  * A class for controlling the can auto arms we are adding
+ * @author Mike Edwards {michaele789@gmail.com}
  * @author Alex Mechler {amechler1998@gmail.com}
  */
 public class CanAcqAuto extends GenericSubsystem{

@@ -1,9 +1,12 @@
 package org.gosparx.team1126.robot;
 
+import org.gosparx.team1126.robot.subsystem.CanAcqAuto;
 import org.gosparx.team1126.robot.subsystem.CanAcqTele;
 import org.gosparx.team1126.robot.subsystem.Drives;
 import org.gosparx.team1126.robot.subsystem.Elevations;
 import org.gosparx.team1126.robot.subsystem.GenericSubsystem;
+import org.gosparx.team1126.robot.subsystem.ToteAcq;
+import org.gosparx.team1126.robot.subsystem.ToteAcq.RollerPosition;
 
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
@@ -111,6 +114,10 @@ public class Autonomous extends GenericSubsystem{
 	private double waitTime;
 
 	private boolean waiting = false;
+	
+	private ToteAcq toteAcq;
+	
+	private CanAcqAuto canAcqAuto;
 
 	/**
 	 * The voltages of the different choices on the selection switch
@@ -319,7 +326,11 @@ public class Autonomous extends GenericSubsystem{
 		 */
 		ELEV_DOWN(33),
 		
-		CAN_TELE_ACQUIRE_SLOW(34);
+		CAN_TELE_ACQUIRE_SLOW(34),
+		
+		CAN_AUTO_DROP(100),
+		
+		CAN_AUTO_RAISE(101);
 
 		private int id;
 		private AutoCommands(int id){
@@ -374,6 +385,8 @@ public class Autonomous extends GenericSubsystem{
 			case DRIVES_ARC:		return "Drives Arcing";
 			case ELEV_DONE: 		return "Elevation Done";
 			case ELEV_DOWN:			return "Elevatons lowered";
+			case CAN_AUTO_DROP:		return "Can Auto Arms Dropped";
+			case CAN_AUTO_RAISE:	return "Can Auto Arms Raising";
 			default:				return auto.toId() + "";
 			}
 		}
@@ -663,7 +676,24 @@ public class Autonomous extends GenericSubsystem{
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.END.toId()}
 	};
-
+	
+	private final String TWO_CANS_FROM_STEP_NAME = "Two Cans from Step";
+	private int[][] TWO_CANS_FROM_STEP = {
+			{AutoCommands.ACQ_LOWER.toId()},
+			{AutoCommands.WAIT.toId(), 500},
+			{AutoCommands.CAN_AUTO_DROP.toId()},
+			{AutoCommands.WAIT.toId(), 2000},
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 0, 0},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.WAIT.toId(), 500},
+			{AutoCommands.CAN_AUTO_RAISE.toId()},
+			{AutoCommands.WAIT.toId(), 2000},
+			{AutoCommands.ACQ_RAISE.toId()},
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 0, 0},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.END.toId()}
+	};
+	
 	/**
 	 * Singleton
 	 * @return the only instance of Autonomous ever
@@ -692,6 +722,8 @@ public class Autonomous extends GenericSubsystem{
 		canAcqTele = CanAcqTele.getInstance();
 		ele = Elevations.getInstance();
 		runAuto = false;
+		toteAcq = ToteAcq.getInstance();
+		canAcqAuto = CanAcqAuto.getInstance();
 
 		//Auto current selected
 		SmartDashboard.putBoolean(SD_USE_SMART_AUTO, false);
@@ -892,8 +924,10 @@ public class Autonomous extends GenericSubsystem{
 			case ARMS_DONE:
 				break;
 			case ACQ_LOWER:
+				toteAcq.setRollerPos(RollerPosition.FLOOR);
 				break;
 			case ACQ_RAISE:
+				toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
 				break;
 			case ACQ_ROLLERS_ON:
 				break;
@@ -945,6 +979,12 @@ public class Autonomous extends GenericSubsystem{
 					waitTime = Timer.getFPGATimestamp() + (currentAuto[currentStep][1]/1000.0);
 					waiting = true;
 				}
+				break;
+			case CAN_AUTO_DROP:
+				canAcqAuto.dropArms();
+				break;
+			case CAN_AUTO_RAISE:
+				canAcqAuto.raiseArms();
 				break;
 			case END:
 				break;

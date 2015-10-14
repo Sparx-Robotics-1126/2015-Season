@@ -11,6 +11,7 @@ import org.gosparx.team1126.robot.util.AdvancedJoystick.JoystickListener;
 import org.gosparx.team1126.robot.util.AdvancedJoystick.MultibuttonEvent;
 
 import sun.rmi.runtime.Log;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -84,6 +85,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 	 * Instance for CanAcqTele
 	 */
 	private CanAcqTele canAcqTele;
+
+	private CanAcqAuto canAcqAuto;
 
 	//**************************************************************************
 	//*****************************Logitech f310 mapping************************
@@ -180,6 +183,8 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		driverJoyRight.addButton(NEW_JOY_LEFT);
 		driverJoyRight.addButton(NEW_JOY_TRIGGER);
 		driverJoyRight.addButton(NEW_JOY_MIDDLE);
+		driverJoyRight.addButton(NEW_JOY_LEFT);
+		driverJoyRight.addButton(NEW_JOY_RIGHT);
 		driverJoyRight.start();
 		operatorJoy = new AdvancedJoystick("Operator Joy", IO.OPERATOR_JOYSTICK, 10, 0.25);
 		operatorJoy.addActionListener(this);
@@ -198,6 +203,7 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 		toteAcq = ToteAcq.getInstance();
 		elevations = Elevations.getInstance();
 		auto = Autonomous.getInstance();
+		canAcqAuto = CanAcqAuto.getInstance();
 		return true;
 	}
 
@@ -350,6 +356,12 @@ public class Controls extends GenericSubsystem implements JoystickListener{
 					case NEW_JOY_MIDDLE:
 						useAuto = true;
 						LOG.logMessage("USING AUTO");
+						break;
+					case NEW_JOY_LEFT:
+						canAcqAuto.raiseArms();
+						break;
+					case NEW_JOY_RIGHT:
+						canAcqAuto.dropArms();
 						break;
 					}
 					break;

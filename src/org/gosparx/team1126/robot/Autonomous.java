@@ -683,13 +683,19 @@ public class Autonomous extends GenericSubsystem{
 			{AutoCommands.WAIT.toId(), 500},
 			{AutoCommands.CAN_AUTO_DROP.toId()},
 			{AutoCommands.WAIT.toId(), 2000},
-			{AutoCommands.DRIVES_GO_REVERSE.toId(), 0, 0},
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 2, 15},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.WAIT.toId(), 500},
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 2, 15},
+			{AutoCommands.DRIVES_DONE.toId()},
+			{AutoCommands.WAIT.toId(), 500},
+			{AutoCommands.DRIVES_GO_REVERSE.toId(), 110, 100},
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.WAIT.toId(), 500},
 			{AutoCommands.CAN_AUTO_RAISE.toId()},
 			{AutoCommands.WAIT.toId(), 2000},
 			{AutoCommands.ACQ_RAISE.toId()},
-			{AutoCommands.DRIVES_GO_FORWARD.toId(), 0, 0},
+			{AutoCommands.DRIVES_GO_FORWARD.toId(), 24, 100},
 			{AutoCommands.DRIVES_DONE.toId()},
 			{AutoCommands.END.toId()}
 	};
@@ -743,6 +749,7 @@ public class Autonomous extends GenericSubsystem{
 		chooser.addObject(AUTO_CAN_TO_LINUP_ARMS_NAME, new Integer(11));
 		chooser.addObject(AUTO_CAN_TO_ZONE_ARMS_NAME, new Integer(12));
 		chooser.addObject(AUTO_CAN_TO_ZONE_DIRECT_ARMS_NAME, new Integer(13));
+		chooser.addObject(TWO_CANS_FROM_STEP_NAME, new Integer(14));
 		SmartDashboard.putData(SD_AUTO_NAME, chooser);
 
 		return false;
@@ -870,6 +877,9 @@ public class Autonomous extends GenericSubsystem{
 			currentAutoName = AUTO_CAN_TO_ZONE_DIRECT_ARMS_NAME;
 			currentAuto = AUTO_CAN_TO_ZONE_DIRECT_ARMS;
 			break;
+		case 14:
+			currentAutoName = TWO_CANS_FROM_STEP_NAME;
+			currentAuto = TWO_CANS_FROM_STEP;
 		default:
 			currentAutoName = NO_AUTO_NAME;//NO_AUTO_NAME;
 			currentAuto = NO_AUTO;//NO_AUTO;
@@ -924,10 +934,10 @@ public class Autonomous extends GenericSubsystem{
 			case ARMS_DONE:
 				break;
 			case ACQ_LOWER:
-				toteAcq.setRollerPos(RollerPosition.FLOOR);
+				toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
 				break;
 			case ACQ_RAISE:
-				toteAcq.setRollerPos(RollerPosition.HUMAN_PLAYER);
+				toteAcq.setRollerPos(RollerPosition.TRAVEL);
 				break;
 			case ACQ_ROLLERS_ON:
 				break;

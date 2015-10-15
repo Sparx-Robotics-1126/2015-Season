@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Controls the can tele acq
@@ -342,6 +343,7 @@ public class CanAcqTele extends GenericSubsystem{
 			}
 		}
 
+		SmartDashboard.putBoolean("Floor Grabbers", currentFloorGrabbers);
 		floorGrabbers.set(currentFloorGrabbers);
 		rotateMotor.set(wantedRotateSpeed*3);
 		//hookMotor.set(-wantedHookSpeed/2.0); //Needs to be flipped if we return to AM motor

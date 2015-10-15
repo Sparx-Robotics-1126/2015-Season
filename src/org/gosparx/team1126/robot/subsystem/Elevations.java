@@ -1,7 +1,5 @@
 package org.gosparx.team1126.robot.subsystem;
 
-import jdk.internal.org.objectweb.asm.tree.IntInsnNode;
-
 import org.gosparx.team1126.robot.IO;
 import org.gosparx.team1126.robot.sensors.EncoderData;
 
@@ -176,7 +174,9 @@ public class Elevations extends GenericSubsystem{
 	private int numOfTotes = 0;
 
 	private boolean initalSetup = true;
-
+	
+	private double endTime = 0;
+	private double runTime = 0;
 	/**
 	 * Returns the only instance of elevations
 	 */
@@ -191,7 +191,7 @@ public class Elevations extends GenericSubsystem{
 	 * Creates a new elevations
 	 */
 	private Elevations() {
-		super("Elevations", Thread.NORM_PRIORITY);
+		super("Elevations", Thread.MAX_PRIORITY);
 	}
 
 	/**
@@ -222,6 +222,10 @@ public class Elevations extends GenericSubsystem{
 	 */
 	@Override
 	protected boolean execute() {
+		if(Timer.getFPGATimestamp() - runTime > 0.05){
+			LOG.logMessage("TOOOOOOO LONG*************** Sleep:" + (Timer.getFPGATimestamp() - endTime) + " Run:"+(endTime-runTime));
+		}
+		runTime = Timer.getFPGATimestamp();
 		isWorking = true;//USE FOR DEBUGGING
 		wantedSpeed = 0;
 		elevationRightEncoderData.calculateSpeed();
@@ -263,8 +267,8 @@ public class Elevations extends GenericSubsystem{
 		case COMPLEX_MOVE:
 			double rightDistance = elevationRightEncoderData.getDistance();
 			double leftDistance = elevationLeftEncoderData.getDistance();
-			double rightSpeed = (wantedPosition - rightDistance)/2;
-			double leftSpeed = (wantedPosition - leftDistance)/2;
+			double rightSpeed = (wantedPosition - rightDistance)/4.0;
+			double leftSpeed = (wantedPosition - leftDistance)/4.0;
 
 			//MAX SPEED
 			if(rightSpeed < 0){
@@ -337,6 +341,8 @@ public class Elevations extends GenericSubsystem{
 				}else{
 					if(scoreTotes){
 						currState = State.STANDBY;
+						rightWantedSpeed = 0;
+						leftWantedSpeed = 0;
 					}else{
 						currState = State.SETTING_HOME;
 					}
@@ -371,9 +377,13 @@ public class Elevations extends GenericSubsystem{
 				leftDone = false;
 				goingUp = true;
 				wantedPosition = TOTE_LIFT_DIST;
+				if(!initalSetup){
+					liftTote();
+				}else{
+					currState = State.STANDBY;
+				}
 				initalSetup = false;//ONLY USED FOR INITAL SETUP
-				liftTote();
-				LOG.logMessage("1126: BOTTOM REACHED Tote: " + numOfTotes);
+				LOG.logMessage("1126: BOTTOM REACHED Tote: " + numOfTotes);	
 			}
 			break;
 		default:
@@ -383,6 +393,7 @@ public class Elevations extends GenericSubsystem{
 
 		rightElevationMotor.set(rightWantedSpeed);
 		leftElevationMotor.set(leftWantedSpeed);
+		endTime = Timer.getFPGATimestamp();
 		return false;
 	}
 
@@ -410,6 +421,7 @@ public class Elevations extends GenericSubsystem{
 	 * Used to lower the elevator to lower poisition
 	 */
 	public void lowerTotes(){
+		LOG.logMessage("Lowering Totes");
 		leftDone = false;
 		rightDone = false;
 		scoreTotes = false;
@@ -423,6 +435,7 @@ public class Elevations extends GenericSubsystem{
 	 * Lifts the tote;
 	 */
 	public void liftTote(){
+		LOG.logMessage("Lifting Totes");
 		rightDone = false;
 		leftDone = false;
 		scoreTotes = false;
@@ -433,6 +446,7 @@ public class Elevations extends GenericSubsystem{
 	}
 
 	public void scoreTotes(){
+		LOG.logMessage("Scoring Totes");
 		rightDone = false;
 		leftDone = false;
 		numOfTotes = 0;
@@ -464,7 +478,7 @@ public class Elevations extends GenericSubsystem{
 	 */
 	@Override
 	protected long sleepTime() {
-		return 20;
+		return 10;
 	}
 
 	/**
